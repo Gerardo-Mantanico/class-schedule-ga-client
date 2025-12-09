@@ -5,11 +5,13 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useSidebar } from "../context/SidebarContext";
 import {
-  CalenderIcon,
+  ListIcon,
   ChevronDownIcon,
   GridIcon,
   HorizontaLDots,
   UserCircleIcon,
+  TableIcon,
+  GroupIcon,
 } from "../icons/index";
 
 
@@ -27,17 +29,17 @@ const navItems: NavItem[] = [
     subItems: [{ name: "Ecommerce", path: "/", pro: false }],
   },
   {
-    icon: <CalenderIcon />,
+    icon: <ListIcon />,
     name: "Servicios",
     path: "/admin/servicios",
   },
   {
-    icon: <UserCircleIcon />,
+    icon: <GroupIcon />,
     name: "Especialidades",
     path: "/admin/especialidades",
   },
    {
-    icon: <UserCircleIcon />,
+    icon: <TableIcon />,
     name: "Areas",
     path: "/admin/area",
   },
