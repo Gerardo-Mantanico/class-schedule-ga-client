@@ -34,7 +34,6 @@ const request = async (endpoint, method, data = null, customHeaders = {}) => {
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       const message = errorData.message || response.statusText || `Error ${response.status}`;
-      console.error('API Error:', message, JSON.stringify(errorData, null, 2));
       throw new Error(message);
     }
 
@@ -43,12 +42,24 @@ const request = async (endpoint, method, data = null, customHeaders = {}) => {
     if (response.status === 204) {
       return null;
     }
+
+    // Verificar si hay contenido en la respuesta
+    const contentLength = response.headers.get('content-length');
     
-    const responseData = await response.json();
-    return responseData;
+    // Si no hay contenido, retornar null
+    if (contentLength === '0' || !response.text) {
+      return null;
+    }
+
+    try {
+      const responseData = await response.json();
+      return responseData;
+    } catch {
+      // Si no puede parsear JSON pero es 200, retornar null
+      return null;
+    }
 
   } catch (error) {
-    console.error('Fetch Error:', error.message);
     throw error;
   }
 };

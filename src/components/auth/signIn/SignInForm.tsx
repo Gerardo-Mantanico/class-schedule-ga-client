@@ -77,7 +77,11 @@ export default function SignInForm() {
             router.push("/admin");
           } else if (role === "PACIENTE" || role === "ROLE_PACIENTE") {
             router.push("/paciente");
-          } else {
+          }  else if (role === "PSM" || role === "ROLE_PSM") {
+            router.push("/psm");
+          }
+          
+          else {
             // Fallback si no coincide o es otro rol
             console.log("Redirigiendo por defecto a /paciente (Rol: " + role + ")");
             router.push("/paciente");
