@@ -5,8 +5,9 @@ import AppHeader from "@/layout/AppHeader";
 import AppSidebarPsm from "@/layout/AppSidebarPsm";
 import Backdrop from "@/layout/Backdrop";
 import React from "react";
+import RequireRole from "@/components/auth/RequireRole";
 
-export default function PacienteLayout({
+export default function PsmLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -32,7 +33,11 @@ export default function PacienteLayout({
         {/* Header */}
         <AppHeader />
         {/* Page Content */}
-        <div className="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">{children}</div>
+        <div className="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">
+                     <RequireRole allowedRoles={["PSM", "PSM", "ROLE_PSM"]}>
+                               {children}
+                     </RequireRole>
+        </div>
       </div>
     </div>
   );

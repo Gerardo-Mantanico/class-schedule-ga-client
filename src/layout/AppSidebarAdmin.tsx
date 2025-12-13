@@ -52,7 +52,7 @@ const navItems: NavItem[] = [
    
 ];
 
-const AppSidebarPaciente: React.FC = () => {
+const AppSidebarAdmin: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const pathname = usePathname();
 
@@ -302,4 +302,4 @@ const AppSidebarPaciente: React.FC = () => {
   );
 };
 
-export default AppSidebarPaciente;
+export default AppSidebarAdmin;

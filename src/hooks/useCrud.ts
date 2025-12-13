@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 
 interface ApiService {
-  getAll: () => Promise<unknown>;
+  getAll: (params?: Record<string, unknown>) => Promise<unknown>;
   create: (data: unknown) => Promise<unknown>;
   update: (id: number | string, data: unknown) => Promise<unknown>;
   delete: (id: number | string) => Promise<unknown>;
@@ -14,25 +14,63 @@ export const useCrud = <T extends { id: number | string }>(
   const [items, setItems] = useState<T[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [totalItems, setTotalItems] = useState<number | null>(null);
 
   // Obtener elementos
-  const fetchItems = useCallback(async () => {
+  const fetchItems = useCallback(async (params: Record<string, unknown> = {}) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await apiService.getAll();
-      // Manejar paginación (Spring Boot usa 'content') o array directo
-      const data = Array.isArray(response)
-        ? response
-        : ((response as { content?: T[] })?.content || (response as { data?: T[] })?.data || []);
+      const response = await apiService.getAll(params);
 
-      if (Array.isArray(data)) {
-        setItems(data);
-      } else {
-        console.error('Formato de respuesta inesperado:', response);
-        setItems([]);
-        setError('Formato de datos inválido');
+      // Si el backend devuelve un array directamente
+      if (Array.isArray(response)) {
+        setItems(response as T[]);
+        setTotalItems((response as T[]).length);
+        return { items: response as T[], total: (response as T[]).length };
       }
+
+      // Intentar parsear estructura de paginación típica de Spring Data
+      type PageResp = {
+        content?: unknown[];
+        data?: unknown[];
+        items?: unknown[];
+        rows?: unknown[];
+        results?: unknown[];
+        totalElements?: number;
+        total?: number;
+        totalItems?: number;
+      };
+      const respObj = response as PageResp;
+      const content = respObj.content || respObj.data || respObj.items || null;
+      let total: number | null = null;
+      if (typeof respObj.totalElements === 'number') {
+        total = respObj.totalElements;
+      } else if (typeof respObj.total === 'number') {
+        total = respObj.total;
+      } else if (typeof respObj.totalItems === 'number') {
+        total = respObj.totalItems;
+      }
+
+      if (Array.isArray(content)) {
+        setItems(content as T[]);
+        setTotalItems(total ?? (content as T[]).length);
+        return { items: content as T[], total: total ?? (content as T[]).length };
+      }
+
+      // Si response contiene un campo 'rows' o es un objeto con lista directamente
+      const fallbackArray = respObj?.rows || respObj?.results || null;
+      if (Array.isArray(fallbackArray)) {
+        setItems(fallbackArray as T[]);
+        setTotalItems(total ?? (fallbackArray as T[]).length);
+        return { items: fallbackArray as T[], total: total ?? (fallbackArray as T[]).length };
+      }
+
+      console.error('Formato de respuesta inesperado:', response);
+      setItems([]);
+      setTotalItems(0);
+      setError('Formato de datos inválido');
+      return { items: [], total: 0 };
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message || 'Error al cargar datos');
@@ -40,6 +78,7 @@ export const useCrud = <T extends { id: number | string }>(
         setError('Error desconocido al cargar datos');
       }
       console.error(err);
+      return { items: [], total: 0 };
     } finally {
       setLoading(false);
     }
@@ -54,11 +93,28 @@ export const useCrud = <T extends { id: number | string }>(
       await fetchItems(); // Recargar lista
       return true;
     } catch (err: unknown) {
+      let errorMessage = 'Error al crear elemento';
       if (err instanceof Error) {
-        setError(err.message || 'Error al crear elemento');
+  const extra = (err as unknown as { data?: unknown }).data;
+        errorMessage = err.message || errorMessage;
+        if (extra) {
+          try {
+            errorMessage = `${errorMessage} — ${JSON.stringify(extra)}`;
+          } catch {
+            // ignore JSON stringify issues
+          }
+        }
+        // Log del error completo para debugging
+        console.error('Error detallado al crear:', {
+          message: err.message,
+          data: extra,
+          stack: err.stack,
+          payload: data,
+        });
       } else {
-        setError('Error desconocido al crear elemento');
+        console.error('Error desconocido al crear:', err);
       }
+      setError(errorMessage);
       return false;
     } finally {
       setLoading(false);
@@ -78,7 +134,16 @@ export const useCrud = <T extends { id: number | string }>(
     } catch (err: unknown) {
       console.error("Error en updateItem:", err);
       if (err instanceof Error) {
-        setError(err.message || 'Error al actualizar elemento');
+  const extra = (err as unknown as { data?: unknown }).data;
+        let errorMessage = err.message || 'Error al actualizar elemento';
+        if (extra) {
+          try {
+            errorMessage = `${errorMessage} — ${JSON.stringify(extra)}`;
+          } catch {
+            // ignore
+          }
+        }
+        setError(errorMessage);
       } else {
         setError('Error desconocido al actualizar elemento');
       }
@@ -120,5 +185,6 @@ export const useCrud = <T extends { id: number | string }>(
     createItem,
     updateItem,
     deleteItem,
+    totalItems,
   };
 };

@@ -33,8 +33,46 @@ const request = async (endpoint, method, data = null, customHeaders = {}) => {
     // Manejo de respuestas no exitosas
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      const message = errorData.message || response.statusText || `Error ${response.status}`;
-      throw new Error(message);
+
+      // Construir un mensaje legible a partir de distintas formas de respuesta
+      let message = response.statusText || `Error ${response.status}`;
+      if (errorData) {
+        if (typeof errorData === 'string') {
+          message = errorData;
+        } else if (errorData.message) {
+          message = errorData.message;
+        } else if (errorData.error) {
+          message = errorData.error;
+        } else if (Array.isArray(errorData) && errorData.length > 0) {
+          try {
+            // Intentar obtener mensajes individuales si vienen en un array
+            const mapped = errorData.map((it) => (it && (it.message || it.defaultMessage || JSON.stringify(it))) ).join(' | ');
+            message = mapped || JSON.stringify(errorData);
+          } catch {
+            message = JSON.stringify(errorData);
+          }
+        } else {
+          message = JSON.stringify(errorData);
+        }
+      }
+
+      // Log detallado del error
+      console.error('Error API completo:', {
+        status: response.status,
+        statusText: response.statusText,
+        endpoint: url,
+        errorData: errorData,
+        fullError: message,
+      });
+
+      // Adjuntar el body original al Error para que el código superior pueda inspeccionarlo
+      const err = new Error(message);
+      try {
+        err.data = errorData; // attach extra info
+      } catch {
+        // ignore if attachment fails
+      }
+      throw err;
     }
 
     // Retornar datos parseados para respuestas exitosas
@@ -60,6 +98,7 @@ const request = async (endpoint, method, data = null, customHeaders = {}) => {
     }
 
   } catch (error) {
+    console.error('Error en la solicitud:', error);
     throw error;
   }
 };

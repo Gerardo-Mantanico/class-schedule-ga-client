@@ -113,10 +113,12 @@ const columns: Column<User>[] = [
 
 export default function UserTable() {
   const { isOpen, openModal, closeModal } = useModal();
-  const {users, loading, error, updateUser, deleteUser } = useUser();
+  const {users, loading, error, fetchUsers, totalItems, updateUser, deleteUser, createUser } = useUser();
   const { roles } = useRole();
 
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [isCreating, setIsCreating] = useState(false);
+  const [localError, setLocalError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     firstname: "",
     lastname: "",
@@ -130,12 +132,33 @@ export default function UserTable() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 7;
 
-  const totalPages = Math.ceil(users.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentUser = users.slice(startIndex, startIndex + itemsPerPage);
+  const totalPages = Math.max(1, Math.ceil((totalItems || 0) / itemsPerPage));
+
+  // Fetch page when currentPage or page size changes
+  React.useEffect(() => {
+    fetchUsers({ page: currentPage - 1, size: itemsPerPage });
+  }, [currentPage, itemsPerPage, fetchUsers]);
+
+  const handleAddUser = () => {
+    setIsCreating(true);
+    setSelectedUser(null);
+    setLocalError(null);
+    setFormData({
+      firstname: "",
+      lastname: "",
+      email: "",
+      phoneNumber: "",
+      active: true,
+      use2fa: false,
+      roleId: 0,
+    });
+    openModal();
+  };
 
   const handleEdit = (user: User) => {
+    setIsCreating(false);
     setSelectedUser(user);
+    setLocalError(null);
     setFormData({
       firstname: user.firstname,
       lastname: user.lastname,
@@ -150,22 +173,54 @@ export default function UserTable() {
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLocalError(null);
     
-    // Mapear 'active' a 'isActive' para el backend
-    const dataToSend = {
-      firstname: formData.firstname,
-      lastname: formData.lastname,
-      email: formData.email,
-      phoneNumber: formData.phoneNumber,
-      isActive: formData.active, // Convertir active a isActive
-      use2fa: formData.use2fa,
-      roleId: formData.roleId,
-    };
-    
-    if (selectedUser) {
+    if (isCreating) {
+      // Validación mínima para creación
+      if (!formData.firstname || !formData.lastname || !formData.email) {
+        setLocalError("Completa nombre, apellido y email.");
+        return;
+      }
+      if (!formData.phoneNumber) {
+        setLocalError("Ingresa un teléfono válido.");
+        return;
+      }
+      if (!formData.roleId || formData.roleId === 0) {
+        setLocalError("Selecciona un rol válido.");
+        return;
+      }
+      // Crear nuevo usuario - estructura específica del backend
+      const createData = {
+        firstname: formData.firstname,
+        lastname: formData.lastname,
+        email: formData.email,
+        phoneNumber: formData.phoneNumber,
+        password: "123456789", 
+        roleId: formData.roleId,
+      };
+      const success = await createUser(createData);
+      if (success) {
+        // refresh current page
+        await fetchUsers({ page: currentPage - 1, size: itemsPerPage });
+        closeModal();
+        setIsCreating(false);
+      }
+    } else if (selectedUser) {
+      // Actualizar usuario existente
+      const dataToSend = {
+        firstname: formData.firstname,
+        lastname: formData.lastname,
+        email: formData.email,
+        phoneNumber: formData.phoneNumber,
+        isActive: formData.active,
+        use2fa: formData.use2fa,
+        roleId: formData.roleId,
+      };
       const success = await updateUser(selectedUser.id, dataToSend);
       if (success) {
+        await fetchUsers({ page: currentPage - 1, size: itemsPerPage });
         closeModal();
+        setIsCreating(false);
       }
     }
   };
@@ -181,10 +236,16 @@ export default function UserTable() {
         <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
           Lista de Usuarios
         </h3>
+        <button
+          onClick={handleAddUser}
+          className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+        >
+          + Agregar Usuario
+        </button>
       </div>
 
       <GenericTable
-        data={currentUser}
+        data={users}
         columns={columns}
         onEdit={handleEdit}
         onDelete={(user) => deleteUser(user.id)}
@@ -198,17 +259,18 @@ export default function UserTable() {
         <div className="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
           <div className="px-2 pr-14">
             <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
-              Editar Usuario
+              {isCreating ? "Agregar Usuario" : "Editar Usuario"}
             </h4>
             <p className="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
-              Actualizar los detalles del usuario
+              {isCreating ? "Crear un nuevo usuario en el sistema" : "Actualizar los detalles del usuario"}
             </p>
           </div>
           <form className="flex flex-col" onSubmit={handleSave}>
             <div className="custom-scrollbar h-[500px] overflow-y-auto px-2 pb-3">
-              {error && (
+              {(localError || error) && (
                 <div className="p-3 mb-4 text-sm text-red-500 bg-red-50 rounded-lg dark:bg-red-900/10 dark:text-red-400">
-                  {error}
+                  <p className="font-semibold mb-1">Error:</p>
+                  <p className="overflow-wrap break-word">{localError || error}</p>
                 </div>
               )}
               <div className="mt-7">
@@ -287,35 +349,39 @@ export default function UserTable() {
                     </select>
                   </div>
 
-                  {/* Estado Activo */}
-                  <div className="col-span-2 lg:col-span-1">
-                    <Label>Estado</Label>
-                    <select
-                      value={formData.active ? "active" : "inactive"}
-                      onChange={(e) =>
-                        setFormData({ ...formData, active: e.target.value === "active" })
-                      }
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                      <option value="active">Activo</option>
-                      <option value="inactive">Inactivo</option>
-                    </select>
-                  </div>
+                  {/* Estado Activo - Solo edición */}
+                  {!isCreating && (
+                    <div className="col-span-2 lg:col-span-1">
+                      <Label>Estado</Label>
+                      <select
+                        value={formData.active ? "active" : "inactive"}
+                        onChange={(e) =>
+                          setFormData({ ...formData, active: e.target.value === "active" })
+                        }
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value="active">Activo</option>
+                        <option value="inactive">Inactivo</option>
+                      </select>
+                    </div>
+                  )}
 
-                  {/* 2FA */}
-                  <div className="col-span-2 lg:col-span-1">
-                    <Label>Autenticación de dos factores</Label>
-                    <select
-                      value={formData.use2fa ? "enabled" : "disabled"}
-                      onChange={(e) =>
-                        setFormData({ ...formData, use2fa: e.target.value === "enabled" })
-                      }
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                      <option value="enabled">Habilitado</option>
-                      <option value="disabled">Deshabilitado</option>
-                    </select>
-                  </div>
+                  {/* 2FA - Solo edición */}
+                  {!isCreating && (
+                    <div className="col-span-2 lg:col-span-1">
+                      <Label>Autenticación de dos factores</Label>
+                      <select
+                        value={formData.use2fa ? "enabled" : "disabled"}
+                        onChange={(e) =>
+                          setFormData({ ...formData, use2fa: e.target.value === "enabled" })
+                        }
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value="enabled">Habilitado</option>
+                        <option value="disabled">Deshabilitado</option>
+                      </select>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -331,7 +397,7 @@ export default function UserTable() {
                 type="submit"
                 className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
               >
-                Guardar Cambios
+                {isCreating ? "Crear Usuario" : "Guardar Cambios"}
               </button>
             </div>
           </form>

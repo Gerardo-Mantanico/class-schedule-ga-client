@@ -30,6 +30,7 @@ export const useUser = () => {
     createItem: createUser,
     updateItem: updateUser,
     deleteItem: deleteUser
+  , totalItems
   } = useCrud<User>(userApi);
 
   return {
@@ -40,5 +41,6 @@ export const useUser = () => {
     createUser,
     updateUser,
     deleteUser,
+    totalItems,
   };
 };

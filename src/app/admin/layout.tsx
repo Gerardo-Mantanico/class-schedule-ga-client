@@ -5,19 +5,17 @@ import AppHeader from "@/layout/AppHeader";
 import AppSidebarAdmin from "@/layout/AppSidebarAdmin";
 import Backdrop from "@/layout/Backdrop";
 import React from "react";
+import RequireRole from "@/components/auth/RequireRole";
 
-export default function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function AdminLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const { isExpanded, isHovered, isMobileOpen } = useSidebar();
 
-  const mainContentMargin = isMobileOpen
-    ? "ml-0"
-    : isExpanded || isHovered
-    ? "lg:ml-[290px]"
-    : "lg:ml-[90px]";
+  let mainContentMargin = "lg:ml-[90px]";
+  if (isMobileOpen) {
+    mainContentMargin = "ml-0";
+  } else if (isExpanded || isHovered) {
+    mainContentMargin = "lg:ml-[290px]";
+  }
 
   return (
     <div className="min-h-screen xl:flex">
@@ -31,7 +29,11 @@ export default function AdminLayout({
         {/* Header */}
         <AppHeader />
         {/* Page Content */}
-        <div className="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">{children}</div>
+        <div className="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">
+          <RequireRole allowedRoles={["ADMIN", "ADMINISTRADOR", "ROLE_ADMIN"]}>
+            {children}
+          </RequireRole>
+        </div>
       </div>
     </div>
   );
