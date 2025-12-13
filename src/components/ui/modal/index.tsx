@@ -50,9 +50,12 @@ export const Modal: React.FC<ModalProps> = ({
 
   if (!isOpen) return null;
 
+  // Use inline-block for non-fullscreen modal so its width can be driven by
+  // content or by the provided max-width classes. Keep w-full behavior for
+  // fullscreen mode.
   const contentClasses = isFullscreen
     ? "w-full h-full"
-    : "relative w-full rounded-3xl bg-white  dark:bg-gray-900";
+    : "relative inline-block rounded-3xl bg-white dark:bg-gray-900";
 
   return (
     <div className="fixed inset-0 flex items-center justify-center overflow-y-auto modal z-99999">

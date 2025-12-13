@@ -17,6 +17,8 @@ interface InputProps {
   error?: boolean;
   hint?: string; // Optional hint text
   required?: boolean;
+  autoFocus?: boolean;
+  ariaInvalid?: boolean;
 }
 
 const Input: FC<InputProps> = ({
@@ -36,6 +38,8 @@ const Input: FC<InputProps> = ({
   error = false,
   hint,
   required = false,
+  autoFocus = false,
+  ariaInvalid = false,
 }) => {
   // Determine input styles based on state (disabled, success, error)
   let inputClasses = `h-11 w-full rounded-lg border appearance-none px-4 py-2.5 text-sm shadow-theme-xs placeholder:text-gray-400 focus:outline-hidden focus:ring-3 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 ${className}`;
@@ -66,23 +70,21 @@ const Input: FC<InputProps> = ({
         step={step}
         disabled={disabled}
         required={required}
+        autoFocus={autoFocus}
+        aria-invalid={ariaInvalid}
         className={inputClasses}
       />
 
       {/* Optional Hint Text */}
-      {hint && (
-        <p
-          className={`mt-1.5 text-xs ${
-            error
-              ? "text-error-500"
-              : success
-              ? "text-success-500"
-              : "text-gray-500"
-          }`}
-        >
-          {hint}
-        </p>
-      )}
+      {hint && (() => {
+        let hintClass = "text-gray-500";
+        if (error) {
+          hintClass = "text-error-500";
+        } else if (success) {
+          hintClass = "text-success-500";
+        }
+        return <p className={`mt-1.5 text-xs ${hintClass}`}>{hint}</p>;
+      })()}
     </div>
   );
 };

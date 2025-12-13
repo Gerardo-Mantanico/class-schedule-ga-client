@@ -66,7 +66,7 @@ export function GenericTable<T extends { id: string | number }>({
               {(onEdit || onDelete || actions) && (
                 <TableCell
                   isHeader
-                  className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                  className="px-5 py-3 font-medium text-gray-500 text-end text-theme-xs dark:text-gray-400"
                 >
                   Acciones
                 </TableCell>
@@ -86,7 +86,7 @@ export function GenericTable<T extends { id: string | number }>({
                 ))}
                 {(onEdit || onDelete || actions) && (
                   <TableCell className="px-5 py-4 text-gray-500 dark:text-gray-400">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 justify-end">
                       {actions?.(row)}
                       {onEdit && (
                         <button

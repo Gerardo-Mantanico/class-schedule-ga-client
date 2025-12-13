@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { useModal } from "../../hooks/useModal";
-import { Modal } from "../ui/modal";
+import { GenericModal } from "../ui/modal/GenericModal";
 import Button from "../ui/button/Button";
 import Input from "../form/input/InputField";
 import Label from "../form/Label";
@@ -30,7 +30,7 @@ export default function UserMetaCard() {
             </div>
             <div className="order-3 xl:order-2">
               <h4 className="mb-2 text-lg font-semibold text-center text-gray-800 dark:text-white/90 xl:text-left">
-                Musharof Chowdhury
+                Musharof Chowdhury hola
               </h4>
               <div className="flex flex-col items-center gap-1 text-center xl:flex-row xl:gap-3 xl:text-left">
                 <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -136,7 +136,7 @@ export default function UserMetaCard() {
           </button>
         </div>
       </div>
-      <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[700px] m-4">
+  <GenericModal isOpen={isOpen} onClose={closeModal}   size="lg" className="max-w-[1200px] m-4">
         <div className="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
           <div className="px-2 pr-14">
             <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
@@ -227,7 +227,7 @@ export default function UserMetaCard() {
             </div>
           </form>
         </div>
-      </Modal>
+  </GenericModal>
     </>
   );
 }

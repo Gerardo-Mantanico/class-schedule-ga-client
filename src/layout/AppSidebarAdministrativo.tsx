@@ -22,13 +22,17 @@ type NavItem = {
 const navItems: NavItem[] = [
   {
     icon: <GridIcon />,
-    name: "Dashboard",
-    subItems: [{ name: "Ecommerce", path: "/", pro: false }],
+    name: "Inventario",
+    subItems: [
+      { name: "Medicamentos", path: "/administrativo/inventario/medicamentos", pro: false },
+      { name: "Catálogos", path: "/administrativo/inventario/catalogos", pro: false },
+    ],
+
   },
   {
-    icon: <UserCircleIcon />,
-    name: "User Profile",
-    path: "/paciente/profile",
+    icon: <GridIcon />,
+    name: "Inventario",
+    path: "/administrativo/inventario",
   },
 ];
 
