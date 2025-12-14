@@ -49,6 +49,16 @@ export interface Medicamento {
   principiosActivos: PrincipioActivo[];
 }
 
+export interface Lote {
+  id: number;
+  medicamentoId: number;
+  proveedorId: number;
+  ubicacionId: number;
+  numeroLote: string;
+  fechaVencimiento: string;
+  cantidad: number;
+  precioCompra: number;
+}
 
 
 
@@ -72,6 +82,8 @@ export const useInventario = () => {
   const ubicaciones = useCrud<Categoria>(inventarioApi.ubicaciones);
 
   const medicamentos = useCrud<Medicamento>(inventarioApi.medicamentos);
+  /* -------- LOTES -------- */
+  const lotes = useCrud<Lote>(inventarioApi.lotes);
 
   return {
     categorias,
@@ -80,7 +92,8 @@ export const useInventario = () => {
     principios,
     proveedores,
     ubicaciones,
-    medicamentos
+    medicamentos,
+    lotes,
   };
 };
 

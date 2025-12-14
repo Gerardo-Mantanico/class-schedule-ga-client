@@ -31,7 +31,7 @@ const navItems: NavItem[] = [
   },
   {
     icon: <GridIcon />,
-    name: "Inventario",
+    name: "Nominas ",
     path: "/administrativo/inventario",
   },
 ];

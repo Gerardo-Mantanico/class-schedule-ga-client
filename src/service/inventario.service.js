@@ -22,6 +22,10 @@ export const proveedoresApi = createCrudService(PROVEEDORES);
 const UBICACIONES = '/ubicaciones';
 export const ubicacionesApi = createCrudService(UBICACIONES);
 
+const LOTES = '/lotes';
+export const lotesApi = createCrudService(LOTES);
+
+
 
 export const inventarioApi = {
   medicamentos: medicamentosApi,
@@ -31,6 +35,7 @@ export const inventarioApi = {
   principios: principiosApi,
   proveedores: proveedoresApi,
   ubicaciones: ubicacionesApi,
+  lotes: lotesApi,
 };
 
 export default inventarioApi; 

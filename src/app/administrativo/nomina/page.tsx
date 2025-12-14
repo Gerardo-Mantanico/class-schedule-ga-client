@@ -139,7 +139,7 @@ export default function MedicamentosPage() {
       {/* HEADER */}
       <div className="bg-white rounded-xl shadow p-6 dark:bg-gray-800">
         <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
-          Catálogos - Inventario
+          Nomina
         </h1>
         <p className="text-sm text-gray-600 dark:text-gray-300">
           Administración de medicamentos
