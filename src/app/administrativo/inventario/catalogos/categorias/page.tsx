@@ -1,80 +1,89 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
-import useInventario from '@/hooks/useInventario';
-import { GenericTable, Column } from '@/components/ui/table/GenericTable';
-import { GenericModal } from '@/components/ui/modal/GenericModal';
-import CategoriaForm from '@/components/administrativo/CategoriaForm';
+import React from 'react';
+import { Column } from '@/components/ui/table/GenericTable';
+import GenericPage from '@/components/administrativo/GenericPage';
+import GenericForm from '@/components/administrativo/GenericForm';
+import Label from '@/components/form/Label';
+import Input from '@/components/form/input/InputField';
 import Button from '@/components/ui/button/Button';
-import Alert from '@/components/ui/alert/Alert';
+import { useInventario } from '@/hooks/useInventario';
 
-interface Categoria { id: number; nombre: string }
+interface Categoria {
+  id: number;
+  nombre: string;
+}
+
+interface CategoriaForm {
+  nombre: string;
+}
 
 export default function CategoriasPage() {
-  const { categorias, fetchCategorias, loading, error, deleteCategoria } = useInventario();
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editing, setEditing] = useState<{ id?: number; nombre?: string } | null>(null);
-  const [alertData, setAlertData] = useState<{ variant: 'success' | 'error' | 'warning' | 'info'; title: string; message: string } | null>(null);
-  const handleEdit = React.useCallback((c: Categoria) => { setEditing(c); setIsModalOpen(true); }, []);
-
-  useEffect(() => { fetchCategorias(); }, [fetchCategorias]);
-
-  const totalPages = Math.max(1, Math.ceil((categorias?.length || 0) / itemsPerPage));
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const pageData = (categorias || []).slice(startIndex, startIndex + itemsPerPage);
+  const { categorias } = useInventario();
 
   const columns: Column<Categoria>[] = [
     { header: 'Nombre', accessorKey: 'nombre' },
   ];
 
   return (
-    <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/5 dark:bg-gray-800">
-      <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-white/5">
-        <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-          Categoria
-        </h3>
-        <Button size="sm" onClick={() => { setEditing(null); setIsModalOpen(true); }}>
-          Agregar Categoria
-        </Button>
-      </div>
-      
-  <div className="bg-white dark:bg-gray-800 rounded shadow p-4">
-        {loading && <div>Cargando categorías...</div>}
-        {error && <div className="text-error-500">{error}</div>}
-        {alertData && (
-          <div className="mb-4">
-            <Alert variant={alertData.variant} title={alertData.title} message={alertData.message} />
-          </div>
+    <GenericPage<Categoria>
+      title="Categoría"
+      items={categorias.items}
+      fetchItems={categorias.fetchItems}
+      deleteItem={categorias.deleteItem}
+      columns={columns}
+      itemName="Categoría"
+      itemsPerPage={10}
+      modalSize="sm"
+    >
+      <GenericForm<CategoriaForm, boolean>
+        title="Nueva categoría"
+        description="Registre una nueva categoría"
+        onSubmit={(data) => categorias.createItem(data)}
+        renderFields={({ values, setField, error, isSaving, onCancel }) => (
+          <>
+            <div className="flex flex-col">
+              <Label htmlFor="categoria-nombre">
+                Nombre
+              </Label>
+
+              <Input
+                id="categoria-nombre"
+                value={values.nombre ?? ''}
+                onChange={(e) => setField('nombre', e.target.value)}
+                placeholder="Ej. Analgésicos"
+                error={!!error}
+                autoFocus
+                required
+              />
+
+              {error && (
+                <p className="mt-2 text-sm text-error-500">
+                  {error}
+                </p>
+              )}
+            </div>
+
+            <div className="mt-2 flex gap-2 justify-end">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={onCancel}
+                disabled={isSaving}
+              >
+                Cancelar
+              </Button>
+
+              <Button
+                type="submit"
+                disabled={!values.nombre || isSaving}
+              >
+                Guardar
+              </Button>
+            </div>
+          </>
         )}
-
-        <GenericTable
-          data={pageData}
-          columns={columns}
-          onDelete={async (c) => {
-            try {
-              await deleteCategoria(Number(c.id));
-              await fetchCategorias();
-              setAlertData({ variant: 'success', title: 'Categoría eliminada', message: 'La categoría se eliminó correctamente.' });
-              setTimeout(() => setAlertData(null), 3000);
-            } catch {
-              setAlertData({ variant: 'error', title: 'Error', message: 'Error al eliminar la categoría' });
-              setTimeout(() => setAlertData(null), 5000);
-            }
-          }}
-          onEdit={handleEdit}
-          pagination={{ currentPage, totalPages, onPageChange: setCurrentPage }}
-        />
-
-        <GenericModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={editing ? 'Editar categoría' : 'Nueva categoría'} size="sm">
-          <CategoriaForm
-            initial={editing || undefined}
-            onCancel={() => setIsModalOpen(false)}
-            onSaved={() => { setIsModalOpen(false); fetchCategorias(); }}
-          />
-        </GenericModal>
-      </div>
-    </div>
+      />
+    </GenericPage>
   );
 }

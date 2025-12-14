@@ -31,14 +31,14 @@ export default function CatalogosIndex() {
         <div className="bg-white rounded-xl shadow p-4 dark:bg-gray-800">
           <div className="flex items-center gap-3 rounded-xl">
             <BoxCubeIcon className="w-6 h-6 text-brand-500" />
-            <h3 className="font-medium text-gray-900 dark:text-white">Unidades</h3>
+            <h3 className="font-medium text-gray-900 dark:text-white">Unidades / Empaque</h3>
           </div>
           <Link href="/administrativo/inventario/catalogos/unidades" className="text-brand-500 dark:text-brand-400">Ver unidades</Link>
         </div>
         <div className="bg-white rounded-xl shadow p-4 dark:bg-gray-800">
           <div className="flex items-center gap-3 rounded-xl">
             <BoxIconLine className="w-6 h-6 text-brand-500" />
-            <h3 className="font-medium text-gray-900 dark:text-white">Formas</h3>
+            <h3 className="font-medium text-gray-900 dark:text-white">Forma farmacéutica</h3>
           </div>
           <Link href="/administrativo/inventario/catalogos/formas" className="text-brand-500 dark:text-brand-400">Ver formas</Link>
         </div>

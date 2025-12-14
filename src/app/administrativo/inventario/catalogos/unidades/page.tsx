@@ -1,57 +1,103 @@
 "use client";
+import React from 'react';
+import { Column } from '@/components/ui/table/GenericTable';
+import GenericPage from '@/components/administrativo/GenericPage';
+import GenericForm from '@/components/administrativo/GenericForm';
+import Label from '@/components/form/Label';
+import Input from '@/components/form/input/InputField';
+import Button from '@/components/ui/button/Button';
+import { useInventario } from '@/hooks/useInventario';
 
-import React, { useEffect, useState } from 'react';
-import useInventario from '@/hooks/useInventario';
-import Link from 'next/link';
-import { GenericTable, Column } from '@/components/ui/table/GenericTable';
+interface Unidades {
+  id: number;
+  nombre: string;
+  simbolo: string;
+}
 
-export default function UnidadesPage() {
-  const { unidades, fetchUnidades, loading, error, deleteUnidad } = useInventario();
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+interface UnidadesForm {
+  nombre: string;
+  simbolo: string;
+}
 
-  useEffect(() => { fetchUnidades(); }, [fetchUnidades]);
+export default function UnidadessPage() {
+  const { unidades } = useInventario();
 
-  const totalPages = Math.max(1, Math.ceil((unidades?.length || 0) / itemsPerPage));
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const pageData = (unidades || []).slice(startIndex, startIndex + itemsPerPage);
-
-  const columns: Column<any>[] = [
+  const columns: Column<Unidades>[] = [
     { header: 'Nombre', accessorKey: 'nombre' },
     { header: 'Símbolo', accessorKey: 'simbolo' },
   ];
-
-  const renderActions = (u: any) => (
-    <Link href={`/administrativo/inventario/catalogos/unidades/${u.id}`} className="text-brand-500">Editar</Link>
-  );
-
   return (
-    <div className="space-y-4">
-      <div className="bg-white rounded shadow p-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold">Unidades de medida</h1>
-        </div>
-        <div>
-          <Link href="/administrativo/inventario/catalogos/unidades/new" className="btn btn-primary">Nueva unidad</Link>
-        </div>
-      </div>
+    <GenericPage<Unidades>
+      title="Unidades / Empaque"
+      items={unidades.items}
+      fetchItems={unidades.fetchItems}
+      deleteItem={unidades.deleteItem}
+      columns={columns}
+      itemName="Unidad"
+      itemsPerPage={10}
+      modalSize="sm"
+    >
+      <GenericForm<UnidadesForm, boolean>
+        title="Nueva Unidad"
+        description="Registre una nueva Unidad"
+        onSubmit={(data) => unidades.createItem(data)}
+        renderFields={({ values, setField, error, isSaving, onCancel }) => (
+          <>
+            <div className="flex flex-col">
+              <Label htmlFor="categoria-nombre">
+                Nombre
+              </Label>
 
-      <div className="bg-white rounded shadow p-4">
-        {loading && <div>Cargando...</div>}
-        {error && <div className="text-error-500">{error}</div>}
+              <Input
+                id="categoria-nombre"
+                value={values.nombre ?? ''}
+                onChange={(e) => setField('nombre', e.target.value)}
+                placeholder="Ej. Tableta"
+                error={!!error}
+                autoFocus
+                required
+              />
 
-        <GenericTable
-          data={pageData}
-          columns={columns}
-          onDelete={async (u) => {
-            if (!confirm('Eliminar unidad?')) return;
-            try { await deleteUnidad(Number(u.id)); await fetchUnidades(); }
-            catch (e) { console.error(e); alert('Error al eliminar'); }
-          }}
-          actions={renderActions}
-          pagination={{ currentPage, totalPages, onPageChange: setCurrentPage }}
-        />
-      </div>
-    </div>
+              {error && (
+                <p className="mt-2 text-sm text-error-500">
+                  {error}
+                </p>
+              )}
+            </div>
+               {/* Símbolo */}
+            <div className="flex flex-col">
+              <Label htmlFor="unidad-simbolo">Símbolo</Label>
+
+              <Input
+                id="unidad-simbolo"
+                value={values.simbolo ?? ''}
+                onChange={(e) => setField('simbolo', e.target.value)}
+                placeholder="Ej. tab"
+                error={!!error}
+                required
+              />
+            </div>
+
+            <div className="mt-2 flex gap-2 justify-end">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={onCancel}
+                disabled={isSaving}
+              >
+                Cancelar
+              </Button>
+
+              <Button
+                type="submit"
+                disabled={!values.nombre || isSaving}
+              >
+                Guardar
+              </Button>
+            </div>
+          </>
+        )}
+      />
+    </GenericPage>
   );
 }

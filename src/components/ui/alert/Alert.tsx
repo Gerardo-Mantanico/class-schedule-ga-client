@@ -1,5 +1,5 @@
 import Link from "next/link";
-import React from "react";
+import React, { useEffect } from "react";
 
 interface AlertProps {
   variant: "success" | "error" | "warning" | "info"; // Alert type
@@ -8,6 +8,12 @@ interface AlertProps {
   showLink?: boolean; // Whether to show the "Learn More" link
   linkHref?: string; // Link URL
   linkText?: string; // Link text
+  /** Called when the alert is dismissed (e.g. clicking close or autoHide) */
+  onClose?: () => void;
+  /** Show a close button */
+  dismissible?: boolean;
+  /** Auto hide in milliseconds. If provided and onClose exists, will call onClose after this delay */
+  autoHide?: number;
 }
 
 const Alert: React.FC<AlertProps> = ({
@@ -17,6 +23,9 @@ const Alert: React.FC<AlertProps> = ({
   showLink = false,
   linkHref = "#",
   linkText = "Learn more",
+  onClose,
+  dismissible = false,
+  autoHide,
 }) => {
   // Tailwind classes for each variant
   const variantClasses = {
@@ -112,19 +121,20 @@ const Alert: React.FC<AlertProps> = ({
     ),
   };
 
-  return (
-    <div
-      className={`rounded-xl border p-4 ${variantClasses[variant].container}`}
-    >
-      <div className="flex items-start gap-3">
-        <div className={`-mt-0.5 ${variantClasses[variant].icon}`}>
-          {icons[variant]}
-        </div>
+  useEffect(() => {
+    if (autoHide && onClose) {
+      const t = setTimeout(() => onClose(), autoHide);
+      return () => clearTimeout(t);
+    }
+  }, [autoHide, onClose]);
 
-        <div>
-          <h4 className="mb-1 text-sm font-semibold text-gray-800 dark:text-white/90">
-            {title}
-          </h4>
+  return (
+    <div className={`rounded-xl border p-4 ${variantClasses[variant].container}`}>
+      <div className="flex items-start gap-3">
+        <div className={`-mt-0.5 ${variantClasses[variant].icon}`}>{icons[variant]}</div>
+
+        <div className="flex-1">
+          <h4 className="mb-1 text-sm font-semibold text-gray-800 dark:text-white/90">{title}</h4>
 
           <p className="text-sm text-gray-500 dark:text-gray-400">{message}</p>
 
@@ -137,6 +147,25 @@ const Alert: React.FC<AlertProps> = ({
             </Link>
           )}
         </div>
+
+        {(dismissible || onClose) && (
+          <div className="ml-3 shrink-0">
+            <button
+              type="button"
+              aria-label="Cerrar alerta"
+              onClick={() => onClose?.()}
+              className="inline-flex h-7 w-7 items-center justify-center rounded-full text-gray-500 hover:bg-gray-100 dark:hover:bg-white/5"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                <path
+                  fillRule="evenodd"
+                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

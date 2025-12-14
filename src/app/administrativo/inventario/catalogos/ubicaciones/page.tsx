@@ -1,50 +1,88 @@
 "use client";
+import React from 'react';
+import { Column } from '@/components/ui/table/GenericTable';
+import GenericPage from '@/components/administrativo/GenericPage';
+import GenericForm from '@/components/administrativo/GenericForm';
+import Label from '@/components/form/Label';
+import Input from '@/components/form/input/InputField';
+import Button from '@/components/ui/button/Button';
+import { useInventario } from '@/hooks/useInventario';
 
-import React, { useEffect, useState } from 'react';
-import useInventario from '@/hooks/useInventario';
-import Link from 'next/link';
-import { GenericTable, Column } from '@/components/ui/table/GenericTable';
+interface Ubicaciones {
+  id: number;
+  nombre: string;
+}
 
-export default function UbicacionesPage() {
-  const { ubicaciones, fetchUbicaciones, loading, error } = useInventario();
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
-  useEffect(() => { fetchUbicaciones(); }, [fetchUbicaciones]);
+interface UbicacionesForm {
+  nombre: string;
+}
+
+export default function UbicacionessPage() {
+  const { ubicaciones } = useInventario();
+
+  const columns: Column<Ubicaciones>[] = [
+    { header: 'Nombre', accessorKey: 'nombre' },
+  ];
 
   return (
-    <div className="space-y-4">
-      <div className="bg-white rounded shadow p-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold">Ubicaciones</h1>
-        </div>
-        <div>
-          <Link href="/administrativo/inventario/catalogos/ubicaciones/new" className="btn btn-primary">Nueva ubicación</Link>
-        </div>
-      </div>
+    <GenericPage<Ubicaciones>
+      title="Ubicaciones"
+      items={ubicaciones.items}
+      fetchItems={ubicaciones.fetchItems}
+      deleteItem={ubicaciones.deleteItem}
+      columns={columns}
+      itemName="Forma"
+      itemsPerPage={10}
+      modalSize="sm"
+    >
+      <GenericForm<UbicacionesForm, boolean>
+        title="Nueva Ubicaciones"
+        description="Registre una nueva Ubicaciones"
+        onSubmit={(data) => ubicaciones.createItem(data)}
+        renderFields={({ values, setField, error, isSaving, onCancel }) => (
+          <>
+            <div className="flex flex-col">
+              <Label htmlFor="categoria-nombre">
+                Nombre
+              </Label>
 
-      <div className="bg-white rounded shadow p-4">
-        {loading && <div>Cargando...</div>}
-        {error && <div className="text-error-500">{error}</div>}
-
-        {ubicaciones && (
-          (() => {
-            const totalPages = Math.max(1, Math.ceil((ubicaciones?.length || 0) / itemsPerPage));
-            const startIndex = (currentPage - 1) * itemsPerPage;
-            const pageData = (ubicaciones || []).slice(startIndex, startIndex + itemsPerPage);
-            const columns: Column<any>[] = [{ header: 'Nombre', accessorKey: 'nombre' }];
-            const renderActions = (u: any) => <Link href={`/administrativo/inventario/catalogos/ubicaciones/${u.id}`} className="text-brand-500">Editar</Link>;
-
-            return (
-              <GenericTable
-                data={pageData}
-                columns={columns}
-                actions={renderActions}
-                pagination={{ currentPage, totalPages, onPageChange: setCurrentPage }}
+              <Input
+                id="categoria-nombre"
+                value={values.nombre ?? ''}
+                onChange={(e) => setField('nombre', e.target.value)}
+                placeholder="Ej. Tableta"
+                error={!!error}
+                autoFocus
+                required
               />
-            );
-          })()
+
+              {error && (
+                <p className="mt-2 text-sm text-error-500">
+                  {error}
+                </p>
+              )}
+            </div>
+
+            <div className="mt-2 flex gap-2 justify-end">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={onCancel}
+                disabled={isSaving}
+              >
+                Cancelar
+              </Button>
+
+              <Button
+                type="submit"
+                disabled={!values.nombre || isSaving}
+              >
+                Guardar
+              </Button>
+            </div>
+          </>
         )}
-      </div>
-    </div>
+      />
+    </GenericPage>
   );
 }

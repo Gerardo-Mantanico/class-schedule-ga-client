@@ -1,51 +1,88 @@
 "use client";
+import React from 'react';
+import { Column } from '@/components/ui/table/GenericTable';
+import GenericPage from '@/components/administrativo/GenericPage';
+import GenericForm from '@/components/administrativo/GenericForm';
+import Label from '@/components/form/Label';
+import Input from '@/components/form/input/InputField';
+import Button from '@/components/ui/button/Button';
+import { useInventario } from '@/hooks/useInventario';
 
-import React, { useEffect, useState } from 'react';
-import useInventario from '@/hooks/useInventario';
-import Link from 'next/link';
-import { GenericTable, Column } from '@/components/ui/table/GenericTable';
-import { inventarioApi } from '@/service/inventario.service';
+interface Formas {
+  id: number;
+  nombre: string;
+}
 
-export default function FormasPage() {
-  const { formas, fetchFormas, loading, error } = useInventario();
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
-  useEffect(() => { fetchFormas(); }, [fetchFormas]);
+interface FormasForm {
+  nombre: string;
+}
 
-  const totalPages = Math.max(1, Math.ceil((formas?.length || 0) / itemsPerPage));
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const pageData = (formas || []).slice(startIndex, startIndex + itemsPerPage);
+export default function FormassPage() {
+  const { formas } = useInventario();
 
-  const columns: Column<any>[] = [{ header: 'Nombre', accessorKey: 'nombre' }];
-  const renderActions = (f: any) => <Link href={`/administrativo/inventario/catalogos/formas/${f.id}`} className="text-brand-500">Editar</Link>;
+  const columns: Column<Formas>[] = [
+    { header: 'Nombre', accessorKey: 'nombre' },
+  ];
 
   return (
-    <div className="space-y-4">
-      <div className="bg-white rounded shadow p-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold">Formas farmacéuticas</h1>
-        </div>
-        <div>
-          <Link href="/administrativo/inventario/catalogos/formas/new" className="btn btn-primary">Nueva forma</Link>
-        </div>
-      </div>
+    <GenericPage<Formas>
+      title="Formas"
+      items={formas.items}
+      fetchItems={formas.fetchItems}
+      deleteItem={formas.deleteItem}
+      columns={columns}
+      itemName="Forma"
+      itemsPerPage={10}
+      modalSize="sm"
+    >
+      <GenericForm<FormasForm, boolean>
+        title="Nueva Formas"
+        description="Registre una nueva Formas"
+        onSubmit={(data) => formas.createItem(data)}
+        renderFields={({ values, setField, error, isSaving, onCancel }) => (
+          <>
+            <div className="flex flex-col">
+              <Label htmlFor="categoria-nombre">
+                Nombre
+              </Label>
 
-      <div className="bg-white rounded shadow p-4">
-        {loading && <div>Cargando...</div>}
-        {error && <div className="text-error-500">{error}</div>}
+              <Input
+                id="categoria-nombre"
+                value={values.nombre ?? ''}
+                onChange={(e) => setField('nombre', e.target.value)}
+                placeholder="Ej. Tableta"
+                error={!!error}
+                autoFocus
+                required
+              />
 
-        <GenericTable
-          data={pageData}
-          columns={columns}
-          onDelete={async (f) => {
-            if (!confirm('Eliminar forma?')) return;
-            try { await inventarioApi.deleteForma(Number(f.id)); await fetchFormas(); }
-            catch (e) { console.error(e); alert('Error al eliminar'); }
-          }}
-          actions={renderActions}
-          pagination={{ currentPage, totalPages, onPageChange: setCurrentPage }}
-        />
-      </div>
-    </div>
+              {error && (
+                <p className="mt-2 text-sm text-error-500">
+                  {error}
+                </p>
+              )}
+            </div>
+
+            <div className="mt-2 flex gap-2 justify-end">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={onCancel}
+                disabled={isSaving}
+              >
+                Cancelar
+              </Button>
+
+              <Button
+                type="submit"
+                disabled={!values.nombre || isSaving}
+              >
+                Guardar
+              </Button>
+            </div>
+          </>
+        )}
+      />
+    </GenericPage>
   );
 }
