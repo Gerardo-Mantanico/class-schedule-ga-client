@@ -69,7 +69,7 @@ const AppSidebarAdministrativo: React.FC = () => {
                 <span className={`menu-item-text`}>{nav.name}</span>
               )}
               {(isExpanded || isHovered || isMobileOpen) && (
-                <ArrowDownIcon
+                <ChevronDownIcon
                   className={`ml-auto w-5 h-5 transition-transform duration-200  ${
                     openSubmenu === index
                       ? "rotate-180 text-brand-500"
@@ -273,7 +273,7 @@ const AppSidebarAdministrativo: React.FC = () => {
                 {isExpanded || isHovered || isMobileOpen ? (
                   "Administrativo"
                 ) : (
-                  <MoreDotIcon />
+                  <HorizontaLDots />
                 )}
               </h2>
               {renderMenuItems()}

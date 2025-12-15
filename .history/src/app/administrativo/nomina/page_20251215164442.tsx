@@ -30,8 +30,9 @@ export default function NominaPage() {
   ====================== */
   const handleSearch = () => {
     if (!emailSearch) return;
-    // Usamos getItem porque el backend espera el email como parte de la URL, no como query param.
-    nominas.getItem(emailSearch);
+    // Codificar el email para que sea seguro en la URL
+    const encodedEmail = encodeURIComponent(emailSearch);
+    nominas.getItem(encodedEmail);
   };
 
   /* =====================

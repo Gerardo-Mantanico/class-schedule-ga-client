@@ -9,7 +9,7 @@ import Input from "@/components/form/input/InputField";
 import { NominaSection } from "@/components/administrativo/NominaSection";
 
 export default function NominaPage() {
-  const { nominas, retenciones, bonos, descuentos } = useNomina();
+  const { nominas, retenciones } = useNomina();
 
   const [emailSearch, setEmailSearch] = useState("webbank404@gmail.com");
   const [showModal, setShowModal] = useState(false);
@@ -118,10 +118,6 @@ export default function NominaPage() {
               await nominas.getItem(emailSearch);
               setOpLoading(false);
             }}
-            onItemAdd={() => {
-              // Lógica para añadir retención
-              console.log("Añadir retención");
-            }}
           />
 
           <NominaSection
@@ -131,16 +127,6 @@ export default function NominaPage() {
             colorClass="bg-green-200"
             itemColorClass="bg-green-100"
             emptyMessage="Sin bonos."
-            onItemAdd={() => {
-              // Lógica para añadir bono
-              console.log("Añadir bono");
-            }}
-            onItemDelete={async (id) => {
-              setOpLoading(true);
-              await bonos.deleteItem(id.toString());
-              await nominas.getItem(emailSearch);
-              setOpLoading(false);
-            }}
           />
 
           <NominaSection
@@ -150,16 +136,6 @@ export default function NominaPage() {
             colorClass="bg-red-200"
             itemColorClass="bg-red-100"
             emptyMessage="Sin descuentos."
-            onItemAdd={() => {
-              // Lógica para añadir descuento
-              console.log("Añadir descuento");
-            }}
-            onItemDelete={async (id) => {
-              setOpLoading(true);
-              await descuentos.deleteItem(id.toString());
-              await nominas.getItem(emailSearch);
-              setOpLoading(false);
-            }}
           />
         </div>
       </div>

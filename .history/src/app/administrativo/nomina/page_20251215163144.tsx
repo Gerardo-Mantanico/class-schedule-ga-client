@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import { BoltIcon, GroupIcon, PageIcon } from "@/icons";
 import useNomina, { NominaDetail } from "@/hooks/useNomina";
 import Button from "@/components/ui/button/Button";
 import { Modal } from "@/components/ui/modal";

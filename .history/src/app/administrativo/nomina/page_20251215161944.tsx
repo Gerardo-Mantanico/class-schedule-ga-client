@@ -135,12 +135,6 @@ export default function NominaPage() {
               // Lógica para añadir bono
               console.log("Añadir bono");
             }}
-            onItemDelete={async (id) => {
-              setOpLoading(true);
-              await bonos.deleteItem(id.toString());
-              await nominas.getItem(emailSearch);
-              setOpLoading(false);
-            }}
           />
 
           <NominaSection
@@ -153,12 +147,6 @@ export default function NominaPage() {
             onItemAdd={() => {
               // Lógica para añadir descuento
               console.log("Añadir descuento");
-            }}
-            onItemDelete={async (id) => {
-              setOpLoading(true);
-              await descuentos.deleteItem(id.toString());
-              await nominas.getItem(emailSearch);
-              setOpLoading(false);
             }}
           />
         </div>

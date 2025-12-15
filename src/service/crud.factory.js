@@ -5,7 +5,7 @@ export const createCrudService = (endpoint) => ({
     return await api.get(endpoint, { params });
   },
 
-  getById: async (id) => {
+  get: async (id) => {
     return await api.get(`${endpoint}/${id}`);
   },
 

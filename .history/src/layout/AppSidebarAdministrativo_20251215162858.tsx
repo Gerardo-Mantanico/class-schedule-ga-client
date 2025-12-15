@@ -5,9 +5,10 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useSidebar } from "../context/SidebarContext";
 import {
-  ArrowDownIcon,
+  ChevronDownIcon,
   GridIcon,
-  MoreDotIcon,
+  HorizontaLDots,
+  UserCircleIcon,
 } from "../icons/index";
 
 

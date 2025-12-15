@@ -21,9 +21,6 @@ import {
   PageIcon,
 } from "@/icons";
 
-/* =======================
-   ENTIDADES
-======================= */
 
 export interface UnidadMedida {
   id: number;
@@ -62,9 +59,6 @@ export interface Medicamento {
   
 }
 
-/* =======================
-   FORM DTO
-======================= */
 
 interface MedicamentoForm {
   id?: number;
@@ -81,9 +75,6 @@ interface MedicamentoForm {
   unidadMedidaId?: number;
 }
 
-/* =======================
-   PAGE
-======================= */
 
 export default function MedicamentosPage() {
   const {

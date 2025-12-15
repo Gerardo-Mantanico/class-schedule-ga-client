@@ -273,7 +273,7 @@ const AppSidebarAdministrativo: React.FC = () => {
                 {isExpanded || isHovered || isMobileOpen ? (
                   "Administrativo"
                 ) : (
-                  <MoreDotIcon />
+                  <HorizontaLDots />
                 )}
               </h2>
               {renderMenuItems()}

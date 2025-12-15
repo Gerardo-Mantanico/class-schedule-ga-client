@@ -63,6 +63,8 @@ export interface Lote {
 
 
 export const useInventario = () => {
+
+  
   /* -------- CATEGORÍAS -------- */
   const categorias = useCrud<Categoria>(inventarioApi.categorias);
 

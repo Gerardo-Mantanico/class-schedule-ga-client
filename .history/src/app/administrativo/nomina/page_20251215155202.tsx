@@ -9,7 +9,7 @@ import Input from "@/components/form/input/InputField";
 import { NominaSection } from "@/components/administrativo/NominaSection";
 
 export default function NominaPage() {
-  const { nominas, retenciones, bonos, descuentos } = useNomina();
+  const { nominas, retenciones } = useNomina();
 
   const [emailSearch, setEmailSearch] = useState("webbank404@gmail.com");
   const [showModal, setShowModal] = useState(false);
@@ -104,63 +104,79 @@ export default function NominaPage() {
             RETENCIONES / BONOS / DESCUENTOS
         ====================== */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <NominaSection
-            title="Retenciones"
-            icon={<BoltIcon className="w-6 h-6" />}
-            items={nomina.retenciones || []}
-            colorClass="bg-yellow-100"
-            itemColorClass="bg-yellow-50"
-            emptyMessage="Sin retenciones."
-            opLoading={opLoading}
-            onItemDelete={async (id) => {
-              setOpLoading(true);
-              await retenciones.deleteItem(id.toString());
-              await nominas.getItem(emailSearch);
-              setOpLoading(false);
-            }}
-            onItemAdd={() => {
-              // Lógica para añadir retención
-              console.log("Añadir retención");
-            }}
-          />
+          {/* RETENCIONES */}
+          <div className="bg-yellow-100 rounded-xl shadow p-4">
+            <div className="flex items-center gap-3 mb-4">
+              <BoltIcon className="w-6 h-6" />
+              <h3 className="font-medium">Retenciones</h3>
+            </div>
 
-          <NominaSection
-            title="Bonos"
-            icon={<GroupIcon className="w-6 h-6" />}
-            items={nomina.bonos || []}
-            colorClass="bg-green-200"
-            itemColorClass="bg-green-100"
-            emptyMessage="Sin bonos."
-            onItemAdd={() => {
-              // Lógica para añadir bono
-              console.log("Añadir bono");
-            }}
-            onItemDelete={async (id) => {
-              setOpLoading(true);
-              await bonos.deleteItem(id.toString());
-              await nominas.getItem(emailSearch);
-              setOpLoading(false);
-            }}
-          />
+            {nomina.retenciones?.length ? (
+              nomina.retenciones.map((r) => (
+                <div
+                  key={r.id}
+                  className="bg-yellow-50 rounded-xl p-3 flex justify-between"
+                >
+                  <div>
+                    <p className="font-medium">{r.tipoDescripcion}</p>
+                    <p>GTQ {Number(r.monto).toFixed(2)}</p>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="text-red-600"
+                    onClick={async () => {
+                      setOpLoading(true);
+                      await retenciones.deleteItem(r.id.toString());
+                      await nominas.fetchItems({ email: emailSearch });
+                      setOpLoading(false);
+                    }}
+                  >
+                    -
+                  </Button>
+                </div>
+              ))
+            ) : (
+              <p className="text-sm">Sin retenciones.</p>
+            )}
+          </div>
 
-          <NominaSection
-            title="Descuentos"
-            icon={<PageIcon className="w-6 h-6" />}
-            items={nomina.descuentos || []}
-            colorClass="bg-red-200"
-            itemColorClass="bg-red-100"
-            emptyMessage="Sin descuentos."
-            onItemAdd={() => {
-              // Lógica para añadir descuento
-              console.log("Añadir descuento");
-            }}
-            onItemDelete={async (id) => {
-              setOpLoading(true);
-              await descuentos.deleteItem(id.toString());
-              await nominas.getItem(emailSearch);
-              setOpLoading(false);
-            }}
-          />
+          {/* BONOS */}
+          <div className="bg-green-200 rounded-xl shadow p-4">
+            <div className="flex items-center gap-3 mb-4">
+              <GroupIcon className="w-6 h-6" />
+              <h3 className="font-medium">Bonos</h3>
+            </div>
+            {nomina.bonos?.length ? (
+              nomina.bonos.map((b) => (
+                <div key={b.id} className="bg-green-100 p-3 rounded-xl">
+                  <p>{b.tipoDescripcion}</p>
+                  <p>GTQ {Number(b.monto).toFixed(2)}</p>
+                </div>
+                
+              ))
+            ) : (
+              <p className="text-sm">Sin bonos.</p>
+            )}
+          </div>
+
+          {/* DESCUENTOS */}
+          <div className="bg-red-200 rounded-xl shadow p-4">
+            <div className="flex items-center gap-3 mb-4">
+              <PageIcon className="w-6 h-6" />
+              <h3 className="font-medium">Descuentos</h3>
+            </div>
+            {nomina.descuentos?.length ? (
+              nomina.descuentos.map((d) => (
+                <div key={d.id} className="bg-red-100 p-3 rounded-xl">
+                  <p>{d.tipoDescripcion}</p>
+                  <p>GTQ {Number(d.monto).toFixed(2)}</p>
+                </div>
+              ))
+            ) : (
+              <p className="text-sm">Sin descuentos.</p>
+            )}
+          </div>
         </div>
       </div>
     );

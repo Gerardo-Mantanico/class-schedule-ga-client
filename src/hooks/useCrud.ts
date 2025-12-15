@@ -5,6 +5,7 @@ interface ApiService {
   create: (data: unknown) => Promise<unknown>;
   update: (id: number | string, data: unknown) => Promise<unknown>;
   delete: (id: number | string) => Promise<unknown>;
+  get?: (id: number | string) => Promise<unknown>; 
 }
 
 export const useCrud = <T extends { id: number | string }>(
@@ -12,6 +13,7 @@ export const useCrud = <T extends { id: number | string }>(
   transformPayload?: (data: unknown) => unknown
 ) => {
   const [items, setItems] = useState<T[]>([]);
+  const [item, setItem] = useState<T | null>(null); // Estado para un solo ítem
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [totalItems, setTotalItems] = useState<number | null>(null);
@@ -172,6 +174,41 @@ export const useCrud = <T extends { id: number | string }>(
     }
   };
 
+  // Obtener un solo elemento por ID (GET /{id})
+  const getItem = async (id: number | string): Promise<T | null> => {
+    if (!apiService.get) {
+      console.error('El servicio no implementa get(id)');
+      setError('Operación no soportada');
+      return null;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await apiService.get(id);
+
+      if (response && typeof response === 'object') {
+        setItem(response as T); // <-- Cambio clave: Actualiza el estado 'item'
+        return response as T;
+      }
+
+      console.error('Formato de respuesta inesperado en getItem:', response);
+      setItem(null);
+      setError('Formato de datos inválido');
+      return null;
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message || 'Error al obtener elemento');
+      } else {
+        setError('Error desconocido al obtener elemento');
+      }
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Cargar al montar
   useEffect(() => {
     fetchItems();
@@ -179,12 +216,14 @@ export const useCrud = <T extends { id: number | string }>(
 
   return {
     items,
+    item, // <-- Cambio clave: Devuelve el estado 'item'
     loading,
     error,
+    totalItems,
     fetchItems,
     createItem,
     updateItem,
     deleteItem,
-    totalItems,
+    getItem,
   };
 };

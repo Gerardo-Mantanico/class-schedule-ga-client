@@ -5,9 +5,10 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useSidebar } from "../context/SidebarContext";
 import {
-  ArrowDownIcon,
+  ChevronDownIcon,
   GridIcon,
-  MoreDotIcon,
+  HorizontaLDots,
+  UserCircleIcon,
 } from "../icons/index";
 
 
@@ -69,7 +70,7 @@ const AppSidebarAdministrativo: React.FC = () => {
                 <span className={`menu-item-text`}>{nav.name}</span>
               )}
               {(isExpanded || isHovered || isMobileOpen) && (
-                <ArrowDownIcon
+                <ChevronDownIcon
                   className={`ml-auto w-5 h-5 transition-transform duration-200  ${
                     openSubmenu === index
                       ? "rotate-180 text-brand-500"
