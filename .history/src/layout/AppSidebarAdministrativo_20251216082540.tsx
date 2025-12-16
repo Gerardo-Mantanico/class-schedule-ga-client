@@ -7,7 +7,6 @@ import { useSidebar } from "../context/SidebarContext";
 import {
   ArrowDownIcon,
   GridIcon,
-  ListIcon,
   MoreDotIcon,
 } from "../icons/index";
 
@@ -40,12 +39,20 @@ const navItems: NavItem[] = [
   },
 
    {
-    icon: <ListIcon />,
+    icon: <GridIcon />,
     name: "Asignacion de area",
     subItems: [
       { name: "Registro de area", path: "/administrativo/area", pro: false },
       { name: "Busqueda de area", path: "/administrativo/area/search", pro: false },
     ],
+
+  },
+
+
+  {
+    icon: <GridIcon />,
+    name: "Asignacion de area ",
+    path: "/administrativo/area",
   },
 ];
 

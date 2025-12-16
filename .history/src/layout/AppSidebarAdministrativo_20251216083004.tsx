@@ -30,7 +30,7 @@ const navItems: NavItem[] = [
 
   },
    {
-    icon: <GridIcon />,
+    icon: <MoreDotIcon />,
     name: "Nominas",
     subItems: [
       { name: "Nominas", path: "/administrativo/nomina", pro: false },

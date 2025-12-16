@@ -225,139 +225,133 @@ export default function AreaPage() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Layout con Búsqueda a la izquierda y datos a la derecha */}
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-              {/* Búsqueda de Empleado - Columna Izquierda */}
-              <div className="overflow-hidden rounded-xl border-2 border-blue-200 bg-gradient-to-br from-white to-blue-50/30 shadow-md dark:border-blue-800/30 dark:from-gray-900 dark:to-blue-900/10">
-                <div className="border-b border-blue-200 bg-white px-6 py-4 dark:border-blue-800/30 dark:bg-gray-900">
-                  <div className="flex items-center gap-3">
-                    <div className="rounded-lg bg-blue-100 p-2 dark:bg-blue-900/30">
-                      <svg className="h-6 w-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            {/* Búsqueda de Empleado */}
+            <div className="overflow-hidden rounded-xl border-2 border-blue-200 bg-gradient-to-br from-white to-blue-50/30 shadow-md dark:border-blue-800/30 dark:from-gray-900 dark:to-blue-900/10">
+              <div className="border-b border-blue-200 bg-white px-6 py-4 dark:border-blue-800/30 dark:bg-gray-900">
+                <div className="flex items-center gap-3">
+                  <div className="rounded-lg bg-blue-100 p-2 dark:bg-blue-900/30">
+                    <svg className="h-6 w-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-800 dark:text-white/90">
+                      Paso 1: Seleccionar Empleado
+                    </h3>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      Busca por nombre o DPI
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="p-6">
+            <AsyncSearchableSelect
+              label="Buscar Empleado"
+              searchEndpoint="http://localhost:8090/api/v1/users/search"
+              placeholder="Buscar por nombre o DPI..."
+              searchPlaceholder="Escribe nombre o DPI del empleado..."
+              value={selectedUserId ? String(selectedUserId) : ""}
+              onChange={(value) => {
+                setSelectedUserId(Number(value));
+              }}
+              minChars={2}
+              debounceMs={300}
+              formatOption={(user: any) => {
+                if (user.id === Number(selectedUserId)) {
+                  setSelectedUserName(`${user.firstname} ${user.lastname}`);
+                }
+                return {
+                  value: String(user.id),
+                  label: `${user.firstname} ${user.lastname}`,
+                  searchText: `DPI: ${user.dpi || "N/A"} - Email: ${user.email} - Rol: ${user.role?.description || "N/A"}`,
+                };
+              }}
+            />
+                {selectedUserId && (
+                  <div className="mt-4 flex items-center gap-3 rounded-lg border-2 border-blue-300 bg-blue-50 p-4 dark:border-blue-700 dark:bg-blue-900/20">
+                    <div className="rounded-full bg-blue-100 p-2 dark:bg-blue-900/30">
+                      <svg className="h-5 w-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
                     </div>
                     <div>
-                      <h3 className="text-xl font-bold text-gray-800 dark:text-white/90">
-                        Paso 1: Seleccionar Empleado
-                      </h3>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        Busca por nombre o DPI
+                      <p className="text-xs font-medium text-blue-600 dark:text-blue-400">Empleado seleccionado</p>
+                      <p className="text-sm font-bold text-blue-900 dark:text-blue-300">
+                        {selectedUserName} <span className="font-normal text-blue-700 dark:text-blue-400">(ID: {selectedUserId})</span>
                       </p>
                     </div>
                   </div>
-                </div>
-                <div className="p-6">
-                  <AsyncSearchableSelect
-                    label="Buscar Empleado"
-                    searchEndpoint="http://localhost:8090/api/v1/users/search"
-                    placeholder="Buscar por nombre o DPI..."
-                    searchPlaceholder="Escribe nombre o DPI del empleado..."
-                    value={selectedUserId ? String(selectedUserId) : ""}
-                    onChange={(value) => {
-                      setSelectedUserId(Number(value));
-                    }}
-                    minChars={2}
-                    debounceMs={300}
-                    formatOption={(user: any) => {
-                      if (user.id === Number(selectedUserId)) {
-                        setSelectedUserName(`${user.firstname} ${user.lastname}`);
-                      }
-                      return {
-                        value: String(user.id),
-                        label: `${user.firstname} ${user.lastname}`,
-                        searchText: `DPI: ${user.dpi || "N/A"} - Email: ${user.email} - Rol: ${user.role?.description || "N/A"}`,
-                      };
-                    }}
-                  />
-                  {selectedUserId && (
-                    <div className="mt-4 flex items-center gap-3 rounded-lg border-2 border-blue-300 bg-blue-50 p-4 dark:border-blue-700 dark:bg-blue-900/20">
-                      <div className="rounded-full bg-blue-100 p-2 dark:bg-blue-900/30">
-                        <svg className="h-5 w-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                      </div>
-                      <div>
-                        <p className="text-xs font-medium text-blue-600 dark:text-blue-400">Empleado seleccionado</p>
-                        <p className="text-sm font-bold text-blue-900 dark:text-blue-300">
-                          {selectedUserName} <span className="font-normal text-blue-700 dark:text-blue-400">(ID: {selectedUserId})</span>
-                        </p>
-                      </div>
-                    </div>
-                  )}
+                )}
+              </div>
+            </div>
+
+            {/* Datos de IL Empleado */}
+            <div className="overflow-hidden rounded-xl border-2 border-purple-200 bg-gradient-to-br from-white to-purple-50/30 shadow-md dark:border-purple-800/30 dark:from-gray-900 dark:to-purple-900/10">
+              <div className="border-b border-purple-200 bg-white px-6 py-4 dark:border-purple-800/30 dark:bg-gray-900">
+                <div className="flex items-center gap-3">
+                  <div className="rounded-lg bg-purple-100 p-2 dark:bg-purple-900/30">
+                    <svg className="h-6 w-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-800 dark:text-white/90">
+                      Paso 2: Información del Empleado
+                    </h3>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      Especialidad, área y número de colegiado
+                    </p>
+                  </div>
                 </div>
               </div>
+              <div className="p-6">
+                <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+              <div>
+                <Label>Especialidad</Label>
+                <Select
+                  options={(especialidades || []).map((e) => ({
+                    value: String(e.id),
+                    label: e.nombre,
+                  }))}
+                  placeholder="Seleccione especialidad"
+                  defaultValue={empleadoData.especialidadId ? String(empleadoData.especialidadId) : ""}
+                  onChange={(value) =>
+                    setEmpleadoData({
+                      ...empleadoData,
+                      especialidadId: Number(value),
+                    })
+                  }
+                />
+              </div>
 
-              {/* Columna Derecha - Información del Empleado */}
-              <div className="flex flex-col gap-6">
-                {/* Datos de IL Empleado */}
-                <div className="overflow-hidden rounded-xl border-2 border-purple-200 bg-gradient-to-br from-white to-purple-50/30 shadow-md dark:border-purple-800/30 dark:from-gray-900 dark:to-purple-900/10">
-                  <div className="border-b border-purple-200 bg-white px-6 py-4 dark:border-purple-800/30 dark:bg-gray-900">
-                    <div className="flex items-center gap-3">
-                      <div className="rounded-lg bg-purple-100 p-2 dark:bg-purple-900/30">
-                        <svg className="h-6 w-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                      </div>
-                      <div>
-                        <h3 className="text-xl font-bold text-gray-800 dark:text-white/90">
-                          Paso 2: Información
-                        </h3>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                          Especialidad, área y colegiado
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="p-6">
-                    <div className="space-y-4">
-                      <div>
-                        <Label>Especialidad</Label>
-                        <Select
-                          options={(especialidades || []).map((e) => ({
-                            value: String(e.id),
-                            label: e.nombre,
-                          }))}
-                          placeholder="Seleccione especialidad"
-                          defaultValue={empleadoData.especialidadId ? String(empleadoData.especialidadId) : ""}
-                          onChange={(value) =>
-                            setEmpleadoData({
-                              ...empleadoData,
-                              especialidadId: Number(value),
-                            })
-                          }
-                        />
-                      </div>
+              <div>
+                <Label>Área</Label>
+                <Select
+                  options={(areas || []).map((a) => ({
+                    value: String(a.id),
+                    label: a.nombre,
+                  }))}
+                  placeholder="Seleccione área"
+                  defaultValue={empleadoData.areaId ? String(empleadoData.areaId) : ""}
+                  onChange={(value) =>
+                    setEmpleadoData({ ...empleadoData, areaId: Number(value) })
+                  }
+                />
+              </div>
 
-                      <div>
-                        <Label>Área</Label>
-                        <Select
-                          options={(areas || []).map((a) => ({
-                            value: String(a.id),
-                            label: a.nombre,
-                          }))}
-                          placeholder="Seleccione área"
-                          defaultValue={empleadoData.areaId ? String(empleadoData.areaId) : ""}
-                          onChange={(value) =>
-                            setEmpleadoData({ ...empleadoData, areaId: Number(value) })
-                          }
-                        />
-                      </div>
-
-                      <div>
-                        <Label>Número de Colegiado</Label>
-                        <Input
-                          type="text"
-                          placeholder="Ej: 12345"
-                          value={empleadoData.colegiado}
-                          onChange={(e) =>
-                            setEmpleadoData({
-                              ...empleadoData,
-                              colegiado: e.target.value,
-                            })
-                          }
-                        />
-                      </div>
-                    </div>
+                  <div>
+                    <Label>Número de Colegiado</Label>
+                    <Input
+                      type="text"
+                      placeholder="Ej: 12345"
+                      value={empleadoData.colegiado}
+                      onChange={(e) =>
+                        setEmpleadoData({
+                          ...empleadoData,
+                          colegiado: e.target.value,
+                        })
+                      }
+                    />
                   </div>
                 </div>
               </div>
