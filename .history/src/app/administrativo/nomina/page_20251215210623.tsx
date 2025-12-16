@@ -9,7 +9,6 @@ import Input from "@/components/form/input/InputField";
 import { NominaSection } from "@/components/administrativo/NominaSection";
 import GenericModal from "@/components/ui/modal/GenericModal";
 import Select from "@/components/form/Select";
-import Label from "@/components/form/Label";
 
 export default function NominaPage() {
   const { nominas, retenciones, bonos, descuentos } = useNomina();
@@ -28,13 +27,24 @@ export default function NominaPage() {
 
 
 
+  /* =====================
+     Buscar nómina
+  ====================== */
   const handleSearch = () => {
     if (!emailSearch) return;
-      nominas.getItem(emailSearch);
+    // Usamos getItem porque el backend espera el email como parte de la URL, no como query param.
+    nominas.getItem(emailSearch);
   };
 
+  /* =====================
+     Obtener nómina actual
+  ====================== */
+  // El resultado de getItem se almacena en la propiedad 'item' (singular) 
   const nomina: NominaDetail | null = nominas.item;
 
+  /* =====================
+     Contenido principal
+  ====================== */
   let mainContent: React.ReactNode;
 
   if (nominas.loading) {
@@ -193,7 +203,7 @@ export default function NominaPage() {
               : "Agregar Descuento"
         }
       >
-      <div className="relative w-full rounded-3xl bg-white p-6 dark:bg-gray-900">
+        <div className="space-y-4">
           <div>
             <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
               {modalType === "retencion"
@@ -207,16 +217,16 @@ export default function NominaPage() {
                 modalType === "retencion"
                   ? retenciones.items.map((item: any) => ({
                       value: item.id?.toString() || "",
-                      label: item.tipo || item.descripcion || "",
+                      label: item.tipo || item.nombre || "",
                     }))
                   : modalType === "bono"
                     ? bonos.items.map((item: any) => ({
                         value: item.id?.toString() || "",
-                        label: item.tipo || item.descripcion || "",
+                        label: item.tipo || item.nombre || "",
                       }))
                     : descuentos.items.map((item: any) => ({
                         value: item.id?.toString() || "",
-                        label: item.tipo || item.descripcion || "",
+                        label: item.tipo || item.nombre || "",
                       }))
               }
               placeholder="Seleccione un tipo"
@@ -225,9 +235,9 @@ export default function NominaPage() {
             />
           </div>
           <div>
-            <Label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Monto (GTQ)
-            </Label>
+            </label>
             <Input
               type="number"
               value={monto}
@@ -253,10 +263,8 @@ export default function NominaPage() {
               onClick={async () => {
                 try {
                   const data = {
-                    tipoId: selectedTipo,
+                    tipo: selectedTipo,
                     monto: parseFloat(monto),
-                    nominaId : nomina?.id || 0,
-
                   };
 
                   if (modalType === "retencion") {

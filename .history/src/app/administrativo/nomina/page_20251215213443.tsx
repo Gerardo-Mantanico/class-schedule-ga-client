@@ -28,13 +28,24 @@ export default function NominaPage() {
 
 
 
+  /* =====================
+     Buscar nómina
+  ====================== */
   const handleSearch = () => {
     if (!emailSearch) return;
-      nominas.getItem(emailSearch);
+    // Usamos getItem porque el backend espera el email como parte de la URL, no como query param.
+    nominas.getItem(emailSearch);
   };
 
+  /* =====================
+     Obtener nómina actual
+  ====================== */
+  // El resultado de getItem se almacena en la propiedad 'item' (singular) 
   const nomina: NominaDetail | null = nominas.item;
 
+  /* =====================
+     Contenido principal
+  ====================== */
   let mainContent: React.ReactNode;
 
   if (nominas.loading) {

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { BoltIcon, GroupIcon, PageIcon } from "@/icons";
 import useNomina, { NominaDetail } from "@/hooks/useNomina";
 import Button from "@/components/ui/button/Button";
@@ -9,7 +9,6 @@ import Input from "@/components/form/input/InputField";
 import { NominaSection } from "@/components/administrativo/NominaSection";
 import GenericModal from "@/components/ui/modal/GenericModal";
 import Select from "@/components/form/Select";
-import Label from "@/components/form/Label";
 
 export default function NominaPage() {
   const { nominas, retenciones, bonos, descuentos } = useNomina();
@@ -26,15 +25,24 @@ export default function NominaPage() {
   const [selectedTipo, setSelectedTipo] = useState<string>("");
   const [monto, setMonto] = useState<string>("");
 
-
-
+  /* =====================
+     Buscar nómina
+  ====================== */
   const handleSearch = () => {
     if (!emailSearch) return;
-      nominas.getItem(emailSearch);
+    // Usamos getItem porque el backend espera el email como parte de la URL, no como query param.
+    nominas.getItem(emailSearch);
   };
 
+  /* =====================
+     Obtener nómina actual
+  ====================== */
+  // El resultado de getItem se almacena en la propiedad 'item' (singular)
   const nomina: NominaDetail | null = nominas.item;
 
+  /* =====================
+     Contenido principal
+  ====================== */
   let mainContent: React.ReactNode;
 
   if (nominas.loading) {
@@ -143,8 +151,7 @@ export default function NominaPage() {
             itemColorClass="bg-red-100"
             emptyMessage="Sin descuentos."
             onItemAdd={() => {
-              setModalType("descuento");
-              setShowModal(true);
+              setShowDescuentoModal(true);
             }}
             onItemDelete={async (id) => {
               setOpLoading(true);
@@ -176,62 +183,36 @@ export default function NominaPage() {
 
       {mainContent}
 
-      {/* Modal unificado para Retenciones, Bonos y Descuentos */}
+      {/* Modal para agregar Retenciones */}
       <GenericModal
-        isOpen={showModal}
-        onClose={() => {
-          setShowModal(false);
-          setModalType(null);
-          setSelectedTipo("");
-          setMonto("");
-        }}
-        title={
-          modalType === "retencion"
-            ? "Agregar Retención"
-            : modalType === "bono"
-              ? "Agregar Bono"
-              : "Agregar Descuento"
-        }
+        isOpen={showRetencionModal}
+        onClose={() => setShowRetencionModal(false)}
+        title="Agregar Retención"
       >
-      <div className="relative w-full rounded-3xl bg-white p-6 dark:bg-gray-900">
+        <div className="space-y-4">
           <div>
             <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-              {modalType === "retencion"
-                ? "Tipo de Retención"
-                : modalType === "bono"
-                  ? "Tipo de Bono"
-                  : "Tipo de Descuento"}
+              Tipo de Retención
             </label>
             <Select
-              options={
-                modalType === "retencion"
-                  ? retenciones.items.map((item: any) => ({
-                      value: item.id?.toString() || "",
-                      label: item.tipo || item.descripcion || "",
-                    }))
-                  : modalType === "bono"
-                    ? bonos.items.map((item: any) => ({
-                        value: item.id?.toString() || "",
-                        label: item.tipo || item.descripcion || "",
-                      }))
-                    : descuentos.items.map((item: any) => ({
-                        value: item.id?.toString() || "",
-                        label: item.tipo || item.descripcion || "",
-                      }))
-              }
+              options={[
+                { value: "1", label: "ISR" },
+                { value: "2", label: "IGSS" },
+                { value: "3", label: "Préstamo" },
+              ]}
               placeholder="Seleccione un tipo"
-              defaultValue={selectedTipo}
-              onChange={(value) => setSelectedTipo(value)}
+              defaultValue={selectedRetencionTipo}
+              onChange={(value) => setSelectedRetencionTipo(value)}
             />
           </div>
           <div>
-            <Label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Monto (GTQ)
-            </Label>
+            </label>
             <Input
               type="number"
-              value={monto}
-              onChange={(e) => setMonto(e.target.value)}
+              value={retencionMonto}
+              onChange={(e) => setRetencionMonto(e.target.value)}
               placeholder="0.00"
               step={0.01}
               min="0"
@@ -241,39 +222,151 @@ export default function NominaPage() {
             <Button
               variant="outline"
               onClick={() => {
-                setShowModal(false);
-                setModalType(null);
-                setSelectedTipo("");
-                setMonto("");
+                setShowRetencionModal(false);
+                setSelectedRetencionTipo("");
+                setRetencionMonto("");
               }}
             >
               Cancelar
             </Button>
             <Button
-              onClick={async () => {
-                try {
-                  const data = {
-                    tipoId: selectedTipo,
-                    monto: parseFloat(monto),
-                    nominaId : nomina?.id || 0,
+              onClick={() => {
+                // Aquí iría la lógica para guardar
+                console.log("Guardar retención", {
+                  tipo: selectedRetencionTipo,
+                  monto: retencionMonto,
+                });
+                setShowRetencionModal(false);
+                setSelectedRetencionTipo("");
+                setRetencionMonto("");
+              }}
+            >
+              Guardar
+            </Button>
+          </div>
+        </div>
+      </GenericModal>
 
-                  };
+      {/* Modal para agregar Bonos */}
+      <GenericModal
+        isOpen={showBonoModal}
+        onClose={() => setShowBonoModal(false)}
+        title="Agregar Bono"
+      >
+        <div className="space-y-4">
+          <div>
+            <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Tipo de Bono
+            </label>
+            <Select
+              options={[
+                { value: "1", label: "Bono de Productividad" },
+                { value: "2", label: "Bono de Desempeño" },
+                { value: "3", label: "Aguinaldo" },
+              ]}
+              placeholder="Seleccione un tipo"
+              defaultValue={selectedBonoTipo}
+              onChange={(value) => setSelectedBonoTipo(value)}
+            />
+          </div>
+          <div>
+            <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Monto (GTQ)
+            </label>
+            <Input
+              type="number"
+              value={bonoMonto}
+              onChange={(e) => setBonoMonto(e.target.value)}
+              placeholder="0.00"
+              step={0.01}
+              min="0"
+            />
+          </div>
+          <div className="flex gap-2 justify-end pt-4 border-t border-gray-200 dark:border-gray-700">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowBonoModal(false);
+                setSelectedBonoTipo("");
+                setBonoMonto("");
+              }}
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={() => {
+                // Aquí iría la lógica para guardar
+                console.log("Guardar bono", {
+                  tipo: selectedBonoTipo,
+                  monto: bonoMonto,
+                });
+                setShowBonoModal(false);
+                setSelectedBonoTipo("");
+                setBonoMonto("");
+              }}
+            >
+              Guardar
+            </Button>
+          </div>
+        </div>
+      </GenericModal>
 
-                  if (modalType === "retencion") {
-                    await retenciones.createItem(data);
-                  } else if (modalType === "bono") {
-                    await bonos.createItem(data);
-                  } else {
-                    await descuentos.createItem(data);
-                  }
-
-                  setShowModal(false);
-                  setModalType(null);
-                  setSelectedTipo("");
-                  setMonto("");
-                } catch (error) {
-                  console.error("Error al guardar:", error);
-                }
+      {/* Modal para agregar Descuentos */}
+      <GenericModal
+        isOpen={showDescuentoModal}
+        onClose={() => setShowDescuentoModal(false)}
+        title="Agregar Descuento"
+      >
+        <div className="space-y-4">
+          <div>
+            <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Tipo de Descuento
+            </label>
+            <Select
+              options={[
+                { value: "1", label: "Descuento por inasistencia" },
+                { value: "2", label: "Descuento por retardo" },
+                { value: "3", label: "Otros" },
+              ]}
+              placeholder="Seleccione un tipo"
+              defaultValue={selectedDescuentoTipo}
+              onChange={(value) => setSelectedDescuentoTipo(value)}
+            />
+          </div>
+          <div>
+            <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Monto (GTQ)
+            </label>
+            <Input
+              type="number"
+              value={descuentoMonto}
+              onChange={(e) => setDescuentoMonto(e.target.value)}
+              placeholder="0.00"
+              step={0.01}
+              min="0"
+            />
+          </div>
+          <div className="flex gap-2 justify-end pt-4 border-t border-gray-200 dark:border-gray-700">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowDescuentoModal(false);
+                setSelectedDescuentoTipo("");
+                setDescuentoMonto("");
+              }}
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={() => {
+                // Aquí iría la lógica para guardar
+                console.log("Guardar descuento", {
+                  tipo: selectedDescuentoTipo,
+                  monto: descuentoMonto,
+                });
+                setShowDescuentoModal(false);
+                setSelectedDescuentoTipo("");
+                setDescuentoMonto("");
               }}
             >
               Guardar

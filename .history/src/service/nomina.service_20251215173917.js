@@ -7,10 +7,12 @@ export const nominasApi = createCrudService(NOMINAS);
 const NOMINAS_METODOS_PAGO = '/nomina/metodos-pago';
 export const nominasMetodosPagoApi = createCrudService(NOMINAS_METODOS_PAGO);
 
+// Catálogos de tipos
+export const retencionesTiposApi = createCrudService("/nomina/retenciones/tipos");
+export const bonosTiposApi = createCrudService("/nomina/bonos/tipos");
+export const descuentosTiposApi = createCrudService("/nomina/descuentos/tipos");
 
-
-
-// Retenciones should be scoped under the nomina id like the other nested endpoints
+// Conceptos de nómina (asociados a una nómina específica)
 export const retencionesApi =  createCrudService("/nomina/retenciones");
 export const descuentosApi =  createCrudService("/nomina/descuentos");
 export const bonosApi =  createCrudService("/nomina/bonos");
@@ -21,6 +23,7 @@ export const nominaService = {
   nomina: nominasApi,
   nominaMetodoPago: nominasMetodosPagoApi,
   retencionesApi,
+  retencionesTiposApi,
   descuentosApi,
   bonosApi,
 };
