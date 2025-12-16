@@ -75,29 +75,9 @@ export default function NominaPage() {
           </div>
 
           <div className="bg-white rounded-xl shadow p-4">
-            <div className="flex justify-between items-center border-b pb-2 mb-3">
-              <h3 className="font-semibold">
-                Detalles de Nómina
-              </h3>
-              <Button
-                variant="outline"
-                onClick={async () => {
-                  if (confirm("¿Está seguro de que desea eliminar esta nómina?")) {
-                    setOpLoading(true);
-                    const success = await nominas.deleteItem(nomina.id.toString());
-                    if (success) {
-                      setEmailSearch("");
-                      nominas.item = null;
-                    }
-                    setOpLoading(false);
-                  }
-                }}
-                disabled={opLoading}
-                className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
-              >
-                Eliminar Nómina
-              </Button>
-            </div>
+            <h3 className="font-semibold border-b pb-2 mb-3">
+              Detalles de Nómina
+            </h3>
             <div className="text-sm space-y-1">
               <p><b>ID:</b> {nomina.id}</p>
               <p><b>Periodo:</b> {nomina.periodo}</p>

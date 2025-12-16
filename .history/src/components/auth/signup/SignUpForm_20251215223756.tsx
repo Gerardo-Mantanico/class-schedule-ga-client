@@ -141,13 +141,11 @@ export default function SignUpForm() {
                   <Input
                     type="number"
                     id="dpi"
-                    name="dpi"
+                    name="phoneNumber"
+                    placeholder="Enter your phone number"
                     value={formData.dpi}
                     onChange={handleChange}
-                         placeholder="0.00"
-                    step={0.01}
-                    min="0"
-                 />
+                  />
                 </div>
               </div>
 

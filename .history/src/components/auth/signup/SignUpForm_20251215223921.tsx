@@ -142,12 +142,10 @@ export default function SignUpForm() {
                     type="number"
                     id="dpi"
                     name="dpi"
+                    placeholder="Enter your dpi"
                     value={formData.dpi}
                     onChange={handleChange}
-                         placeholder="0.00"
-                    step={0.01}
-                    min="0"
-                 />
+                  />
                 </div>
               </div>
 

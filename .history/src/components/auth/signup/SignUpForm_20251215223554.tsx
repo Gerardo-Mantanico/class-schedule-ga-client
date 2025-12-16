@@ -119,38 +119,33 @@ export default function SignUpForm() {
                 />
               </div>
 
-              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                {/* Phone Number */}
-                <div>
-                  <Label>
-                    Phone Number<span className="text-error-500">*</span>
-                  </Label>
-                  <Input
-                    type="tel"
-                    id="phoneNumber"
-                    name="phoneNumber"
-                    placeholder="Enter your phone number"
-                    value={formData.phoneNumber}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div>
-                  <Label>
-                    Dpi<span className="text-error-500">*</span>
-                  </Label>
-                  <Input
-                    type="number"
-                    id="dpi"
-                    name="dpi"
-                    value={formData.dpi}
-                    onChange={handleChange}
-                         placeholder="0.00"
-                    step={0.01}
-                    min="0"
-                 />
-                </div>
+              {/* Phone Number */}
+              <div>
+                <Label>
+                  Phone Number<span className="text-error-500">*</span>
+                </Label>
+                <Input
+                  type="tel"
+                  id="phoneNumber"
+                  name="phoneNumber"
+                  placeholder="Enter your phone number"
+                  value={formData.phoneNumber}
+                  onChange={handleChange}
+                />
               </div>
-
+                 <div>
+                <Label>
+                  Phone Number<span className="text-error-500">*</span>
+                </Label>
+                <Input
+                  type="tel"
+                  id="phoneNumber"
+                  name="phoneNumber"
+                  placeholder="Enter your phone number"
+                  value={formData.phoneNumber}
+                  onChange={handleChange}
+                />
+              </div>
 
               {/* Password */}
               <div>

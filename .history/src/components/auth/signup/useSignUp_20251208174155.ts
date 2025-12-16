@@ -14,7 +14,6 @@ export function useSignUp() {
     firstname: "",
     lastname: "",
     email: "",
-    dpi: "",
     phoneNumber: "",
     password: "",
   });

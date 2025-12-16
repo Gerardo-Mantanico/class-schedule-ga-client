@@ -136,18 +136,16 @@ export default function SignUpForm() {
                 </div>
                 <div>
                   <Label>
-                    Dpi<span className="text-error-500">*</span>
+                    Phone Number<span className="text-error-500">*</span>
                   </Label>
                   <Input
-                    type="number"
-                    id="dpi"
-                    name="dpi"
-                    value={formData.dpi}
+                    type="tel"
+                    id="phoneNumber"
+                    name="phoneNumber"
+                    placeholder="Enter your phone number"
+                    value={formData.phoneNumber}
                     onChange={handleChange}
-                         placeholder="0.00"
-                    step={0.01}
-                    min="0"
-                 />
+                  />
                 </div>
               </div>
 

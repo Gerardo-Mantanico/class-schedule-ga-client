@@ -21,7 +21,6 @@ interface User {
   firstname: string;
   lastname: string;
   email: string;
-  dpi: string;
   phoneNumber: string;
   createdAt: string;
   updatedAt: string;
@@ -58,10 +57,6 @@ const columns: Column<User>[] = [
   {
     header: "Teléfono",
     accessorKey: "phoneNumber",
-  },
-  {
-    header: "DPI",
-    accessorKey: "dpi",
   },
   {
     header: "Rol",
@@ -202,7 +197,6 @@ export default function UserTable() {
         firstname: formData.firstname,
         lastname: formData.lastname,
         email: formData.email,
-        dpi: formData.dpi,
         phoneNumber: formData.phoneNumber,
         password: "123456789", 
         roleId: formData.roleId,
@@ -323,21 +317,6 @@ export default function UserTable() {
                         setFormData({ ...formData, email: e.target.value })
                       }
                       required
-                    />
-                  </div>
-
-                  {/* DPI */}
-                  <div className="col-span-2 lg:col-span-1">
-                    <Label>DPI</Label>
-                    <Input
-                      type="text"
-                      placeholder="Ingrese el DPI"
-                      value={formData.dpi}
-                      onChange={(e) =>
-                        setFormData({ ...formData, dpi: e.target.value })
-                      }
-                      maxLength={13}
-                      pattern="[0-9]*"
                     />
                   </div>
 

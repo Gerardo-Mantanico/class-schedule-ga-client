@@ -30,17 +30,17 @@ const navItems: NavItem[] = [
   },
    {
     icon: <GridIcon />,
-    name: "Nominas",
+    name: "Inventario",
     subItems: [
-      { name: "Nominas", path: "/administrativo/nomina", pro: false },
-      { name: "Crear nomina", path: "/administrativo/nomina/new", pro: false },
+      { name: "Medicamentos", path: "/administrativo/inventario/medicamentos", pro: false },
+      { name: "Catálogos", path: "/administrativo/inventario/catalogos", pro: false },
     ],
 
   },
   {
     icon: <GridIcon />,
-    name: "Asignacion de area ",
-    path: "/administrativo/area",
+    name: "Nominas ",
+    path: "/administrativo/nomina",
   },
 ];
 

@@ -38,14 +38,12 @@ export default function UserDropdown() {
           <Image
             width={44}
             height={44}
-            src={currentUser?.image || "/images/user/owner.jpg"}
-            alt={currentUser ? `${currentUser.firstname} ${currentUser.lastname}` : "User"}
+            src="/images/user/owner.jpg"
+            alt="User"
           />
         </span>
 
-        <span className="block mr-1 font-medium text-theme-sm">
-          {currentUser ? `${currentUser.firstname} ${currentUser.lastname}` : "Usuario"}
-        </span>
+        <span className="block mr-1 font-medium text-theme-sm">Musharof</span>
 
         <svg
           className={`stroke-gray-500 dark:stroke-gray-400 transition-transform duration-200 ${
@@ -74,16 +72,11 @@ export default function UserDropdown() {
       >
         <div>
           <span className="block font-medium text-gray-700 text-theme-sm dark:text-gray-400">
-            {currentUser ? `${currentUser.firstname} ${currentUser.lastname}` : "Usuario"}
+            Musharof Chowdhury
           </span>
           <span className="mt-0.5 block text-theme-xs text-gray-500 dark:text-gray-400">
-            {currentUser?.email || "email@example.com"}
+            randomuser@pimjo.com
           </span>
-          {currentUser?.role && (
-            <span className="mt-1 inline-block px-2 py-0.5 text-xs font-medium rounded-full bg-brand-100 text-brand-700 dark:bg-brand-900/30 dark:text-brand-300">
-              {currentUser.role.description || currentUser.role.name}
-            </span>
-          )}
         </div>
 
         <ul className="flex flex-col gap-1 pt-4 pb-3 border-b border-gray-200 dark:border-gray-800">

@@ -12,7 +12,6 @@ export interface User {
   firstname: string;
   lastname: string;
   email: string;
-  dpi: number;
   phoneNumber: string;
   createdAt: string;
   updatedAt: string;
