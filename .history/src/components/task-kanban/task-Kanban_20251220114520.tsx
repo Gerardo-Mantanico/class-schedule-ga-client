@@ -6,7 +6,7 @@ import { MdMedicalServices } from 'react-icons/md';
 import { useCita } from '@/hooks/useCita';
 
 const KanbanBoard = () => {
-  const { citas, loading, error, updateCita } = useCita();
+  const { citas, loading, error } = useCita();
   if (loading) return <div>Cargando...</div>;
   if (error) return <div>Error: {error}</div>;
 
@@ -57,35 +57,41 @@ const KanbanBoard = () => {
                               </span>
                             </div>
                           </div>
-                          <Link
-                            href={`/psm/historiaClinica?id=${cita.historiaClinicaId}`}
-                            className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-green-50 text-green-700 hover:bg-green-100 dark:bg-green-400/10 dark:text-green-300 dark:hover:bg-green-400/20 transition"
-                            title="Empezar consulta"
-                            onClick={async (e) => {
-                              e.preventDefault();
-                              await updateCita(cita.id, {  'estado': "EN_PROCESO" });
-                              window.location.href = `/psm/historiaClinica?id=${cita.historiaClinicaId}`;
-                            }}
-                          >
-                            <MdMedicalServices className="w-5 h-5" />
-                            <span className="text-sm font-medium">Empezar consulta</span>
-                          </Link>
+                         <Link
+  href={`/psm/historiaClinica?id=${cita.historiaClinicaId}`}
+  className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-green-50 text-green-700 hover:bg-green-100 dark:bg-green-400/10 dark:text-green-300 dark:hover:bg-green-400/20 transition"
+  title="Empezar consulta"
+  onClick={async (e) => {
+    e.preventDefault();
+    await updateCita(cita.id, { ...cita, estadoCita: "EN_PROCESO" });
+    // Redirige después de actualizar el estado
+    window.location.href = `/psm/historiaClinica?id=${cita.historiaClinicaId}`;
+  }}
+>
+  <MdMedicalServices className="w-5 h-5" />
+  <span className="text-sm font-medium">Empezar consulta</span>
+</Link>
                         </div>
                         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
                           <div className="flex-1">
-
+                           
                             <div className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
                               <span className="font-medium text-gray-500 dark:text-gray-400">Paciente:</span>
                               {cita.paciente.firstname} {cita.paciente.lastname}
                             </div>
+                            
                             {cita.nota && (
+                              
                               <div className="mt-2 text-sm text-gray-500 dark:text-gray-400 italic border-l-4 border-brand-200 pl-2">
-                                <span className="block font-medium text-gray-500 dark:text-gray-400">Nota del paciente</span>
+                                  <span className="block font-medium text-gray-500 dark:text-gray-400">Nota del paciente</span>
                                 {cita.nota}
                               </div>
                             )}
                           </div>
+                          
+                        
                         </div>
+                        
                       </div>
                     ))}
                   </div>
@@ -125,7 +131,7 @@ const KanbanBoard = () => {
                         </div>
                         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
                           <div className="flex-1">
-
+                           
                             <div className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
                               <span className="font-medium text-gray-500 dark:text-gray-400">Paciente:</span>
                               {cita.paciente.firstname} {cita.paciente.lastname}
@@ -136,13 +142,15 @@ const KanbanBoard = () => {
                               </div>
                             )}
                           </div>
-
+                        
                         </div>
                       </div>
                     ))}
                   </div>
                 </div>
               </div>
+             
+              
             </div>
           </div>
         </div>

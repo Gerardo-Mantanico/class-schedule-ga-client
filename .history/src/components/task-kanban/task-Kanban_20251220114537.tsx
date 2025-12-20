@@ -6,7 +6,7 @@ import { MdMedicalServices } from 'react-icons/md';
 import { useCita } from '@/hooks/useCita';
 
 const KanbanBoard = () => {
-  const { citas, loading, error, updateCita } = useCita();
+  const { citas, loading, error } = useCita();
   if (loading) return <div>Cargando...</div>;
   if (error) return <div>Error: {error}</div>;
 
@@ -63,7 +63,8 @@ const KanbanBoard = () => {
                             title="Empezar consulta"
                             onClick={async (e) => {
                               e.preventDefault();
-                              await updateCita(cita.id, {  'estado': "EN_PROCESO" });
+                              await updateCita(cita.id, { ...cita, estadoCita: "EN_PROCESO" });
+                              // Redirige después de actualizar el estado
                               window.location.href = `/psm/historiaClinica?id=${cita.historiaClinicaId}`;
                             }}
                           >
@@ -78,14 +79,19 @@ const KanbanBoard = () => {
                               <span className="font-medium text-gray-500 dark:text-gray-400">Paciente:</span>
                               {cita.paciente.firstname} {cita.paciente.lastname}
                             </div>
+
                             {cita.nota && (
+
                               <div className="mt-2 text-sm text-gray-500 dark:text-gray-400 italic border-l-4 border-brand-200 pl-2">
                                 <span className="block font-medium text-gray-500 dark:text-gray-400">Nota del paciente</span>
                                 {cita.nota}
                               </div>
                             )}
                           </div>
+
+
                         </div>
+
                       </div>
                     ))}
                   </div>

@@ -63,7 +63,8 @@ const KanbanBoard = () => {
                             title="Empezar consulta"
                             onClick={async (e) => {
                               e.preventDefault();
-                              await updateCita(cita.id, {  'estado': "EN_PROCESO" });
+                              await updateCita(cita.id, { ...cita, estadoCita: "EN_PROCESO" });
+                              // Redirige después de actualizar el estado
                               window.location.href = `/psm/historiaClinica?id=${cita.historiaClinicaId}`;
                             }}
                           >
