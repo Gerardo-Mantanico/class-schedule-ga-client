@@ -147,27 +147,16 @@ export default function ObjetivosTerapeuticosConfiguracion({
   };
 
   // Handler para enviar información (crear)
-const handleEnviarInformacion = async () => {
-  if (isLocked) return;
-  try {
-    // Obtener el hcId actualizado desde localStorage
-    const storedHcId = typeof window !== "undefined" ? localStorage.getItem("HistoriClinica") : null;
-    const id = storedHcId ? parseInt(storedHcId, 10) : hcId;
-
-    // Crear un nuevo objeto con el hcId correcto
-    const dataToSend = {
-      ...formData,
-      hcId: id,
-    };
-
-    await createItem(dataToSend);
-    alert('Información registrada correctamente.');
-    setIsLocked(true);
-  } catch (e) {
-    alert('Error al registrar la información.');
-  }
-};
-
+  const handleEnviarInformacion = async () => {
+    if (isLocked) return;
+    try {
+      await createItem(formData);
+      alert('Información registrada correctamente.');
+      setIsLocked(true);
+    } catch (e) {
+      alert('Error al registrar la información.');
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -502,19 +491,17 @@ const handleEnviarInformacion = async () => {
           )}
         </div>
       </div>
-        {/* Botón para mandar la información solo si no está bloqueado */}
-        {!isLocked && (
-          <div className="flex justify-end mt-8">
-            <button
-              type="button"
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 disabled:bg-gray-400"
-              onClick={handleEnviarInformacion}
-              disabled={disabled}
-            >
-              Mandar información
-            </button>
-          </div>
-        )}
+        {/* Botón para mandar la información */}
+        <div className="flex justify-end mt-8">
+          <button
+            type="button"
+            className="px-6 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 disabled:bg-gray-400"
+            onClick={() => handleEnviarInformacion()}
+            disabled={disabled || isLocked}
+          >
+            Mandar información
+          </button>
+        </div>
       </div>
     );
   }

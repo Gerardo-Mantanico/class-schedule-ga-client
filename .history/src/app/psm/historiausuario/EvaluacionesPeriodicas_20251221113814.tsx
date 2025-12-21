@@ -32,16 +32,15 @@
     const [errores, setErrores] = useState<Record<string, string>>({});
 
     React.useEffect(() => {
-       // Obtener el id de la historia clínica (ajusta la clave si es diferente)
-    const hcId = typeof window !== "undefined" ? localStorage.getItem("HistoriClinica") : null;
-
-      if (hcId) {
-        getItem(parseInt(hcId)).then((data: EvaluacionPeriodica | undefined) => {
+      // Si hay pacienteId, intenta cargar la evaluación existente
+      if (pacienteId) {
+        getItem(parseInt(pacienteId)).then((data: EvaluacionPeriodica | undefined) => {
           if (data) {
             setFormData(data);
           }
         });
       }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pacienteId]);
 
     const tiposEvaluacion = [
@@ -70,10 +69,17 @@
 
       if (!formData.objetivosPedientes.trim()) {
         nuevosErrores.objetivosPedientes = "Los objetivos pendientes son requeridos";
-    React.useEffect(() => {
-      fetchItems({ hcId: pacienteId ? parseInt(pacienteId) : undefined });
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [pacienteId]);
+      }
+
+      if (!formData.recomendaciones.trim()) {
+        nuevosErrores.recomendaciones = "Las recomendaciones son requeridas";
+      }
+
+      // Validar escala de progreso
+      if (formData.escalaProgreso < 1 || formData.escalaProgreso > 10) {
+        nuevosErrores.escalaProgreso = "La escala debe estar entre 1 y 10";
+      }
+
       setErrores(nuevosErrores);
       return Object.keys(nuevosErrores).length === 0;
     };
@@ -216,29 +222,6 @@
             )}
           </div>
 
-                    {/* Lista de evaluaciones */}
-                    {items && items.length > 0 ? (
-                      <div className="mb-8">
-                        <h4 className="mb-2 text-lg font-semibold">Historial de evaluaciones</h4>
-                        <ul className="space-y-4">
-                          {items.map((ev) => (
-                            <li key={ev.id} className="border rounded p-4">
-                              <div><strong>Fecha:</strong> {ev.fechaEvalucacion}</div>
-                              <div><strong>Tipo:</strong> {tiposEvaluacion.find(t => t.value === ev.tipoEvaluacion)?.label ?? ev.tipoEvaluacion}</div>
-                              <div><strong>Progreso:</strong> {ev.progresoObservado}</div>
-                              <div><strong>Objetivos Alcanzados:</strong> {ev.objetivoAlcanzado}</div>
-                              <div><strong>Objetivos Pendientes:</strong> {ev.objetivosPedientes}</div>
-                              <div><strong>Recomendaciones:</strong> {ev.recomendaciones}</div>
-                              <div><strong>Escala Progreso:</strong> {ev.escalaProgreso}</div>
-                              <div><strong>Modificación Plan Tratamiento:</strong> {ev.modificacionPlanTratamiento}</div>
-                              <div><strong>Reevaluación Diagnóstico:</strong> {ev.reevaluacionDiagnostico}</div>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    ) : (
-                      <div className="mb-8 text-gray-500">No hay evaluaciones registradas.</div>
-                    )}
           {/* Escala de Progreso */}
           <div className="mb-6">
             <label className="mb-3 block text-sm font-medium text-black">Escala de Progreso (1-10)</label>
@@ -294,4 +277,4 @@
       </div>
     );
   }
-  }
+// ...existing code up to the end of the main component

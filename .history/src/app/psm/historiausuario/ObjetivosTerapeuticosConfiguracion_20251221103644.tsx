@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState, useEffect } from "react";
 import Label from "@/components/form/Label";
 import Input from "@/components/form/input/InputField";
@@ -60,10 +61,8 @@ export default function ObjetivosTerapeuticosConfiguracion({
   onChange,
   disabled = false,
 }: ObjetivosTerapeuticosConfiguracionProps) {
-
-  
   // Hook para operaciones CRUD de objetivos terapéuticos
-  const { getItem, createItem } = useObjetivos();
+  const { getItem, createItem, updateItem, loading, error } = useObjetivos();
 
   // Estado para controlar si el formulario está bloqueado
   const [isLocked, setIsLocked] = useState(false);
@@ -83,13 +82,12 @@ export default function ObjetivosTerapeuticosConfiguracion({
 
   // Obtener hcId de localStorage
   useEffect(() => {
-      const hcId = typeof window !== "undefined" ? localStorage.getItem("HistoriClinica") : null;
-
-    if (hcId) {
-      const id = parseInt(hcId, 10);
+    const storedHcId = localStorage.getItem('hcId');
+    if (storedHcId) {
+      const id = parseInt(storedHcId, 10);
       if (!isNaN(id) && id > 0) {
         getItem(id).then((data: ObjetivosHC | null) => {
-          if (data && Object.keys(data).length > 0) {
+          if (data) {
             setFormData(data);
             setIsLocked(true);
           } else {
@@ -101,6 +99,31 @@ export default function ObjetivosTerapeuticosConfiguracion({
   }, []);
 
 
+  hcId = 0,
+  objetivoCortoplazo = "",
+  objetivoMedioplazo = "",
+  objetivoLargoplazo = "",
+  modalidad = [],
+  enfoqueTerapeutico = [],
+  frecuencia = 1,
+  sesionesPorSemana = 1,
+  duracionEstimada = 0,
+  costoPorSesion = 0,
+  onChange,
+  disabled = false,
+}: ObjetivosTerapeuticosConfiguracionProps) {
+  const [formData, setFormData] = useState<ObjetivosHC>({
+    hcId,
+    objetivoCortoplazo,
+    objetivoMedioplazo,
+    objetivoLargoplazo,
+    modalidad,
+    enfoqueTerapeutico,
+    frecuencia,
+    sesionesPorSemana,
+    duracionEstimada,
+    costoPorSesion,
+  });
 
   // Notificar cambios al componente padre
   useEffect(() => {
@@ -146,36 +169,26 @@ export default function ObjetivosTerapeuticosConfiguracion({
       });
   };
 
+  // Método para mandar la información
+  const handleEnviarInformacion = () => {
+    // Aquí puedes implementar la lógica para enviar la información
+    // Por ejemplo, llamar a una API o mostrar un mensaje
+    alert("Información enviada:\n" + JSON.stringify(formData, null, 2));
+  };
   // Handler para enviar información (crear)
-const handleEnviarInformacion = async () => {
-  if (isLocked) return;
-  try {
-    // Obtener el hcId actualizado desde localStorage
-    const storedHcId = typeof window !== "undefined" ? localStorage.getItem("HistoriClinica") : null;
-    const id = storedHcId ? parseInt(storedHcId, 10) : hcId;
-
-    // Crear un nuevo objeto con el hcId correcto
-    const dataToSend = {
-      ...formData,
-      hcId: id,
-    };
-
-    await createItem(dataToSend);
-    alert('Información registrada correctamente.');
-    setIsLocked(true);
-  } catch (e) {
-    alert('Error al registrar la información.');
-  }
-};
-
+  const handleEnviarInformacion = async () => {
+    if (isLocked) return;
+    try {
+      await createItem(formData);
+      alert('Información registrada correctamente.');
+      setIsLocked(true);
+    } catch (e) {
+      alert('Error al registrar la información.');
+    }
+  };
 
   return (
     <div className="space-y-6">
-      {isLocked && (
-        <div className="mb-4 p-3 text-sm bg-yellow-100 rounded text-yellow-900">
-          Modo solo lectura: objetivos terapéuticos ya registrados
-        </div>
-      )}
       {/* Sección: Objetivos Terapéuticos */}
       <div className="rounded-lg border border-gray-300 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900">
         <h2 className="mb-6 text-xl font-semibold text-gray-800 dark:text-white">
@@ -197,7 +210,7 @@ const handleEnviarInformacion = async () => {
               onChange={(v) =>
                 handleInputChange("objetivoCortoplazo", v)
               }
-              disabled={disabled || isLocked}
+              disabled={disabled}
               required
               className="max-w-full"
               rows={4}
@@ -220,7 +233,7 @@ const handleEnviarInformacion = async () => {
               onChange={(v) =>
                 handleInputChange("objetivoMedioplazo",v)
               }
-              disabled={disabled || isLocked}
+              disabled={disabled}
               className="max-w-full"
               rows={4}
             />
@@ -242,7 +255,7 @@ const handleEnviarInformacion = async () => {
               onChange={(v) =>
                 handleInputChange("objetivoLargoplazo", v)
               }
-              disabled={disabled || isLocked}
+              disabled={disabled}
               className="max-w-full"
               rows={4}
             />
@@ -278,7 +291,7 @@ const handleEnviarInformacion = async () => {
                   onChange={(v) =>
                     handleModalidadChange(option.value, v)
                   }
-                  disabled={disabled || isLocked}
+                  disabled={disabled}
                 />
               ))}
             </div>
@@ -302,7 +315,7 @@ const handleEnviarInformacion = async () => {
                   onChange={(v) =>
                     handleEnfoqueChange(option.value, v)
                   }
-                  disabled={disabled || isLocked}
+                  disabled={disabled}
                 />
               ))}
             </div>
@@ -337,7 +350,7 @@ const handleEnviarInformacion = async () => {
                     parseInt(e.target.value) || 1
                   )
                 }
-                disabled={disabled || isLocked}
+                disabled={disabled}
                 min={1}
                 max={3}
                 className="max-w-full"
@@ -502,19 +515,17 @@ const handleEnviarInformacion = async () => {
           )}
         </div>
       </div>
-        {/* Botón para mandar la información solo si no está bloqueado */}
-        {!isLocked && (
-          <div className="flex justify-end mt-8">
-            <button
-              type="button"
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 disabled:bg-gray-400"
-              onClick={handleEnviarInformacion}
-              disabled={disabled}
-            >
-              Mandar información
-            </button>
-          </div>
-        )}
+        {/* Botón para mandar la información */}
+        <div className="flex justify-end mt-8">
+          <button
+            type="button"
+            className="px-6 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 disabled:bg-gray-400"
+            onClick={() => handleEnviarInformacion()}
+            disabled={disabled}
+          >
+            Mandar información
+          </button>
+        </div>
       </div>
     );
   }

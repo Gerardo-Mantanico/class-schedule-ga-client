@@ -147,27 +147,16 @@ export default function ObjetivosTerapeuticosConfiguracion({
   };
 
   // Handler para enviar información (crear)
-const handleEnviarInformacion = async () => {
-  if (isLocked) return;
-  try {
-    // Obtener el hcId actualizado desde localStorage
-    const storedHcId = typeof window !== "undefined" ? localStorage.getItem("HistoriClinica") : null;
-    const id = storedHcId ? parseInt(storedHcId, 10) : hcId;
-
-    // Crear un nuevo objeto con el hcId correcto
-    const dataToSend = {
-      ...formData,
-      hcId: id,
-    };
-
-    await createItem(dataToSend);
-    alert('Información registrada correctamente.');
-    setIsLocked(true);
-  } catch (e) {
-    alert('Error al registrar la información.');
-  }
-};
-
+  const handleEnviarInformacion = async () => {
+    if (isLocked) return;
+    try {
+      await createItem(formData);
+      alert('Información registrada correctamente.');
+      setIsLocked(true);
+    } catch (e) {
+      alert('Error al registrar la información.');
+    }
+  };
 
   return (
     <div className="space-y-6">

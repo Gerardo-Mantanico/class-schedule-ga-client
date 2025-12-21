@@ -365,7 +365,7 @@ export default function PsmHome() {
                       if (idx !== -1 && idx < TABS.length - 1) setActiveTab(TABS[idx + 1].key as TabKey);
                     }}
                   >
-                         siguiente
+                    Guardar
                   </button>
                 </div>
               </div>
@@ -381,7 +381,7 @@ export default function PsmHome() {
                       if (idx !== -1 && idx < TABS.length - 1) setActiveTab(TABS[idx + 1].key as TabKey);
                     }}
                   >
-                         siguiente
+                    Guardar
                   </button>
                 </div>
               </div>
@@ -413,7 +413,7 @@ export default function PsmHome() {
                       if (idx !== -1 && idx < TABS.length - 1) setActiveTab(TABS[idx + 1].key as TabKey);
                     }}
                   >
-                      siguiente
+                    Guardar
                   </button>
                 </div>
               </div>

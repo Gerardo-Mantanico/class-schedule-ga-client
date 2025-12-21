@@ -294,4 +294,4 @@
       </div>
     );
   }
-  }
+// ...existing code up to the end of the main component
