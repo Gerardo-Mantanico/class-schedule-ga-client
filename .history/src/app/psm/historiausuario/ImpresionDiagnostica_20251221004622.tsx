@@ -7,7 +7,6 @@ import TextArea from "@/components/form/input/TextArea";
 import SearchableSelect from "@/components/form/SearchableSelect";
 import { useImpresionDiagnostica, useTipoImpresionDiagnosticoC11, useTipoImpresionDiagnosticoD5 } from "../../../hooks/historaClinica/useImpresionDiagnostica";
 import type { ImpresionDiagnostica } from "@/interfaces/historiaClinica/ImpresionDiagnostica";
-import Button from "@/components/ui/button/Button";
 
 
 // Devuelve una clase de color según el nivel de funcionamiento
@@ -37,14 +36,12 @@ export default function ImpresionDiagnostica(props: ImpresionDiagnosticaProps) {
       .then((data) => {
         if (data && data.id && data.id !== 0) {
           setDiagnosticoExistente(data);
-            setFormData({ ...data });
+           setDisabled(true); /
         }
       })
       .finally(() => setLoadingConsulta(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hcId]);
-
-
   // Hook y mapeo de diagnósticos CIE-11
   const { items: tiposCIE11 = [] } = useTipoImpresionDiagnosticoC11();
   const diagnosticosCIE11 = tiposCIE11.map((item: any) => ({
@@ -146,12 +143,6 @@ export default function ImpresionDiagnostica(props: ImpresionDiagnosticaProps) {
       <h2 className="mb-6 text-xl font-semibold text-gray-800 dark:text-white">
         Impresión Diagnóstica
       </h2>
-
-      {diagnosticoExistente && diagnosticoExistente.id !== 0 && (
-        <div className="mb-4 p-3 text-sm bg-yellow-100 rounded">
-          Modo solo lectura: impresión diagnóstica ya registrada
-        </div>
-      )}
 
       <div className="space-y-6">
         {/* Diagnóstico Principal (CIE-11) */}
@@ -443,16 +434,13 @@ export default function ImpresionDiagnostica(props: ImpresionDiagnosticaProps) {
         )}
       </div>
       <div className="mt-8 flex justify-end">
-
-          {/* Botón para guardar solo si NO existe el registro */}
-      {!diagnosticoExistente && (
-        <div className="mt-8 flex justify-end">
-          <Button onClick={handleGuardar} disabled={readOnly}>
-            Guardar información
-          </Button>
-        </div>
-      )}
-
+        <button
+          type="button"
+          className="px-6 py-2 rounded bg-blue-600 text-white font-semibold hover:bg-blue-700 disabled:opacity-60"
+          onClick={handleGuardar}
+        >
+          Guardar
+        </button>
       </div>
     </div>
   );
