@@ -40,33 +40,21 @@ export default function ImpresionDiagnostica(props: ImpresionDiagnosticaProps) {
 
     const hcId = typeof window !== "undefined" ? localStorage.getItem("HistoriClinica") : null;
 
-// ...existing code...
-useEffect(() => {
-  if (!hcId) return setLoadingConsulta(false);
+  useEffect(() => {
+    if (!hcId) return setLoadingConsulta(false);
+      
+    getItem(hcId)
+      .then((data) => {
+        if (data && data.id && data.id !== 0) {
+          setDiagnosticoExistente(data);
+            setFormData({ ...data });
+        }
+      })
+      .finally(() => setLoadingConsulta(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hcId]);
 
-  getItem(hcId)
-    .then((data) => {
-      if (data && data.id && data.id !== 0) {
-        setDiagnosticoExistente(data);
-        setFormData({ ...data });
-      }
-    })
-    .catch((error) => {
-      // Si es un 400, simplemente no hay datos, no mostrar alerta
-      if (error?.status === 400) {
-        setDiagnosticoExistente(null);
-      } else {
-        // Otros errores, puedes mostrar alerta o log
-        alert("Error al consultar la impresión diagnóstica");
-        setDiagnosticoExistente(null);
-      }
-    })
-    .finally(() => setLoadingConsulta(false));
-}, [hcId]);
-// ...existing code...
-
-
-
+  // Extraer props con valores por defecto
   const {
     diagnosticoPrincipal = "",
     descripcionDiagnostico = "",

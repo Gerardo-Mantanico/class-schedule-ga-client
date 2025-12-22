@@ -121,34 +121,16 @@ export default function EvaluacionesPeriodicas({
       return Object.keys(nuevosErrores).length === 0;
     };
 
-const handleSubmit = async (e: React.FormEvent) => {
-  const hcId = typeof window !== "undefined" ? localStorage.getItem("HistoriClinica") : null;
-
-  e.preventDefault();
-  if (!validar()) {
-    return;
-  }
-  // Guardar usando el hook
-  formData.hcId = hcId ? parseInt(hcId) : 0;
-  createItem(formData).then((saved: EvaluacionPeriodica) => {
-    onSubmit?.(saved);
-    // Limpiar formulario y recargar la página
-    setFormData({
-      id: 0,
-      hcId: pacienteId ? parseInt(pacienteId) : 0,
-      fechaEvalucacion: new Date().toISOString().split("T")[0],
-      tipoEvaluacion: 2,
-      progresoObservado: "",
-      objetivoAlcanzado: "",
-      objetivosPedientes: "",
-      recomendaciones: "",
-      escalaProgreso: 5,
-      modificacionPlanTratamiento: "",
-      reevaluacionDiagnostico: "",
-    });
-    window.location.reload();
-  });
-};
+    const handleSubmit = async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!validar()) {
+        return;
+      }
+      // Guardar usando el hook
+      createItem(formData).then((saved: EvaluacionPeriodica) => {
+        onSubmit?.(saved);
+      });
+    };
 
     const renderStars = () => {
       return (

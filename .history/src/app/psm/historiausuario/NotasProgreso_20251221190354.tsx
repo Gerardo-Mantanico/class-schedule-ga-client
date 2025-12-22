@@ -4,15 +4,26 @@ import Button from "@/components/ui/button/Button";
 import React, { useRef, useEffect, useState } from "react";
 import SignaturePad from "signature_pad";
 import { useSesiones } from "../../../hooks/historaClinica/useSesiones";
-import { Sesion } from "@/interfaces/historiaClinica/Sesiones";
 
 interface NotasProgresoProps {
-  onSubmit?: (data: Sesion) => void;
+  onSubmit?: (data: NotasProgresoData) => void;
   onCancel?: () => void;
   pacienteId?: string;
 }
 
-
+interface NotasProgresoData {
+  fechaSesion: string;
+  numeroSesion: number;
+  asistencia: boolean;
+  justificacionInasistencia?: string;
+  temasAbordados: string;
+  intervenciones: string;
+  respuestaPaciente: string;
+  tareasAsignadas?: string;
+  observaciones?: string;
+  proximaCita: string;
+  firmaDigital: string;
+}
 
 export default function NotasProgreso({
   onSubmit,
@@ -22,27 +33,29 @@ export default function NotasProgreso({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const signaturePadRef = useRef<SignaturePad | null>(null);
 
-  const [formData, setFormData] = useState<Sesion>({
+  const [formData, setFormData] = useState<NotasProgresoData>({
     fechaSesion: new Date().toISOString().slice(0, 16),
     numeroSesion: 1,
-    asistencia: true,
+    onSubmit?: (data: Sesion) => void;
     justificacionInasistencia: "",
     temasAbordados: " ",
-    intervencionesRealizadas: "",
-    repuestaPaciente: "",
-    tareasAsignadas: "",
-    observaciones: "",
-    proximaCita: "",
-    firmaPsicologo: "",
-  });
-
-  const [etiquetasInput, setEtiquetasInput] = useState("");
-  const [errores, setErrores] = useState<Record<string, string>>({});
-
-  
-
-
-
+    intervenciones: "",
+    respuestaPaciente: "",
+  interface Sesion {
+    id: number;
+    hcId: number;
+    fecha: string;
+    numeroSesiones: number;
+    asistencia: boolean;
+    justificacionInasistencia?: string;
+    temasAbordados: string;
+    intervencionesRealizadas: string;
+    repuestaPaciente: string;
+    tareasAsignadas?: string;
+    observaciones?: string;
+    proximaCita: string;
+    firmaPsicologo: string;
+  }
   // Inicializar SignaturePad
   useEffect(() => {
     if (canvasRef.current && !signaturePadRef.current) {
@@ -52,18 +65,21 @@ export default function NotasProgreso({
       canvas.height = rect.height;
 
       signaturePadRef.current = new SignaturePad(canvas, {
-        backgroundColor: "rgb(255, 255, 255)",
-        penColor: "rgb(0, 0, 0)",
-      });
-    }
-  }, []);
-
-  const validar = () => {
-    const nuevosErrores: Record<string, string> = {};
-
-
-    // Validar próxima cita
-    const proximaCita = new Date(formData.proximaCita);
+    const [formData, setFormData] = useState<Sesion>({
+      id: 0,
+      hcId: 0,
+      fecha: new Date().toISOString().slice(0, 16),
+      numeroSesiones: 1,
+      asistencia: true,
+      justificacionInasistencia: "",
+      temasAbordados: "",
+      intervencionesRealizadas: "",
+      repuestaPaciente: "",
+      tareasAsignadas: "",
+      observaciones: "",
+      proximaCita: "",
+      firmaPsicologo: "",
+    });
     if (proximaCita <= new Date()) {
       nuevosErrores.proximaCita = "La próxima cita debe ser posterior a hoy";
     }
@@ -113,7 +129,7 @@ const hcId = typeof window !== "undefined" ? localStorage.getItem("HistoriClinic
 
   const payload = {
     ...formData,
-    firmaPsicologo: firmaData,
+    firmaDigital: firmaData,
     hcId: Number(hcId),
   };
 
@@ -250,9 +266,9 @@ const hcId = typeof window !== "undefined" ? localStorage.getItem("HistoriClinic
             Intervenciones <span className="text-red-500">*</span>
           </label>
           <textarea
-            value={formData.intervencionesRealizadas}
+            value={formData.intervenciones}
             onChange={(e) =>
-              setFormData({ ...formData, intervencionesRealizadas: e.target.value })
+              setFormData({ ...formData, intervenciones: e.target.value })
             }
             rows={4}
             placeholder="Describa las intervenciones realizadas"
@@ -266,9 +282,9 @@ const hcId = typeof window !== "undefined" ? localStorage.getItem("HistoriClinic
             Respuesta del Paciente <span className="text-red-500">*</span>
           </label>
           <textarea
-            value={formData.repuestaPaciente}
+            value={formData.respuestaPaciente}
             onChange={(e) =>
-              setFormData({ ...formData, repuestaPaciente: e.target.value })
+              setFormData({ ...formData, respuestaPaciente: e.target.value })
             }
             rows={4}
             placeholder="Describa la respuesta del paciente a las intervenciones"

@@ -113,7 +113,7 @@ const hcId = typeof window !== "undefined" ? localStorage.getItem("HistoriClinic
 
   const payload = {
     ...formData,
-    firmaPsicologo: firmaData,
+    firmaDigital: firmaData,
     hcId: Number(hcId),
   };
 

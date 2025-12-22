@@ -177,11 +177,69 @@ export default function PsmHome() {
             {/* Sesiones */}
             {activeTab === "sesiones" && (
               <>
-                <div className="mb-6">
-                  <NotasProgreso onCancel={() => { }} />
+                <div className="mb-6 flex items-center justify-between">
+                  <h2 className="text-xl font-semibold text-gray-800 dark:text-white/90">
+                    Notas de Progreso (Sesiones)
+                  </h2>
+                  <button
+                    className="rounded-lg bg-blue-600 px-4 py-2.5 text-white font-medium shadow-sm hover:bg-blue-700 transition-colors duration-200 flex items-center gap-2"
+                    onClick={() => {
+                      setShowForm(true);
+                      setSelected(null);
+                    }}
+                  >
+                    <MdOutlineEventNote className="size-5" />
+                    Nueva sesión
+                  </button>
                 </div>
+                <div className="mb-6 overflow-hidden rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50">
+                  <div className="divide-y divide-gray-200 dark:divide-gray-800">
+                    {sesionesEjemplo.map((s) => (
+                      <div key={s.id} className="flex items-center justify-between px-4 py-3 hover:bg-white dark:hover:bg-gray-800 transition-colors">
+                        <div>
+                          <span className="font-medium text-gray-900 dark:text-white">
+                            {new Date(s.fecha).toLocaleDateString('es-ES', {
+                              weekday: 'long',
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}
+                          </span>
+                          <span className="text-gray-600 dark:text-gray-400 ml-2">— {s.tema}</span>
+                        </div>
+                        <button
+                          className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium transition-colors flex items-center gap-1"
+                          onClick={() => {
+                            setSelected(s);
+                            setShowForm(false);
+                          }}
+                        >
+                          <MdOutlineDescription className="size-4" />
+                          Ver detalles
+                        </button>
+                      </div>
+                    ))}
+                    {sesionesEjemplo.length === 0 && (
+                      <div className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
+                        <MdOutlineEventNote className="size-12 mx-auto mb-3 text-gray-300 dark:text-gray-600" />
+                        <p>No hay sesiones registradas.</p>
+                        <p className="text-sm mt-1">Comienza agregando una nueva sesión.</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+               
+                {selected && (
+                  <div className="mb-6">
+                    <NotasProgreso onCancel={() => setSelected(null)} />
+                  </div>
+                )}
               </>
             )}
+
+
 
             {/* Evaluaciones */}
             {activeTab === "evaluaciones" && (
@@ -270,7 +328,31 @@ export default function PsmHome() {
                 </div>
                 <div className="mb-6 overflow-hidden rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50">
                   <div className="divide-y divide-gray-200 dark:divide-gray-800">
- 
+                    {altasEjemplo.map((a) => (
+                      <div key={a.id} className="flex items-center justify-between px-4 py-3 hover:bg-white dark:hover:bg-gray-800 transition-colors">
+                        <div>
+                          <span className="font-medium text-gray-900 dark:text-white">{a.fecha}</span>
+                          <span className="text-gray-600 dark:text-gray-400 ml-2">— {a.motivo}</span>
+                        </div>
+                        <button
+                          className="text-purple-600 hover:text-purple-800 dark:text-purple-400 dark:hover:text-purple-300 text-sm font-medium transition-colors flex items-center gap-1"
+                          onClick={() => {
+                            setSelected(a);
+                            setShowForm(false);
+                          }}
+                        >
+                          <MdOutlineDescription className="size-4" />
+                          Ver alta
+                        </button>
+                      </div>
+                    ))}
+                    {altasEjemplo.length === 0 && (
+                      <div className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
+                        <MdOutlineExitToApp className="size-12 mx-auto mb-3 text-gray-300 dark:text-gray-600" />
+                        <p>No hay altas registradas.</p>
+                        <p className="text-sm mt-1">Agrega una alta terapéutica cuando el paciente complete su tratamiento.</p>
+                      </div>
+                    )}
                   </div>
                 </div>
                 {showForm && (

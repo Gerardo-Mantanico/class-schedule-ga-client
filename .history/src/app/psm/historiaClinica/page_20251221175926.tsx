@@ -172,16 +172,14 @@ export default function PsmHome() {
             </nav>
           </div>
 
-          {/* Contenido principal */}
-          <div className="p-6">
-            {/* Sesiones */}
-            {activeTab === "sesiones" && (
-              <>
-                <div className="mb-6">
-                  <NotasProgreso onCancel={() => { }} />
-                </div>
-              </>
-            )}
+ 
+
+{/* Sesiones */}
+{activeTab === "sesiones" && (
+  <div className="mb-6">
+    <NotasProgreso onCancel={() => {}} />
+  </div>
+)}
 
             {/* Evaluaciones */}
             {activeTab === "evaluaciones" && (
@@ -270,7 +268,31 @@ export default function PsmHome() {
                 </div>
                 <div className="mb-6 overflow-hidden rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50">
                   <div className="divide-y divide-gray-200 dark:divide-gray-800">
- 
+                    {altasEjemplo.map((a) => (
+                      <div key={a.id} className="flex items-center justify-between px-4 py-3 hover:bg-white dark:hover:bg-gray-800 transition-colors">
+                        <div>
+                          <span className="font-medium text-gray-900 dark:text-white">{a.fecha}</span>
+                          <span className="text-gray-600 dark:text-gray-400 ml-2">— {a.motivo}</span>
+                        </div>
+                        <button
+                          className="text-purple-600 hover:text-purple-800 dark:text-purple-400 dark:hover:text-purple-300 text-sm font-medium transition-colors flex items-center gap-1"
+                          onClick={() => {
+                            setSelected(a);
+                            setShowForm(false);
+                          }}
+                        >
+                          <MdOutlineDescription className="size-4" />
+                          Ver alta
+                        </button>
+                      </div>
+                    ))}
+                    {altasEjemplo.length === 0 && (
+                      <div className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
+                        <MdOutlineExitToApp className="size-12 mx-auto mb-3 text-gray-300 dark:text-gray-600" />
+                        <p>No hay altas registradas.</p>
+                        <p className="text-sm mt-1">Agrega una alta terapéutica cuando el paciente complete su tratamiento.</p>
+                      </div>
+                    )}
                   </div>
                 </div>
                 {showForm && (

@@ -52,21 +52,14 @@ useEffect(() => {
       }
     })
     .catch((error) => {
-      // Si es un 400, simplemente no hay datos, no mostrar alerta
-      if (error?.status === 400) {
-        setDiagnosticoExistente(null);
-      } else {
-        // Otros errores, puedes mostrar alerta o log
-        alert("Error al consultar la impresión diagnóstica");
-        setDiagnosticoExistente(null);
-      }
+      // Si el error es 400 (no hay datos), simplemente no hay diagnóstico existente
+      setDiagnosticoExistente(null);
     })
     .finally(() => setLoadingConsulta(false));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
 }, [hcId]);
 // ...existing code...
-
-
-
+  // Extraer props con valores por defecto
   const {
     diagnosticoPrincipal = "",
     descripcionDiagnostico = "",

@@ -4,14 +4,12 @@
   import { EvaluacionPeriodica } from "../../../interfaces/historiaClinica/EvaluacionPeriodica";
   import { useEvaluacionPeriodica } from "../../../hooks/historaClinica/useEvaluacionPeriodica";
 
-  import Button from "../../../components/ui/button/Button";
-
-interface EvaluacionesPeriodicasProps {
-  onSubmit?: (data: EvaluacionPeriodica) => void;
-  onCancel?: () => void;
-  pacienteId?: string;
-  evaluacion?: EvaluacionPeriodica;
-}
+  interface EvaluacionesPeriodicasProps {
+    onSubmit?: (data: EvaluacionPeriodica) => void;
+    onCancel?: () => void;
+    pacienteId?: string;
+    evaluacion?: EvaluacionPeriodica;
+  }
 
 export default function EvaluacionesPeriodicas({
     onSubmit,
@@ -19,7 +17,7 @@ export default function EvaluacionesPeriodicas({
     pacienteId,
     evaluacion,
   }: EvaluacionesPeriodicasProps) {
-    const { createItem, loading, error } = useEvaluacionPeriodica();
+    const { getItem, createItem, loading, error } = useEvaluacionPeriodica();
     const [formData, setFormData] = useState<EvaluacionPeriodica>({
       id: 0,
       hcId: pacienteId ? parseInt(pacienteId) : 0,
@@ -38,8 +36,12 @@ export default function EvaluacionesPeriodicas({
     // Si hay evaluación seleccionada, mostrar solo los detalles
     if (evaluacion !== undefined && evaluacion !== null) {
       return (
-        <div title="Detalle de Evaluación" className="max-w-2xl mx-auto mt-10">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="rounded-xl border border-stroke bg-white dark:bg-gray-900 shadow-lg p-6 max-w-2xl mx-auto">
+          <h3 className="text-2xl font-bold text-primary mb-6 flex items-center gap-2">
+            <span className="inline-block w-2 h-6 bg-primary rounded-sm mr-2"></span>
+            Detalle de Evaluación
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
               <span className="block text-xs text-gray-500 mb-1">Fecha</span>
               <span className="font-medium text-gray-900 dark:text-white">{evaluacion.fechaEvalucacion}</span>
@@ -53,7 +55,7 @@ export default function EvaluacionesPeriodicas({
               <span className="font-medium text-gray-900 dark:text-white">{evaluacion.escalaProgreso} / 10</span>
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
               <span className="block text-xs text-gray-500 mb-1">Progreso Observado</span>
               <span className="text-gray-800 dark:text-gray-200 whitespace-pre-line">{evaluacion.progresoObservado}</span>
@@ -80,15 +82,30 @@ export default function EvaluacionesPeriodicas({
             </div>
           </div>
           <div className="flex justify-end mt-6">
-            <Button variant="primary" onClick={onCancel}>
+            <button
+              className="rounded bg-primary px-6 py-2 text-white hover:bg-primary-dark transition"
+              onClick={onCancel}
+            >
               Cerrar
-            </Button>
+            </button>
           </div>
         </div>
       );
     }
 
-   
+    React.useEffect(() => {
+       // Obtener el id de la historia clínica (ajusta la clave si es diferente)
+    const hcId = typeof window !== "undefined" ? localStorage.getItem("HistoriClinica") : null;
+
+      if (hcId) {
+        getItem(parseInt(hcId)).then((data: EvaluacionPeriodica | undefined) => {
+          if (data) {
+            setFormData(data);
+          }
+        });
+      }
+    }, [pacienteId]);
+
     const tiposEvaluacion = [
       { label: "Parcial", value: 1 },
       { label: "Seguimiento", value: 2 },
@@ -115,40 +132,24 @@ export default function EvaluacionesPeriodicas({
 
       if (!formData.objetivosPedientes.trim()) {
         nuevosErrores.objetivosPedientes = "Los objetivos pendientes son requeridos";
-      }
-
+    React.useEffect(() => {
+      fetchItems({ hcId: pacienteId ? parseInt(pacienteId) : undefined });
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [pacienteId]);
       setErrores(nuevosErrores);
       return Object.keys(nuevosErrores).length === 0;
     };
 
-const handleSubmit = async (e: React.FormEvent) => {
-  const hcId = typeof window !== "undefined" ? localStorage.getItem("HistoriClinica") : null;
-
-  e.preventDefault();
-  if (!validar()) {
-    return;
-  }
-  // Guardar usando el hook
-  formData.hcId = hcId ? parseInt(hcId) : 0;
-  createItem(formData).then((saved: EvaluacionPeriodica) => {
-    onSubmit?.(saved);
-    // Limpiar formulario y recargar la página
-    setFormData({
-      id: 0,
-      hcId: pacienteId ? parseInt(pacienteId) : 0,
-      fechaEvalucacion: new Date().toISOString().split("T")[0],
-      tipoEvaluacion: 2,
-      progresoObservado: "",
-      objetivoAlcanzado: "",
-      objetivosPedientes: "",
-      recomendaciones: "",
-      escalaProgreso: 5,
-      modificacionPlanTratamiento: "",
-      reevaluacionDiagnostico: "",
-    });
-    window.location.reload();
-  });
-};
+    const handleSubmit = async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!validar()) {
+        return;
+      }
+      // Guardar usando el hook
+      createItem(formData).then((saved: EvaluacionPeriodica) => {
+        onSubmit?.(saved);
+      });
+    };
 
     const renderStars = () => {
       return (
@@ -276,6 +277,30 @@ const handleSubmit = async (e: React.FormEvent) => {
               <span className="text-xs text-red-500">{errores.recomendaciones}</span>
             )}
           </div>
+
+                    {/* Lista de evaluaciones */}
+                    {items && items.length > 0 ? (
+                      <div className="mb-8">
+                        <h4 className="mb-2 text-lg font-semibold">Historial de evaluaciones</h4>
+                        <ul className="space-y-4">
+                          {items.map((ev) => (
+                            <li key={ev.id} className="border rounded p-4">
+                              <div><strong>Fecha:</strong> {ev.fechaEvalucacion}</div>
+                              <div><strong>Tipo:</strong> {tiposEvaluacion.find(t => t.value === ev.tipoEvaluacion)?.label ?? ev.tipoEvaluacion}</div>
+                              <div><strong>Progreso:</strong> {ev.progresoObservado}</div>
+                              <div><strong>Objetivos Alcanzados:</strong> {ev.objetivoAlcanzado}</div>
+                              <div><strong>Objetivos Pendientes:</strong> {ev.objetivosPedientes}</div>
+                              <div><strong>Recomendaciones:</strong> {ev.recomendaciones}</div>
+                              <div><strong>Escala Progreso:</strong> {ev.escalaProgreso}</div>
+                              <div><strong>Modificación Plan Tratamiento:</strong> {ev.modificacionPlanTratamiento}</div>
+                              <div><strong>Reevaluación Diagnóstico:</strong> {ev.reevaluacionDiagnostico}</div>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ) : (
+                      <div className="mb-8 text-gray-500">No hay evaluaciones registradas.</div>
+                    )}
           {/* Escala de Progreso */}
           <div className="mb-6">
             <label className="mb-3 block text-sm font-medium text-black">Escala de Progreso (1-10)</label>
@@ -313,21 +338,22 @@ const handleSubmit = async (e: React.FormEvent) => {
           </div>
 
           <div className="flex gap-4 pt-4">
-            <Button
+            <button
               type="submit"
               className="rounded bg-primary px-6 py-2 text-white hover:bg-primary-dark"
             >
-             Guardar
-            </Button>
-            <Button
+              Guardar
+            </button>
+            <button
               type="button"
               className="rounded bg-gray-300 px-6 py-2 text-black hover:bg-gray-400"
               onClick={onCancel}
             >
               Cancelar
-            </Button>
+            </button>
           </div>
         </form>
       </div>
     );
+  }
   }

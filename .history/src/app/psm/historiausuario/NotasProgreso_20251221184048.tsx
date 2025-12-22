@@ -4,15 +4,26 @@ import Button from "@/components/ui/button/Button";
 import React, { useRef, useEffect, useState } from "react";
 import SignaturePad from "signature_pad";
 import { useSesiones } from "../../../hooks/historaClinica/useSesiones";
-import { Sesion } from "@/interfaces/historiaClinica/Sesiones";
 
 interface NotasProgresoProps {
-  onSubmit?: (data: Sesion) => void;
+  onSubmit?: (data: NotasProgresoData) => void;
   onCancel?: () => void;
   pacienteId?: string;
 }
 
-
+interface NotasProgresoData {
+  fechaSesion: string;
+  numeroSesion: number;
+  asistencia: boolean;
+  justificacionInasistencia?: string;
+  temasAbordados: string;
+  intervenciones: string;
+  respuestaPaciente: string;
+  tareasAsignadas?: string;
+  observaciones?: string;
+  proximaCita: string;
+  firmaDigital: string;
+}
 
 export default function NotasProgreso({
   onSubmit,
@@ -22,18 +33,18 @@ export default function NotasProgreso({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const signaturePadRef = useRef<SignaturePad | null>(null);
 
-  const [formData, setFormData] = useState<Sesion>({
+  const [formData, setFormData] = useState<NotasProgresoData>({
     fechaSesion: new Date().toISOString().slice(0, 16),
     numeroSesion: 1,
     asistencia: true,
     justificacionInasistencia: "",
     temasAbordados: " ",
-    intervencionesRealizadas: "",
-    repuestaPaciente: "",
+    intervenciones: "",
+    respuestaPaciente: "",
     tareasAsignadas: "",
     observaciones: "",
     proximaCita: "",
-    firmaPsicologo: "",
+    firmaDigital: "",
   });
 
   const [etiquetasInput, setEtiquetasInput] = useState("");
@@ -61,6 +72,11 @@ export default function NotasProgreso({
   const validar = () => {
     const nuevosErrores: Record<string, string> = {};
 
+    // Validar fecha de sesión
+    const fechaSesion = new Date(formData.fechaSesion);
+    if (fechaSesion > new Date()) {
+      nuevosErrores.fechaSesion = "La fecha debe ser igual o anterior a hoy";
+    }
 
     // Validar próxima cita
     const proximaCita = new Date(formData.proximaCita);
@@ -74,7 +90,10 @@ export default function NotasProgreso({
         "La justificación es requerida cuando el paciente no asiste";
     }
 
-
+    // Validar temas abordados
+    if (formData.temasAbordados.length === 0) {
+      nuevosErrores.temasAbordados = "Debe seleccionar al menos un tema";
+    }
 
     // Validar firma
     if (signaturePadRef.current?.isEmpty()) {
@@ -97,34 +116,24 @@ const hcId = typeof window !== "undefined" ? localStorage.getItem("HistoriClinic
 
  const { getItem, createItem } = useSesiones();
 
- const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-  if (!validar()) {
-    return;
-  }
+   alert(JSON.stringify(formData, null, 2));
+    if (!validar()) {
+      return;
+    }
 
-  if (!hcId) {
-    alert("No se encontró el id de la historia clínica");
-    return;
-  }
+    const firmaData = signaturePadRef.current?.toDataURL() || "";
 
-  const firmaData = signaturePadRef.current?.toDataURL() || "";
+    const datosCompletos: NotasProgresoData = {
+      ...formData,
+      firmaDigital: firmaData,
+    };
 
-  const payload = {
-    ...formData,
-    firmaPsicologo: firmaData,
-    hcId: Number(hcId),
+    onSubmit?.(datosCompletos);
   };
 
-  try {
-    await createItem(payload);
-    alert("Información guardada correctamente");
-    onSubmit?.(payload);
-  } catch (error: any) {
-    alert(error?.message || "Error al guardar la información");
-  }
-};
   return (
     <div className="rounded-sm border border-stroke bg-white shadow-default">
       <div className="border-b border-stroke px-4 py-6 sm:px-6">
@@ -143,7 +152,17 @@ const hcId = typeof window !== "undefined" ? localStorage.getItem("HistoriClinic
               disabled
               type="datetime-local"
               value={formData.fechaSesion}
-             ></input>
+              onChange={(e) =>
+                setFormData({ ...formData, fechaSesion: e.target.value })
+              }
+              className={`relative w-full appearance-none rounded border bg-white px-4 py-2 text-black outline-none transition focus:border-primary ${
+                errores.fechaSesion ? "border-red-500" : "border-stroke"
+              }`}
+              max={new Date().toISOString().slice(0, 16)}
+            />
+            {errores.fechaSesion && (
+              <p className="mt-1 text-xs text-red-500">{errores.fechaSesion}</p>
+            )}
           </div>
 
           {/* Número de Sesión */}
@@ -250,9 +269,9 @@ const hcId = typeof window !== "undefined" ? localStorage.getItem("HistoriClinic
             Intervenciones <span className="text-red-500">*</span>
           </label>
           <textarea
-            value={formData.intervencionesRealizadas}
+            value={formData.intervenciones}
             onChange={(e) =>
-              setFormData({ ...formData, intervencionesRealizadas: e.target.value })
+              setFormData({ ...formData, intervenciones: e.target.value })
             }
             rows={4}
             placeholder="Describa las intervenciones realizadas"
@@ -266,9 +285,9 @@ const hcId = typeof window !== "undefined" ? localStorage.getItem("HistoriClinic
             Respuesta del Paciente <span className="text-red-500">*</span>
           </label>
           <textarea
-            value={formData.repuestaPaciente}
+            value={formData.respuestaPaciente}
             onChange={(e) =>
-              setFormData({ ...formData, repuestaPaciente: e.target.value })
+              setFormData({ ...formData, respuestaPaciente: e.target.value })
             }
             rows={4}
             placeholder="Describa la respuesta del paciente a las intervenciones"

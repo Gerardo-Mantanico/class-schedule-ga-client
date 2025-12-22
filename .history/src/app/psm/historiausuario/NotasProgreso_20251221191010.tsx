@@ -29,11 +29,11 @@ export default function NotasProgreso({
     justificacionInasistencia: "",
     temasAbordados: " ",
     intervencionesRealizadas: "",
-    repuestaPaciente: "",
+    respuestaPaciente: "",
     tareasAsignadas: "",
     observaciones: "",
     proximaCita: "",
-    firmaPsicologo: "",
+    firmaDigital: "",
   });
 
   const [etiquetasInput, setEtiquetasInput] = useState("");
@@ -113,7 +113,7 @@ const hcId = typeof window !== "undefined" ? localStorage.getItem("HistoriClinic
 
   const payload = {
     ...formData,
-    firmaPsicologo: firmaData,
+    firmaDigital: firmaData,
     hcId: Number(hcId),
   };
 
@@ -250,9 +250,9 @@ const hcId = typeof window !== "undefined" ? localStorage.getItem("HistoriClinic
             Intervenciones <span className="text-red-500">*</span>
           </label>
           <textarea
-            value={formData.intervencionesRealizadas}
+            value={formData.intervenciones}
             onChange={(e) =>
-              setFormData({ ...formData, intervencionesRealizadas: e.target.value })
+              setFormData({ ...formData, intervenciones: e.target.value })
             }
             rows={4}
             placeholder="Describa las intervenciones realizadas"
@@ -266,9 +266,9 @@ const hcId = typeof window !== "undefined" ? localStorage.getItem("HistoriClinic
             Respuesta del Paciente <span className="text-red-500">*</span>
           </label>
           <textarea
-            value={formData.repuestaPaciente}
+            value={formData.respuestaPaciente}
             onChange={(e) =>
-              setFormData({ ...formData, repuestaPaciente: e.target.value })
+              setFormData({ ...formData, respuestaPaciente: e.target.value })
             }
             rows={4}
             placeholder="Describa la respuesta del paciente a las intervenciones"
