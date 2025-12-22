@@ -12,6 +12,8 @@ interface AltaTerapeuticaProps {
   pacienteId?: string;
 }
 
+
+
 export default function AltaTerapeutica({
   onSubmit,
   onCancel,

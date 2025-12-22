@@ -12,6 +12,8 @@ interface AltaTerapeuticaProps {
   pacienteId?: string;
 }
 
+
+
 export default function AltaTerapeutica({
   onSubmit,
   onCancel,
@@ -24,7 +26,6 @@ export default function AltaTerapeutica({
 
   const [formData, setFormData] = useState<AltaTerapeutica>({
     fechaAlta: new Date().toISOString().split("T")[0],
-    hcId:0,
     motivoAlta: 1,
     estadoAlta: "",
     recomendacionesPosteriores: "",
@@ -137,13 +138,14 @@ const motivosAlta = {
 
     
     try {
-      datosCompletos.hcId = hcId ? parseInt(hcId) : 0;
       await createItem(datosCompletos);
       onSubmit?.(datosCompletos); 
        } catch (error) {
        console.error("Error al crear el alta terapéutica:", error);
     }
   
+
+
 
     onSubmit?.(datosCompletos);
   };

@@ -12,6 +12,8 @@ interface AltaTerapeuticaProps {
   pacienteId?: string;
 }
 
+
+
 export default function AltaTerapeutica({
   onSubmit,
   onCancel,
@@ -24,7 +26,6 @@ export default function AltaTerapeutica({
 
   const [formData, setFormData] = useState<AltaTerapeutica>({
     fechaAlta: new Date().toISOString().split("T")[0],
-    hcId:0,
     motivoAlta: 1,
     estadoAlta: "",
     recomendacionesPosteriores: "",
@@ -137,13 +138,14 @@ const motivosAlta = {
 
     
     try {
-      datosCompletos.hcId = hcId ? parseInt(hcId) : 0;
       await createItem(datosCompletos);
       onSubmit?.(datosCompletos); 
        } catch (error) {
        console.error("Error al crear el alta terapéutica:", error);
     }
   
+
+
 
     onSubmit?.(datosCompletos);
   };
@@ -184,24 +186,28 @@ const motivosAlta = {
               Motivo del Alta <span className="text-red-500">*</span>
             </label>
             <div className="space-y-2">
-           {Object.entries(motivosAlta).map(([motivo, valor]) => (
-  <label key={motivo} className="flex cursor-pointer items-center">
-    <input
-      type="radio"
-      name="motivoAlta"
-      value={valor}
-      checked={formData.motivoAlta === valor}
-      onChange={(e) =>
-        setFormData({
-          ...formData,
-          motivoAlta: Number(e.target.value),
-        })
-      }
-      className="mr-2 h-4 w-4 accent-primary"
-    />
-    <span className="text-sm text-black">{motivo}</span>
-  </label>
-))}
+              {motivosAlta.map((motivo) => (
+                <label key={motivo} className="flex cursor-pointer items-center">
+                  <input
+                    type="radio"
+                    name="motivoAlta"
+                    value={motivo}
+                    checked={formData.motivoAlta === motivo}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        motivoAlta: e.target.value as
+                          | "Objetivos alcanzados"
+                          | "Abandono"
+                          | "Derivación"
+                          | "Otro",
+                      })
+                    }
+                    className="mr-2 h-4 w-4 accent-primary"
+                  />
+                  <span className="text-sm text-black">{motivo}</span>
+                </label>
+              ))}
             </div>
           </div>
         </div>

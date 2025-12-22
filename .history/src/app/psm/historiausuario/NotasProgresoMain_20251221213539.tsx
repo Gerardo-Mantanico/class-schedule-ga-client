@@ -1,0 +1,50 @@
+import React, { useState, useEffect } from "react";
+import { Sesion } from "@/interfaces/historiaClinica/Sesiones";
+import NotasProgresoPanel from "./NotasProgresoPanel";
+import NotasProgreso from "./NotasProgreso";
+import { useSesiones } from "../../../hooks/historaClinica/useSesiones"; // Ajusta la ruta si es necesario
+
+export default function NotasProgresoMain() {
+    const [notas, setNotas] = useState<Sesion[]>([]);
+    const [mostrarFormulario, setMostrarFormulario] = useState(false);
+
+    const hcId = typeof window !== "undefined" ? localStorage.getItem("HistoriClinica") : null;
+
+
+    const { getItemSesion } = useSesiones();
+
+    useEffect(() => {
+        async function cargarNotas() {
+            try {
+                const notasServidor = await getItemSesion(hcId ? parseInt(hcId) : 0);
+                setNotas(notasServidor || []);
+            } catch (error) {
+                console.error("Error al cargar notas de progreso:", error);
+            }
+        }
+        cargarNotas();
+    }, []);
+
+    // Cuando se guarda una nueva nota
+    const handleGuardarNota = (nuevaNota: Sesion) => {
+        setNotas((prev) => [...prev, nuevaNota]);
+        setMostrarFormulario(false);
+    };
+
+    return (
+        <div>
+            {!mostrarFormulario && (
+                <NotasProgresoPanel
+                    notas={notasServidor}
+                    onRegistrar={() => setMostrarFormulario(true)}
+                />
+            )}
+            {mostrarFormulario && (
+                <NotasProgreso
+                    onSubmit={handleGuardarNota}
+                    onCancel={() => setMostrarFormulario(false)}
+                />
+            )}
+        </div>
+    );
+}
