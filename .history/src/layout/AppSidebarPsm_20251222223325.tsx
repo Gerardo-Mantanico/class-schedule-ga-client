@@ -6,11 +6,9 @@ import { usePathname } from "next/navigation";
 import { useSidebar } from "../context/SidebarContext";
 import {
   CalenderIcon,
-  ChatIcon,
   ChevronDownIcon,
   GridIcon,
   HorizontaLDots,
-  ListIcon,
   TableIcon,
   UserCircleIcon,
 } from "../icons/index";
@@ -33,7 +31,7 @@ const navItems: NavItem[] = [
   },
   {
     icon: <CalenderIcon />,
-    name: "Citas",
+    name: "Calendar",
     path: "/psm/calendar",
   },
   {
@@ -47,14 +45,9 @@ const navItems: NavItem[] = [
     path: "/psm/historiaClinica",
   },
   {
-    icon: <ListIcon />,
+    icon: <TableIcon />,
     name: "Reportes",
-    path: "/psm/reporte",
-  },
-  {
-    icon: <ChatIcon />,
-    name: "Soporte de tarea/actividades",
-    path: "/psm/soporte",
+    path: "/psm/historiaClinica",
   },
 ];
 

@@ -5,16 +5,13 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useSidebar } from "../context/SidebarContext";
 import {
-  CalenderIcon,
-  ChatIcon,
-  ChevronDownIcon,
+  ArrowDownIcon,
+  FileIcon,
   GridIcon,
-  HorizontaLDots,
   ListIcon,
-  TableIcon,
-  UserCircleIcon,
-} from "../icons/index";
+  MoreDotIcon,
 
+} from "../icons/index";
 
 
 type NavItem = {
@@ -27,38 +24,39 @@ type NavItem = {
 const navItems: NavItem[] = [
   {
     icon: <GridIcon />,
-    name: "Consultas",
-    path: "/psm",
- 
+    name: "Inventario",
+    subItems: [
+      { name: "Medicamentos", path: "/administrativo/inventario/medicamentos", pro: false },
+      { name: "Catálogos", path: "/administrativo/inventario/catalogos", pro: false },
+    ],
+
   },
-  {
-    icon: <CalenderIcon />,
-    name: "Citas",
-    path: "/psm/calendar",
+   {
+    icon: <GridIcon />,
+    name: "Nominas",
+    subItems: [
+      { name: "Nominas", path: "/administrativo/nomina", pro: false },
+      { name: "Crear nomina", path: "/administrativo/nomina/new", pro: false },
+    ],
+
   },
-  {
-    icon: <UserCircleIcon />,
-    name: "User Profile",
-    path: "/psm/profile",
-  },
-  {
-    icon: <TableIcon />,
-    name: "Historia clinica",
-    path: "/psm/historiaClinica",
-  },
-  {
+
+   {
     icon: <ListIcon />,
-    name: "Reportes",
-    path: "/psm/reporte",
+    name: "Asignacion de area",
+    subItems: [
+      { name: "Registro de area", path: "/administrativo/area", pro: false },
+      { name: "Busqueda de area", path: "/administrativo/area/search", pro: false },
+    ],
   },
-  {
-    icon: <ChatIcon />,
-    name: "Soporte de tarea/actividades",
-    path: "/psm/soporte",
-  },
+   {
+      icon: <FileIcon />,
+      name: "Reportes",
+      path: "/administrativo/reportes",
+    },
 ];
 
-const AppSidebarPsm: React.FC = () => {
+const AppSidebarAdministrativo: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const pathname = usePathname();
 
@@ -92,7 +90,7 @@ const AppSidebarPsm: React.FC = () => {
                 <span className={`menu-item-text`}>{nav.name}</span>
               )}
               {(isExpanded || isHovered || isMobileOpen) && (
-                <ChevronDownIcon
+                <ArrowDownIcon
                   className={`ml-auto w-5 h-5 transition-transform duration-200  ${
                     openSubmenu === index
                       ? "rotate-180 text-brand-500"
@@ -294,9 +292,9 @@ const AppSidebarPsm: React.FC = () => {
                 }`}
               >
                 {isExpanded || isHovered || isMobileOpen ? (
-                  "Psm"
+                  "Administrativo"
                 ) : (
-                  <HorizontaLDots />
+                  <MoreDotIcon />
                 )}
               </h2>
               {renderMenuItems()}
@@ -308,4 +306,4 @@ const AppSidebarPsm: React.FC = () => {
   );
 };
 
-export default AppSidebarPsm;
+export default AppSidebarAdministrativo;

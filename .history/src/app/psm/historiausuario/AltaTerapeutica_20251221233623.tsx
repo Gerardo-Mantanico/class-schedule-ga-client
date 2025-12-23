@@ -171,9 +171,9 @@ const motivosAlta = {
       <div className="border-b border-stroke px-4 py-6 sm:px-6">
         <h3 className="font-medium text-black">Alta Terapéutica</h3>
         {altaExistente && (
-          <div className="mb-4 p-3 text-sm bg-yellow-100 rounded text-yellow-900">
-          Modo solo lectura: Alta terapéuticos ya registrado
-        </div>
+          <p className="mt-2 text-red-500">
+            Ya existe un registro de alta terapéutica. No es posible crear otro.
+          </p>
         )}
       </div>
     

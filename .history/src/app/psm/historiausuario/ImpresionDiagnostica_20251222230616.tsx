@@ -9,51 +9,20 @@ import { useImpresionDiagnostica, useTipoImpresionDiagnosticoC11, useTipoImpresi
 import type { ImpresionDiagnostica } from "@/interfaces/historiaClinica/ImpresionDiagnostica";
 import Button from "@/components/ui/button/Button";
 
-// Interfaces necesarias
-interface ImpresionDiagnosticaData {
-  diagnosticoPrincipal: string | { id: number; label: string };
-  descripcionDiagnostico: string;
-  diagnosticoSecundario: string;
-  factoresPredisponentes: string;
-  factoresPrecipitantes: string;
-  factoresMantenedores: string;
-  nivelFuncionamiento: number;
-  diagnosticoPrincipalCie11?: string;
-  diagnosticoPrincipalDsm5?: string;
-}
-
-interface ImpresionDiagnosticaProps {
-  diagnosticoPrincipal?: string;
-  descripcionDiagnostico?: string;
-  diagnosticoSecundario?: string;
-  factoresPredisponentes?: string;
-  factoresPrecipitantes?: string;
-  factoresMantenedores?: string;
-  nivelFuncionamiento?: number;
-  onChange?: (data: ImpresionDiagnosticaData) => void;
-  disabled?: boolean;
-}
 
 // Devuelve una clase de color según el nivel de funcionamiento
 function getNivelFuncionamientoColor(nivel: number) {
-  if (nivel >= 81) return "text-green-600";
-  if (nivel >= 61) return "text-yellow-600";
-  if (nivel >= 21) return "text-orange-600";
-  return "text-red-600";
-}
-
-function getNivelFuncionamientoLabel(nivel: number): string {
-  if (nivel >= 81) return "Funcionamiento Excelente";
-  if (nivel >= 61) return "Funcionamiento Bueno";
-  if (nivel >= 41) return "Funcionamiento Moderado";
-  if (nivel >= 21) return "Funcionamiento Bajo";
-  return "Funcionamiento Muy Bajo";
+  if (nivel >= 4) return "text-green-600";
+  if (nivel === 3) return "text-yellow-600";
+  if (nivel > 0) return "text-red-600";
+  return "";
 }
 
 export default function ImpresionDiagnostica(props: ImpresionDiagnosticaProps) {
   const [diagnosticoExistente, setDiagnosticoExistente] = useState<ImpresionDiagnostica | null>(null);
   const [loadingConsulta, setLoadingConsulta] = useState(true);
   const { getItem, createItem } = useImpresionDiagnostica();
+
 
   // Hook y mapeo de diagnósticos CIE-11
   const { items: tiposCIE11 = [] } = useTipoImpresionDiagnosticoC11();
@@ -69,7 +38,34 @@ export default function ImpresionDiagnostica(props: ImpresionDiagnosticaProps) {
     label: `${item.codigo} - ${item.nombre}`,
   }));
 
-  const hcId = typeof window !== "undefined" ? localStorage.getItem("HistoriClinica") : null;
+    const hcId = typeof window !== "undefined" ? localStorage.getItem("HistoriClinica") : null;
+
+// ...existing code...
+useEffect(() => {
+  if (!hcId) return setLoadingConsulta(false);
+
+  getItem(hcId)
+    .then((data) => {
+      if (data && data.id && data.id !== 0) {
+        setDiagnosticoExistente(data);
+        setFormData({ ...data });
+      }
+    })
+    .catch((error) => {
+      // Si es un 400, simplemente no hay datos, no mostrar alerta
+      if (error?.status === 400) {
+        setDiagnosticoExistente(null);
+      } else {
+        // Otros errores, puedes mostrar alerta o log
+        alert("Error al consultar la impresión diagnóstica");
+        setDiagnosticoExistente(null);
+      }
+    })
+    .finally(() => setLoadingConsulta(false));
+}, [hcId]);
+// ...existing code...
+
+
 
   const {
     diagnosticoPrincipal = "",
@@ -82,17 +78,14 @@ export default function ImpresionDiagnostica(props: ImpresionDiagnosticaProps) {
     onChange,
     disabled = false,
   } = props;
-
   const [formData, setFormData] = useState<ImpresionDiagnosticaData>({
-    diagnosticoPrincipal: diagnosticoPrincipal || "",
-    descripcionDiagnostico: descripcionDiagnostico || "",
-    diagnosticoSecundario: diagnosticoSecundario || "",
-    factoresPredisponentes: factoresPredisponentes || "",
-    factoresPrecipitantes: factoresPrecipitantes || "",
-    factoresMantenedores: factoresMantenedores || "",
-    nivelFuncionamiento: nivelFuncionamiento || 50,
-    diagnosticoPrincipalCie11: "",
-    diagnosticoPrincipalDsm5: "",
+    diagnosticoPrincipal,
+    descripcionDiagnostico,
+    diagnosticoSecundario,
+    factoresPredisponentes,
+    factoresPrecipitantes,
+    factoresMantenedores,
+    nivelFuncionamiento,
   });
 
   const [diagnosticoManual, setDiagnosticoManual] = useState("");
@@ -105,46 +98,9 @@ export default function ImpresionDiagnostica(props: ImpresionDiagnosticaProps) {
     }
   }, [formData, onChange]);
 
-  // Cargar datos existentes
-  useEffect(() => {
-    if (!hcId) {
-      setLoadingConsulta(false);
-      return;
-    }
-
-    const fetchData = async () => {
-      try {
-        const data = await getItem(hcId);
-        if (data && data.id && data.id !== 0) {
-          setDiagnosticoExistente(data);
-          setFormData({
-            diagnosticoPrincipal: data.diagnosticoPrincipal || "",
-            descripcionDiagnostico: data.descripcionDiagnostico || "",
-            diagnosticoSecundario: data.diagnosticoSecundario || "",
-            factoresPredisponentes: data.factoresPredisponentes || "",
-            factoresPrecipitantes: data.factoresPrecipitantes || "",
-            factoresMantenedores: data.factoresMantenedores || "",
-            nivelFuncionamiento: data.nivelFuncionamiento || 50,
-            diagnosticoPrincipalCie11: data.diagnosticoPrincipalCie11 || "",
-            diagnosticoPrincipalDsm5: data.diagnosticoPrincipalDsm5 || "",
-          });
-        }
-      } catch (error: any) {
-        if (error?.status !== 400) {
-          console.error("Error al consultar la impresión diagnóstica:", error);
-        }
-        setDiagnosticoExistente(null);
-      } finally {
-        setLoadingConsulta(false);
-      }
-    };
-
-    fetchData();
-  }, [hcId]);
-
   const handleInputChange = (
     field: keyof ImpresionDiagnosticaData,
-    value: string | number | { id: number; label: string }
+    value: string | number
   ) => {
     setFormData((prev) => ({
       ...prev,
@@ -152,10 +108,30 @@ export default function ImpresionDiagnostica(props: ImpresionDiagnosticaProps) {
     }));
   };
 
+  const getNivelFuncionamientoLabel = (nivel: number): string => {
+    if (nivel >= 81) return "Funcionamiento Excelente";
+    if (nivel >= 61) return "Funcionamiento Bueno";
+            <SearchableSelect
+              options={diagnosticosCIE11}
+              placeholder="Buscar diagnóstico CIE-11"
+              onChange={(value) => {
+                const selected = diagnosticosCIE11.find((d) => d.value === value);
+                handleInputChange("diagnosticoPrincipal", selected ? { id: selected.value, label: selected.label } : value);
+                setUsarDiagnosticoManual(value === "OTRO");
+              }}
+              value={typeof formData.diagnosticoPrincipal === "object" ? formData.diagnosticoPrincipal.id : formData.diagnosticoPrincipal}
+              searchPlaceholder="Buscar por código o nombre..."
+              className="max-w-full"
+            />
+  };
+
+
   // Si está cargando la consulta, muestra un loader
   if (loadingConsulta) {
     return <div className="p-6">Cargando...</div>;
   }
+
+
 
   // Función para guardar la información
   const handleGuardar = async () => {
@@ -164,13 +140,7 @@ export default function ImpresionDiagnostica(props: ImpresionDiagnosticaProps) {
       return;
     }
     try {
-      await createItem({ 
-        ...formData, 
-        hcId: Number(hcId),
-        diagnosticoPrincipal: typeof formData.diagnosticoPrincipal === "object" 
-          ? formData.diagnosticoPrincipal.label 
-          : formData.diagnosticoPrincipal
-      });
+      await createItem({ ...formData, hcId: Number(hcId) });
       alert("Información guardada correctamente");
     } catch (error: any) {
       alert(error?.message || "Error al guardar la información");
@@ -185,7 +155,7 @@ export default function ImpresionDiagnostica(props: ImpresionDiagnosticaProps) {
       </h2>
 
       {diagnosticoExistente && diagnosticoExistente.id !== 0 && (
-        <div className="mb-4 p-3 text-sm bg-yellow-100 rounded dark:bg-yellow-900">
+        <div className="mb-4 p-3 text-sm bg-yellow-100 rounded">
           Modo solo lectura: impresión diagnóstica ya registrada
         </div>
       )}
@@ -203,18 +173,12 @@ export default function ImpresionDiagnostica(props: ImpresionDiagnosticaProps) {
               options={diagnosticosCIE11}
               placeholder="Buscar diagnóstico CIE-11"
               onChange={(value) => {
-                const selected = diagnosticosCIE11.find((d) => d.value === value);
-                handleInputChange(
-                  "diagnosticoPrincipal", 
-                  selected ? selected.label : value
-                );
                 handleInputChange("diagnosticoPrincipalCie11", value);
                 setUsarDiagnosticoManual(value === "OTRO");
               }}
               value={formData.diagnosticoPrincipalCie11}
               searchPlaceholder="Buscar por código o nombre..."
               className="max-w-full"
-              disabled={disabled || !!diagnosticoExistente}
             />
 
             {/* Input manual si selecciona "Otro" */}
@@ -233,7 +197,7 @@ export default function ImpresionDiagnostica(props: ImpresionDiagnosticaProps) {
                     setDiagnosticoManual(v);
                     handleInputChange("diagnosticoPrincipal", v);
                   }}
-                  disabled={disabled || !!diagnosticoExistente}
+                  disabled={disabled}
                   className="max-w-full"
                 />
               </div>
@@ -259,7 +223,7 @@ export default function ImpresionDiagnostica(props: ImpresionDiagnosticaProps) {
             onChange={(v) =>
               handleInputChange("descripcionDiagnostico", v)
             }
-            disabled={disabled || !!diagnosticoExistente}
+            disabled={disabled}
             required
             className="max-w-full"
             rows={6}
@@ -274,18 +238,16 @@ export default function ImpresionDiagnostica(props: ImpresionDiagnosticaProps) {
           <Label htmlFor="diagnosticoSecundario">
             Diagnóstico Secundario (DSM-5 / DM11)
           </Label>
-         <SearchableSelect
-  options={diagnosticosDM11}
-  placeholder="Buscar diagnóstico secundario (opcional)"
-  onChange={(value) => {
-    handleInputChange("diagnosticoSecundario", value);
-    handleInputChange("diagnosticoPrincipalDsm5", value); // <-- agrega esta línea
-  }}
-  value={formData.diagnosticoSecundario}
-  searchPlaceholder="Buscar por código o nombre..."
-  className="max-w-full"
-  disabled={disabled || !!diagnosticoExistente}
-/>
+          <SearchableSelect
+            options={diagnosticosDM11}
+            placeholder="Buscar diagnóstico secundario (opcional)"
+            onChange={(value) =>
+              handleInputChange("diagnosticoPrincipalDsm5", value)
+            }
+            value={formData.diagnosticoSecundario}
+            searchPlaceholder="Buscar por código o nombre..."
+            className="max-w-full"
+          />
           <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
             Si existe, seleccione un diagnóstico secundario o comorbilidad DSM-5
           </p>
@@ -308,10 +270,10 @@ export default function ImpresionDiagnostica(props: ImpresionDiagnosticaProps) {
                 name="factoresPredisponentes"
                 placeholder="Describa los factores de vulnerabilidad o riesgo previos (genéticos, familiares, temperamentales, experiencias tempranas, etc.)"
                 value={formData.factoresPredisponentes}
-                onChange={(v) =>
-                  handleInputChange("factoresPredisponentes", v)
+                onChange={(v =>
+                  handleInputChange("factoresPredisponentes", v))
                 }
-                disabled={disabled || !!diagnosticoExistente}
+                disabled={disabled}
                 className="max-w-full"
                 rows={4}
               />
@@ -334,7 +296,7 @@ export default function ImpresionDiagnostica(props: ImpresionDiagnosticaProps) {
                 onChange={(v) =>
                   handleInputChange("factoresPrecipitantes", v)
                 }
-                disabled={disabled || !!diagnosticoExistente}
+                disabled={disabled}
                 className="max-w-full"
                 rows={4}
               />
@@ -356,7 +318,7 @@ export default function ImpresionDiagnostica(props: ImpresionDiagnosticaProps) {
                 onChange={(v) =>
                   handleInputChange("factoresMantenedores", v)
                 }
-                disabled={disabled || !!diagnosticoExistente}
+                disabled={disabled}
                 className="max-w-full"
                 rows={4}
               />
@@ -403,7 +365,7 @@ export default function ImpresionDiagnostica(props: ImpresionDiagnosticaProps) {
                   parseInt(e.target.value)
                 )
               }
-              disabled={disabled || !!diagnosticoExistente}
+              disabled={disabled}
               className="h-3 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 dark:bg-gray-700"
               style={{
                 background: `linear-gradient(to right, 
@@ -453,9 +415,9 @@ export default function ImpresionDiagnostica(props: ImpresionDiagnosticaProps) {
                   Diagnóstico Principal:{" "}
                 </span>
                 <span className="text-purple-900 dark:text-purple-200">
-                  {typeof formData.diagnosticoPrincipal === "object" 
-                    ? formData.diagnosticoPrincipal.label 
-                    : formData.diagnosticoPrincipal}
+                  {diagnosticosCIE11.find(
+                    (d) => d.value === formData.diagnosticoPrincipal
+                  )?.label || formData.diagnosticoPrincipal}
                 </span>
               </div>
               {formData.diagnosticoSecundario && (
@@ -464,7 +426,9 @@ export default function ImpresionDiagnostica(props: ImpresionDiagnosticaProps) {
                     Diagnóstico Secundario:{" "}
                   </span>
                   <span className="text-purple-900 dark:text-purple-200">
-                    {formData.diagnosticoSecundario}
+                    {diagnosticosCIE11.find(
+                      (d) => d.value === formData.diagnosticoSecundario
+                    )?.label || formData.diagnosticoSecundario}
                   </span>
                 </div>
               )}
@@ -485,15 +449,18 @@ export default function ImpresionDiagnostica(props: ImpresionDiagnosticaProps) {
           </div>
         )}
       </div>
+      <div className="mt-8 flex justify-end">
 
-      {/* Botón para guardar solo si NO existe el registro */}
+          {/* Botón para guardar solo si NO existe el registro */}
       {!diagnosticoExistente && (
         <div className="mt-8 flex justify-end">
-          <Button onClick={handleGuardar} disabled={disabled}>
+          <Button onClick={handleGuardar} disabled={readOnly}>
             Guardar información
           </Button>
         </div>
       )}
+
+      </div>
     </div>
   );
 }

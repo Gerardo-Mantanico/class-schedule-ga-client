@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useRef, useEffect, useState } from "react";
+  const [altaExistente, setAltaExistente] = useState<AltaTerapeutica | null>(null);
 import SignaturePad from "signature_pad";
 import { useAltaTerapeutica } from "@/hooks/historaClinica/useAltaTerapeutica";
-import type { AltaTerapeutica } from "@/interfaces/historiaClinica/AltaTerapeutica";
-import Button from "@/components/ui/button/Button";
+import {AltaTerapeutica} from "@/interfaces/historiaClinica/AltaTerapeutica";
+
 
 interface AltaTerapeuticaProps {
   onSubmit?: (data: AltaTerapeutica) => void;
@@ -23,13 +24,12 @@ export default function AltaTerapeutica({
   const signaturePsicologoRef = useRef<SignaturePad | null>(null);
 
   const [formData, setFormData] = useState<AltaTerapeutica>({
-    id: 0,
     fechaAlta: new Date().toISOString().split("T")[0],
-    hcId: 0,
+    hcId:0,
     motivoAlta: 1,
     estadoAlta: "",
     recomendacionesPosteriores: "",
-    seguimientoProgramada: false,
+    seguimientoProgramado: false,
     fechaSeguimiento: "",
     firmaPaciente: "",
     firmaPsicologo: "",
@@ -38,8 +38,6 @@ export default function AltaTerapeutica({
   const [errores, setErrores] = useState<Record<string, string>>({});
 
   const hcId = typeof window !== "undefined" ? localStorage.getItem("HistoriClinica") : null;
-  const { getItem, createItem } = useAltaTerapeutica();
-  const [altaExistente, setAltaExistente] = useState<AltaTerapeutica | null>(null);
   useEffect(() => {
     const fetchAlta = async () => {
       if (hcId) {
@@ -56,7 +54,8 @@ export default function AltaTerapeutica({
   }, [hcId]);
 
 
- 
+  const { getItem, createItem } = useAltaTerapeutica();
+
 const motivosAlta = {
   "Objetivos alcanzados": 1,
   "Abandono": 2,
@@ -104,7 +103,7 @@ const motivosAlta = {
     }
 
     // Si seguimiento programado es true, validar fecha de seguimiento
-    if (formData.seguimientoProgramada) {
+    if (formData.seguimientoProgramado) {
       if (!formData.fechaSeguimiento) {
         nuevosErrores.fechaSeguimiento =
           "La fecha de seguimiento es requerida cuando está programado";
@@ -147,7 +146,7 @@ const motivosAlta = {
     const firmaPacienteData = signaturePacienteRef.current?.toDataURL() || "";
     const firmaPsicologoData = signaturePsicologoRef.current?.toDataURL() || "";
 
-    const datosCompletos: AltaTerapeutica = {
+    const datosCompletos: AltaTerapeuticaData = {
       ...formData,
       firmaPaciente: firmaPacienteData,
       firmaPsicologo: firmaPsicologoData,
@@ -167,16 +166,14 @@ const motivosAlta = {
   };
 
   return (
+              <p className="mt-2 text-red-500">
+                Ya existe un registro de alta terapéutica. No es posible crear otro.
+              </p>
+            )}
     <div className="rounded-sm border border-stroke bg-white shadow-default">
       <div className="border-b border-stroke px-4 py-6 sm:px-6">
         <h3 className="font-medium text-black">Alta Terapéutica</h3>
-        {altaExistente && (
-          <div className="mb-4 p-3 text-sm bg-yellow-100 rounded text-yellow-900">
-          Modo solo lectura: Alta terapéuticos ya registrado
-        </div>
-        )}
       </div>
-    
 
       <form onSubmit={handleSubmit} className="p-4 sm:p-6">
         {/* Fila 1: Fecha y Motivo del Alta */}
@@ -196,8 +193,15 @@ const motivosAlta = {
                 errores.fechaAlta ? "border-red-500" : "border-stroke"
               }`}
               max={new Date().toISOString().split("T")[0]}
-              disabled={!!altaExistente}
             />
+                          disabled={!!altaExistente}
+              disabled={!!altaExistente}
+              disabled={!!altaExistente}
+                          disabled={!!altaExistente}
+                          disabled={!!altaExistente}
+                          disabled={!!altaExistente}
+                          disabled={!!altaExistente}
+                          disabled={!!altaExistente}
             {errores.fechaAlta && (
               <p className="mt-1 text-xs text-red-500">{errores.fechaAlta}</p>
             )}
@@ -223,7 +227,6 @@ const motivosAlta = {
         })
       }
       className="mr-2 h-4 w-4 accent-primary"
-      disabled={!!altaExistente}
     />
     <span className="text-sm text-black">{motivo}</span>
   </label>
@@ -247,7 +250,6 @@ const motivosAlta = {
             className={`w-full appearance-none rounded border bg-white px-4 py-2 text-black outline-none transition focus:border-primary ${
               errores.estadoAlta ? "border-red-500" : "border-stroke"
             }`}
-            disabled={!!altaExistente}
           />
           {errores.estadoAlta && (
             <p className="mt-1 text-xs text-red-500">{errores.estadoAlta}</p>
@@ -270,7 +272,6 @@ const motivosAlta = {
             rows={4}
             placeholder="Proporcione recomendaciones para el cuidado posterior (opcional)"
             className="w-full appearance-none rounded border border-stroke bg-white px-4 py-2 text-black outline-none transition focus:border-primary"
-            disabled={!!altaExistente}
           />
         </div>
 
@@ -279,15 +280,14 @@ const motivosAlta = {
           <label className="flex cursor-pointer items-center">
             <input
               type="checkbox"
-              checked={formData.seguimientoProgramada}
+              checked={formData.seguimientoProgramado}
               onChange={(e) =>
                 setFormData({
                   ...formData,
-                  seguimientoProgramada: e.target.checked,
+                  seguimientoProgramado: e.target.checked,
                 })
               }
               className="mr-3 h-4 w-4 rounded border-stroke accent-primary"
-              disabled={!!altaExistente}
             />
             <span className="text-sm font-medium text-black">
               Seguimiento Programado
@@ -296,7 +296,7 @@ const motivosAlta = {
         </div>
 
         {/* Fecha de Seguimiento (Condicional) */}
-        {formData.seguimientoProgramada && (
+        {formData.seguimientoProgramado && (
           <div className="mb-6">
             <label className="mb-3 block text-sm font-medium text-black">
               Fecha de Seguimiento <span className="text-red-500">*</span>
@@ -314,7 +314,6 @@ const motivosAlta = {
                 errores.fechaSeguimiento ? "border-red-500" : "border-stroke"
               }`}
               min={new Date().toISOString().split("T")[0]}
-              disabled={!!altaExistente}
             />
             {errores.fechaSeguimiento && (
               <p className="mt-1 text-xs text-red-500">
@@ -337,7 +336,6 @@ const motivosAlta = {
               ref={canvasPacienteRef}
               className="block w-full cursor-crosshair bg-white"
               style={{ height: "200px" }}
-              disabled={!!altaExistente}
             />
           </div>
           <div className="mt-2 flex gap-2">
@@ -345,8 +343,13 @@ const motivosAlta = {
               type="button"
               onClick={() => handleLimpiarFirma(signaturePacienteRef)}
               className="rounded border border-stroke bg-white px-4 py-2 font-medium text-black hover:bg-gray-100"
-              disabled={!!altaExistente}
             >
+                          disabled={!!altaExistente}
+                          disabled={!!altaExistente}
+                          disabled={!!altaExistente}
+                          disabled={!!altaExistente}
+                          disabled={!!altaExistente}
+                          disabled={!!altaExistente}
               Limpiar Firma
             </button>
           </div>
@@ -365,7 +368,6 @@ const motivosAlta = {
               ref={canvasPsicologoRef}
               className="block w-full cursor-crosshair bg-white"
               style={{ height: "200px" }}
-              disabled={!!altaExistente}
             />
           </div>
           <div className="mt-2 flex gap-2">
@@ -373,7 +375,6 @@ const motivosAlta = {
               type="button"
               onClick={() => handleLimpiarFirma(signaturePsicologoRef)}
               className="rounded border border-stroke bg-white px-4 py-2 font-medium text-black hover:bg-gray-100"
-              disabled={!!altaExistente}
             >
               Limpiar Firma
             </button>
@@ -385,22 +386,20 @@ const motivosAlta = {
 
         {/* Botones */}
         <div className="flex gap-4 pt-4">
-          <Button
+          <button
             type="submit"
             className="flex justify-center rounded bg-primary px-6 py-2 font-medium text-white hover:bg-opacity-90"
-            disabled={!!altaExistente}
           >
             Registrar Alta
-          </Button>
+          </button>
           {onCancel && (
-            <Button
-           
+            <button
+              type="button"
               onClick={onCancel}
-              className="flex justify-center rounded border border-stroke bg-red-500 px-6 py-2 font-medium text-black hover:bg-red-800"
-              disabled={!!altaExistente}
+              className="flex justify-center rounded border border-stroke bg-white px-6 py-2 font-medium text-black hover:bg-gray-100"
             >
               Cancelar
-            </Button>
+            </button>
           )}
         </div>
       </form>

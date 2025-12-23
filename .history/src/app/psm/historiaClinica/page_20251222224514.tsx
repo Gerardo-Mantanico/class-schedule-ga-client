@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
-
+import { MdOutlineLogout } from "react-icons/md";
+import { useRouter } from "next/navigation";
 
 import {
   MdOutlineMedicalServices,
@@ -13,16 +14,12 @@ import {
   MdOutlineTrackChanges,
   MdOutlineEventNote,
   MdOutlineTrendingUp,
-  MdOutlineExitToApp,
-  MdMedication,
-  MdLogout,
-  MdCheckCircleOutline
+  MdOutlineExitToApp
 } from "react-icons/md";
 import dynamic from "next/dynamic";
 import { useEvaluacionPeriodica } from "../../../hooks/historaClinica/useEvaluacionPeriodica";
+import Button from "@/components/ui/button/Button";
 
-import RecetaMedica from "../historiausuario/Receta";
-import Link from "next/link";
 
 const NotasProgresoMain = dynamic(() => import("../historiausuario/indexNotasProgresoMain"), { ssr: false });
 const EvaluacionesPeriodicas = dynamic(() => import("../historiausuario/EvaluacionesPeriodicas"), { ssr: false });
@@ -49,9 +46,7 @@ type TabKey =
   | "estado"
   | "historia"
   | "impresion"
-  | "objetivos"
-  | "finalizar"
-  | "registro medicamento";
+  | "objetivos";
 
 const TABS: { key: TabKey; label: string; icon: JSX.Element }[] = [
   {
@@ -104,22 +99,10 @@ const TABS: { key: TabKey; label: string; icon: JSX.Element }[] = [
     label: "Evaluaciones Periódicas",
     icon: <MdOutlineTrendingUp className="size-5" />
   },
-
-  {
-    key: "registro medicamento",
-    label: "Receta medica",
-    icon: <MdMedication className="size-5" />
-  },
   {
     key: "alta",
     label: "Alta Terapéutica",
-    icon: <MdCheckCircleOutline className="size-5" />
-  },
-
-  {
-    key: "finalizar",
-    label: "Finalizar historia clínica",
-    icon: <MdLogout className="size-5" />
+    icon: <MdOutlineExitToApp className="size-5" />
   },
 ];
 
@@ -178,10 +161,6 @@ export default function PsmHome() {
                   key={tab.key}
                   className={getTabClassName(tab.key, activeTab)}
                   onClick={() => {
-                     if (tab.key === "finalizar") {
-                   localStorage.removeItem("HistoriClinica");
-                    window.location.href = "/psm";
-        }
                     setActiveTab(tab.key);
                     setShowForm(false);
                     setSelected(null);
@@ -192,6 +171,21 @@ export default function PsmHome() {
                 </button>
               ))}
             </nav>
+
+ <div className="flex justify-end mt-10">
+            <button
+              className="flex items-center gap-2 rounded-lg bg-red-500/10 px-6 py-3 text-red-700 font-semibold shadow-sm hover:bg-red-500/20 transition-colors"
+              title="Finalizar y salir de la historia clínica"
+              onClick={() => {
+                localStorage.removeItem("HistoriClinica");
+                router.push("/"); // Cambia la ruta si lo necesitas
+              }}
+            >
+              <MdOutlineLogout className="size-6" />
+              Finalizar historia clínica
+            </button>
+          </div>
+
 
           </div>
 
@@ -434,11 +428,6 @@ export default function PsmHome() {
                     siguiente
                   </button>
                 </div>
-              </div>
-            )}
-                        {activeTab === "registro medicamento" && (
-              <div className="mb-6">
-                <RecetaMedica />
               </div>
             )}
           </div>

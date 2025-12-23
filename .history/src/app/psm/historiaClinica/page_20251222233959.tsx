@@ -180,7 +180,7 @@ export default function PsmHome() {
                   onClick={() => {
                      if (tab.key === "finalizar") {
                    localStorage.removeItem("HistoriClinica");
-                    window.location.href = "/psm";
+                   Link.replace("/psm/historiaClinica");
         }
                     setActiveTab(tab.key);
                     setShowForm(false);

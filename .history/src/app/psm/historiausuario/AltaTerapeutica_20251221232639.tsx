@@ -4,7 +4,6 @@ import React, { useRef, useEffect, useState } from "react";
 import SignaturePad from "signature_pad";
 import { useAltaTerapeutica } from "@/hooks/historaClinica/useAltaTerapeutica";
 import type { AltaTerapeutica } from "@/interfaces/historiaClinica/AltaTerapeutica";
-import Button from "@/components/ui/button/Button";
 
 interface AltaTerapeuticaProps {
   onSubmit?: (data: AltaTerapeutica) => void;
@@ -171,12 +170,14 @@ const motivosAlta = {
       <div className="border-b border-stroke px-4 py-6 sm:px-6">
         <h3 className="font-medium text-black">Alta Terapéutica</h3>
         {altaExistente && (
-          <div className="mb-4 p-3 text-sm bg-yellow-100 rounded text-yellow-900">
-          Modo solo lectura: Alta terapéuticos ya registrado
-        </div>
+          <p className="mt-2 text-red-500">
+            Ya existe un registro de alta terapéutica. No es posible crear otro.
+          </p>
         )}
       </div>
-    
+      <div className="border-b border-stroke px-4 py-6 sm:px-6">
+        <h3 className="font-medium text-black">Alta Terapéutica</h3>
+      </div>
 
       <form onSubmit={handleSubmit} className="p-4 sm:p-6">
         {/* Fila 1: Fecha y Motivo del Alta */}
@@ -198,6 +199,14 @@ const motivosAlta = {
               max={new Date().toISOString().split("T")[0]}
               disabled={!!altaExistente}
             />
+                          disabled={!!altaExistente}
+              disabled={!!altaExistente}
+              disabled={!!altaExistente}
+                          disabled={!!altaExistente}
+                          disabled={!!altaExistente}
+                          disabled={!!altaExistente}
+                          disabled={!!altaExistente}
+                          disabled={!!altaExistente}
             {errores.fechaAlta && (
               <p className="mt-1 text-xs text-red-500">{errores.fechaAlta}</p>
             )}
@@ -347,6 +356,12 @@ const motivosAlta = {
               className="rounded border border-stroke bg-white px-4 py-2 font-medium text-black hover:bg-gray-100"
               disabled={!!altaExistente}
             >
+                          disabled={!!altaExistente}
+                          disabled={!!altaExistente}
+                          disabled={!!altaExistente}
+                          disabled={!!altaExistente}
+                          disabled={!!altaExistente}
+                          disabled={!!altaExistente}
               Limpiar Firma
             </button>
           </div>
@@ -385,22 +400,22 @@ const motivosAlta = {
 
         {/* Botones */}
         <div className="flex gap-4 pt-4">
-          <Button
+          <button
             type="submit"
             className="flex justify-center rounded bg-primary px-6 py-2 font-medium text-white hover:bg-opacity-90"
             disabled={!!altaExistente}
           >
             Registrar Alta
-          </Button>
+          </button>
           {onCancel && (
-            <Button
-           
+            <button
+              type="button"
               onClick={onCancel}
-              className="flex justify-center rounded border border-stroke bg-red-500 px-6 py-2 font-medium text-black hover:bg-red-800"
+              className="flex justify-center rounded border border-stroke bg-white px-6 py-2 font-medium text-black hover:bg-gray-100"
               disabled={!!altaExistente}
             >
               Cancelar
-            </Button>
+            </button>
           )}
         </div>
       </form>

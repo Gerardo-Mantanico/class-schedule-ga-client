@@ -274,18 +274,17 @@ export default function ImpresionDiagnostica(props: ImpresionDiagnosticaProps) {
           <Label htmlFor="diagnosticoSecundario">
             Diagnóstico Secundario (DSM-5 / DM11)
           </Label>
-         <SearchableSelect
-  options={diagnosticosDM11}
-  placeholder="Buscar diagnóstico secundario (opcional)"
-  onChange={(value) => {
-    handleInputChange("diagnosticoSecundario", value);
-    handleInputChange("diagnosticoPrincipalDsm5", value); // <-- agrega esta línea
-  }}
-  value={formData.diagnosticoSecundario}
-  searchPlaceholder="Buscar por código o nombre..."
-  className="max-w-full"
-  disabled={disabled || !!diagnosticoExistente}
-/>
+          <SearchableSelect
+            options={diagnosticosDM11}
+            placeholder="Buscar diagnóstico secundario (opcional)"
+            onChange={(value) =>
+              handleInputChange("diagnosticoSecundario", value)
+            }
+            value={formData.diagnosticoSecundario}
+            searchPlaceholder="Buscar por código o nombre..."
+            className="max-w-full"
+            disabled={disabled || !!diagnosticoExistente}
+          />
           <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
             Si existe, seleccione un diagnóstico secundario o comorbilidad DSM-5
           </p>

@@ -49,7 +49,7 @@ const navItems: NavItem[] = [
   {
     icon: <ListIcon />,
     name: "Reportes",
-    path: "/psm/reporte",
+    path: "/psm/historiaClinica",
   },
   {
     icon: <ChatIcon />,

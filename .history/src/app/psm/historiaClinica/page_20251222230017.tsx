@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-
+import { useRouter } from "next/navigation";
 
 import {
   MdOutlineMedicalServices,
@@ -20,9 +20,8 @@ import {
 } from "react-icons/md";
 import dynamic from "next/dynamic";
 import { useEvaluacionPeriodica } from "../../../hooks/historaClinica/useEvaluacionPeriodica";
+import Button from "@/components/ui/button/Button";
 
-import RecetaMedica from "../historiausuario/Receta";
-import Link from "next/link";
 
 const NotasProgresoMain = dynamic(() => import("../historiausuario/indexNotasProgresoMain"), { ssr: false });
 const EvaluacionesPeriodicas = dynamic(() => import("../historiausuario/EvaluacionesPeriodicas"), { ssr: false });
@@ -179,8 +178,7 @@ export default function PsmHome() {
                   className={getTabClassName(tab.key, activeTab)}
                   onClick={() => {
                      if (tab.key === "finalizar") {
-                   localStorage.removeItem("HistoriClinica");
-                    window.location.href = "/psm";
+          localStorage.removeItem("HistoriClinica");
         }
                     setActiveTab(tab.key);
                     setShowForm(false);
@@ -434,11 +432,6 @@ export default function PsmHome() {
                     siguiente
                   </button>
                 </div>
-              </div>
-            )}
-                        {activeTab === "registro medicamento" && (
-              <div className="mb-6">
-                <RecetaMedica />
               </div>
             )}
           </div>

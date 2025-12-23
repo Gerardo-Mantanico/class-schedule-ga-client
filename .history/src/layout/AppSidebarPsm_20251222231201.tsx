@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation";
 import { useSidebar } from "../context/SidebarContext";
 import {
   CalenderIcon,
-  ChatIcon,
   ChevronDownIcon,
   GridIcon,
   HorizontaLDots,
@@ -49,12 +48,12 @@ const navItems: NavItem[] = [
   {
     icon: <ListIcon />,
     name: "Reportes",
-    path: "/psm/reporte",
+    path: "/psm/historiaClinica",
   },
   {
-    icon: <ChatIcon />,
+    icon: <ListIcon />,
     name: "Soporte de tarea/actividades",
-    path: "/psm/soporte",
+    path: "/psm/historiaClinica",
   },
 ];
 
