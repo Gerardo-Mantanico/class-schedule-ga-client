@@ -8,6 +8,7 @@ import SearchableSelect from "@/components/form/SearchableSelect";
 import { useImpresionDiagnostica, useTipoImpresionDiagnosticoC11, useTipoImpresionDiagnosticoD5 } from "../../../hooks/historaClinica/useImpresionDiagnostica";
 import type { ImpresionDiagnostica } from "@/interfaces/historiaClinica/ImpresionDiagnostica";
 import Button from "@/components/ui/button/Button";
+import { toast } from "react-hot-toast";
 
 // Interfaces necesarias
 interface ImpresionDiagnosticaData {
@@ -171,9 +172,9 @@ export default function ImpresionDiagnostica(props: ImpresionDiagnosticaProps) {
           ? formData.diagnosticoPrincipal.label 
           : formData.diagnosticoPrincipal
       });
-      alert("Información guardada correctamente");
+       toast.success('Información guardada correctamente');
     } catch (error: any) {
-      alert(error?.message || "Error al guardar la información");
+      toast.error('Error al guardar la información');
     }
   };
 

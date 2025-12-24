@@ -3,6 +3,7 @@ import { Sesion } from "@/interfaces/historiaClinica/Sesiones";
 import NotasProgresoPanel from "./NotasProgresoPanel";
 import NotasProgreso from "./NotasProgreso";
 import { useSesiones } from "../../../hooks/historaClinica/useSesiones"; // Ajusta la ruta si es necesario
+import { toast } from "react-hot-toast";
 
 export default function NotasProgresoMain() {
     const [notas, setNotas] = useState<Sesion[]>([]);
@@ -29,6 +30,7 @@ export default function NotasProgresoMain() {
     const handleGuardarNota = (nuevaNota: Sesion) => {
         setNotas((prev) => [...prev, nuevaNota]);
         setMostrarFormulario(false);
+         toast.success('Información guardada correctamente');
     };
 
     return (

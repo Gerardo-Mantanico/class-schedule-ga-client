@@ -6,6 +6,7 @@ import TextArea from "@/components/form/input/TextArea";
 import Radio from "@/components/form/input/Radio";
 import type { EstadoActual } from "@/interfaces/historiaClinica/EstadoActual";
 import { useEstadoActual } from "../../../hooks/historaClinica/useEstadoActual";
+import { toast } from "react-hot-toast";
 
 interface EstadoActualProps extends Partial<EstadoActual> {
   onChange?: (data: EstadoActual) => void;
@@ -88,6 +89,9 @@ export default function EstadoActual({
         setEstadoActual(data);
         setFormData(data);
       }
+      toast.success('Información guardada correctamente');
+    } catch (error) {
+      toast.error('Error al guardar la información');
     } finally {
       setLoading(false);
     }

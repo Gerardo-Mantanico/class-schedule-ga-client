@@ -7,6 +7,7 @@ import TextArea from "@/components/form/input/TextArea";
 import Checkbox from "@/components/form/input/Checkbox";
 import { ObjetivosHC } from "@/interfaces/historiaClinica/Objetivos";
 import { useObjetivos } from "../../../hooks/historaClinica/useObjetivos";
+import { toast } from "react-hot-toast";
 
 
 interface ObjetivosTerapeuticosConfiguracionProps {
@@ -161,10 +162,10 @@ const handleEnviarInformacion = async () => {
     };
 
     await createItem(dataToSend);
-    alert('Información registrada correctamente.');
+   toast.success('Información guardada correctamente');
     setIsLocked(true);
   } catch (e) {
-    alert('Error al registrar la información.');
+    toast.error('Error al guardar la información');
   }
 };
 

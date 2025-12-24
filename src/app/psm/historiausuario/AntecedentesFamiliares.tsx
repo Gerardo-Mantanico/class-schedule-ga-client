@@ -4,6 +4,7 @@
 import React, { useState, useEffect } from "react";
 import type { AntecedentesFamiliares } from "@/interfaces/historiaClinica/AntecedentesFamiliares";
 import { useAntecedentesFamiliares } from "@/hooks/historaClinica/useAntecedentesFamiliares";
+import toast from 'react-hot-toast'
 
 import Button from "@/components/ui/button/Button";
 import Label from "@/components/form/Label";
@@ -107,10 +108,10 @@ export default function AntecedentesFamiliares({
         eventosFr: formData.eventosFamiliaresRelevantes,
       };
       await createItem(payload);
-      alert("Información guardada correctamente");
+      toast.success('Información guardada correctamente');
       setAntecedenteExistente(payload);
     } catch (error) {
-      alert("Error al guardar la información");
+      toast.error('Error al guardar la información');
     }
   };
 

@@ -9,6 +9,7 @@ import Checkbox from "@/components/form/input/Checkbox";
 import type { HistoriaPersonal } from "@/interfaces/historiaClinica/HistoriaPersonal";
 import { useHistoriaPersonal } from "@/hooks/historaClinica/useHistoriaPersonal";
 import Button from "@/components/ui/button/Button";
+import { toast } from "react-hot-toast";
 
 interface HistoriaPersonalProps extends Partial<HistoriaPersonal> {
   onChange?: (data: HistoriaPersonal) => void;
@@ -94,10 +95,10 @@ export default function HistoriaPersonal({
         hcId: Number(hcId),
       };
       await createItem(payload);
-      alert("Información guardada correctamente");
+      toast.success('Información guardada correctamente');
       setHistoriaExistente(payload);
     } catch (error) {
-      alert("Error al guardar la información");
+      toast.error('Error al guardar la información');
     }
   };
 

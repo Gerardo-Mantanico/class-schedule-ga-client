@@ -5,6 +5,7 @@
   import { useEvaluacionPeriodica } from "../../../hooks/historaClinica/useEvaluacionPeriodica";
 
   import Button from "../../../components/ui/button/Button";
+import { toast } from "react-hot-toast";
 
 interface EvaluacionesPeriodicasProps {
   onSubmit?: (data: EvaluacionPeriodica) => void;
@@ -131,6 +132,7 @@ const handleSubmit = async (e: React.FormEvent) => {
   // Guardar usando el hook
   formData.hcId = hcId ? parseInt(hcId) : 0;
   createItem(formData).then((saved: EvaluacionPeriodica) => {
+  toast.success('Información guardada correctamente');
     onSubmit?.(saved);
     // Limpiar formulario y recargar la página
     setFormData({

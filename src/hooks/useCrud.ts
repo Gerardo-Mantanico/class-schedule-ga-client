@@ -217,6 +217,50 @@ export const useCrud = <T extends { id: number | string }>(
     fetchItems();
   }, [fetchItems]);
 
+
+  const createFormDataItem = async (data: Partial<T>) => {
+    setLoading(true);
+    try {
+      const formData = new FormData();
+      Object.entries(data).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          // Si es un archivo, lo agregamos como tal
+          if (value instanceof File) {
+            formData.append(key, value);
+          } else {
+            formData.append(key, String(value));
+          }
+        }
+      });
+      await apiService.create(formData);
+      // await fetchItems(); // Si quieres recargar la lista
+      return true;
+    } catch (err: unknown) {
+      let errorMessage = 'Error al crear elemento (FormData)';
+      if (err instanceof Error) {
+        const extra = (err as unknown as { data?: unknown }).data;
+        errorMessage = err.message || errorMessage;
+        if (extra) {
+          try {
+            errorMessage = `${errorMessage} — ${JSON.stringify(extra)}`;
+          } catch {}
+        }
+        console.error('Error detallado al crear (FormData):', {
+          message: err.message,
+          data: extra,
+          stack: err.stack,
+          payload: data,
+        });
+      } else {
+        console.error('Error desconocido al crear (FormData):', err);
+      }
+      setError(errorMessage);
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     items,
     item, // <-- Cambio clave: Devuelve el estado 'item'
@@ -228,5 +272,6 @@ export const useCrud = <T extends { id: number | string }>(
     updateItem,
     deleteItem,
     getItem,
+    createFormDataItem
   };
 };

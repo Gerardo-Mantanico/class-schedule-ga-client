@@ -66,3 +66,4 @@ package-lock.json
 
 # Environment
 .env.*.local
+.history/

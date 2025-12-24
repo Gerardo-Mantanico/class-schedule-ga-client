@@ -11,6 +11,7 @@ import { useInformacionPaciente } from "@/hooks/historaClinica/useInformacionPac
 import type { InformacionPaciente } from "@/interfaces/historiaClinica/InformacionPaciente";
 import Button from "@/components/ui/button/Button";
 import { h } from "@fullcalendar/core/preact.js";
+import { toast } from "react-hot-toast";
 
 interface Props extends Partial<InformacionPaciente> {
   onChange?: (data: InformacionPaciente) => void;
@@ -55,7 +56,7 @@ export default function DatosIdentificacionPaciente({
     useState<InformacionPaciente | null>(null);
   const [loading, setLoading] = useState(true);
 
-const hdId = localStorage.getItem("HistoriClinica");
+  const hcId = typeof window !== "undefined" ? localStorage.getItem("HistoriClinica") : null;
 
 
 
@@ -63,16 +64,25 @@ const hdId = localStorage.getItem("HistoriClinica");
   /* =======================
      CARGA DE PACIENTE
   ======================= */
-  useEffect(() => {
-    getItem(hdId)
-      .then((data) => {
-        if (data) {
-          setPacienteExistente(data);
-          setFormData(data);
-        }
-      })
-         .finally(() => setLoading(false));
-  }, [hdId]);
+useEffect(() => {
+  setLoading(true);
+  getItem(hcId ? parseInt(hcId) : 0)
+    .then((data) => {
+      if (data) {
+        setPacienteExistente(data);
+        setFormData(data);
+      }
+    })
+    .catch((error) => {
+      // Aquí capturas el error del servidor
+      toast.error("No se pudo cargar la información del paciente");
+      setPacienteExistente(null);
+      setFormData((prev) => ({ ...prev })); // Opcional: limpia o mantiene el estado
+    })
+    .finally(() => setLoading(false));
+}, [hcId]);
+
+
 
   /* =======================
      NOTIFICAR CAMBIOS
@@ -131,13 +141,15 @@ const hdId = localStorage.getItem("HistoriClinica");
   /* =======================
        HANDLER GUARDAR
   ======================= */
+  
+
 const handleGuardar = async () => {
    try {
-    formData.hcId = 31; // Asignar un ID fijo para este ejemplo
+    formData.hcId = hcId ? parseInt(hcId) : 0;
     await createItem(formData); // <-- llama al método del hook
-    alert("Información guardada correctamente");
+    toast.success('Información guardada correctamente');
   } catch (error) {
-    alert("Error al guardar la información");
+    toast.error('Error al guardar la información');
   }
   };
 

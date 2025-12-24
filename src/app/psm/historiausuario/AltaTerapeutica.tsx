@@ -5,6 +5,7 @@ import SignaturePad from "signature_pad";
 import { useAltaTerapeutica } from "@/hooks/historaClinica/useAltaTerapeutica";
 import type { AltaTerapeutica } from "@/interfaces/historiaClinica/AltaTerapeutica";
 import Button from "@/components/ui/button/Button";
+import { toast } from "react-hot-toast";
 
 interface AltaTerapeuticaProps {
   onSubmit?: (data: AltaTerapeutica) => void;
@@ -157,8 +158,10 @@ const motivosAlta = {
     try {
       datosCompletos.hcId = hcId ? parseInt(hcId) : 0;
       await createItem(datosCompletos);
+      toast.success('Información guardada correctamente');
       onSubmit?.(datosCompletos); 
        } catch (error) {
+       toast.error('Error al guardar la información');  
        console.error("Error al crear el alta terapéutica:", error);
     }
   

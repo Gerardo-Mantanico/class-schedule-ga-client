@@ -106,7 +106,8 @@ export default function NotasProgresoPanel({ notas, onRegistrar }: NotasProgreso
       </div>
       <div>
         <span className="font-semibold">Firma del Psicólogo:</span>{" "}
-        {notaSeleccionada.firmaPsicologo || "Sin firma"}
+        <img src={notaSeleccionada.firmaPsicologo || "image"} alt="Firma del Psicólogo" />
+    
       </div>
     </div>
     <div className="flex justify-end mt-8 gap-2">

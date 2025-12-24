@@ -4,6 +4,7 @@ import { SidebarProvider } from '@/context/SidebarContext';
 import { ThemeProvider } from '@/context/ThemeContext';
 import { AuthProvider } from '@/context/AuthContext';
 
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -25,6 +26,7 @@ export default function RootLayout({
         <ThemeProvider>
           <AuthProvider>
             <SidebarProvider>{children}</SidebarProvider>
+             {/* <Toaster toastOptions={{ style: { zIndex: 9999 } }} /> */}
           </AuthProvider>
         </ThemeProvider>
       </body>

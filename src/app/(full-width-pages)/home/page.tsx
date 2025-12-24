@@ -63,7 +63,7 @@ export default function HomePage() {
         {/* Background Image */}
         <div className="absolute inset-0">
           <Image
-          src="/images/carousel/carousel-01.png" 
+          src="/images/carousel/vitaly-gariev-iyeUwItlIPk-unsplash.jpg" 
             alt="Hero Background"
             fill
             className="object-cover blur-[3px] scale-105"

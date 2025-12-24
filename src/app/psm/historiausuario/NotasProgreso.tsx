@@ -5,6 +5,7 @@ import React, { useRef, useEffect, useState } from "react";
 import SignaturePad from "signature_pad";
 import { useSesiones } from "../../../hooks/historaClinica/useSesiones";
 import { Sesion } from "@/interfaces/historiaClinica/Sesiones";
+import { toast } from "react-hot-toast";
 
 interface NotasProgresoProps {
   onSubmit?: (data: Sesion) => void;
@@ -119,10 +120,10 @@ const hcId = typeof window !== "undefined" ? localStorage.getItem("HistoriClinic
 
   try {
     await createItem(payload);
-    alert("Información guardada correctamente");
+    toast.success('Información guardada correctamente');
     onSubmit?.(payload);
   } catch (error: any) {
-    alert(error?.message || "Error al guardar la información");
+     toast.error('Error al guardar la información');
   }
 };
   return (
