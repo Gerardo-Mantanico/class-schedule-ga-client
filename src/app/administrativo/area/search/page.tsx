@@ -694,8 +694,6 @@ export default function SearchPSMPage() {
             {/* Botones de Acción */}
             <div className="flex items-center justify-end gap-3 border-t-2 border-gray-200 pt-6 dark:border-gray-700">
               <Button
-                type="button"
-                type="button"
                 onClick={handleCancelEdit}
                 disabled={loading}
                 className="flex items-center gap-2"
