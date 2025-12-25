@@ -119,15 +119,15 @@ export default function ImpresionDiagnostica(props: ImpresionDiagnosticaProps) {
         if (data && data.id && data.id !== 0) {
           setDiagnosticoExistente(data);
           setFormData({
-            diagnosticoPrincipal: data.diagnosticoPrincipal || "",
-            descripcionDiagnostico: data.descripcionDiagnostico || "",
-            diagnosticoSecundario: data.diagnosticoSecundario || "",
+            diagnosticoPrincipal: 0 || "",
+            descripcionDiagnostico: 0 || "",
+            diagnosticoSecundario: 0 || "",
             factoresPredisponentes: data.factoresPredisponentes || "",
-            factoresPrecipitantes: data.factoresPrecipitantes || "",
+            factoresPrecipitantes: data.factoresPrecipiantes || "",
             factoresMantenedores: data.factoresMantenedores || "",
             nivelFuncionamiento: data.nivelFuncionamiento || 50,
-            diagnosticoPrincipalCie11: data.diagnosticoPrincipalCie11 || "",
-            diagnosticoPrincipalDsm5: data.diagnosticoPrincipalDsm5 || "",
+            diagnosticoPrincipalCie11: 0 || "",
+            diagnosticoPrincipalDsm5: 0 || "",
           });
         }
       } catch (error: any) {
@@ -165,14 +165,13 @@ export default function ImpresionDiagnostica(props: ImpresionDiagnosticaProps) {
       return;
     }
     try {
-      await createItem({ 
-        ...formData, 
+      await createItem({
+        ...formData,
         hcId: Number(hcId),
-        diagnosticoPrincipal: typeof formData.diagnosticoPrincipal === "object" 
-          ? formData.diagnosticoPrincipal.label 
-          : formData.diagnosticoPrincipal
+        diagnosticoPrincipalCie11: formData.diagnosticoPrincipalCie11 ? Number(formData.diagnosticoPrincipalCie11) : undefined,
+        diagnosticoPrincipalDsm5: formData.diagnosticoPrincipalDsm5 ? Number(formData.diagnosticoPrincipalDsm5) : undefined,
       });
-       toast.success('Información guardada correctamente');
+      toast.success('Información guardada correctamente');
     } catch (error: any) {
       toast.error('Error al guardar la información');
     }
@@ -206,7 +205,7 @@ export default function ImpresionDiagnostica(props: ImpresionDiagnosticaProps) {
               onChange={(value) => {
                 const selected = diagnosticosCIE11.find((d) => d.value === value);
                 handleInputChange(
-                  "diagnosticoPrincipal", 
+                  "diagnosticoPrincipal",
                   selected ? selected.label : value
                 );
                 handleInputChange("diagnosticoPrincipalCie11", value);
@@ -215,7 +214,6 @@ export default function ImpresionDiagnostica(props: ImpresionDiagnosticaProps) {
               value={formData.diagnosticoPrincipalCie11}
               searchPlaceholder="Buscar por código o nombre..."
               className="max-w-full"
-              disabled={disabled || !!diagnosticoExistente}
             />
 
             {/* Input manual si selecciona "Otro" */}
@@ -230,9 +228,10 @@ export default function ImpresionDiagnostica(props: ImpresionDiagnosticaProps) {
                   name="diagnosticoManual"
                   placeholder="Ingrese el código y nombre del diagnóstico"
                   value={diagnosticoManual}
-                  onChange={(v) => {
-                    setDiagnosticoManual(v);
-                    handleInputChange("diagnosticoPrincipal", v);
+                  onChange={(e) => {
+                    const valor = typeof e === "string" ? e : e.target.value;
+                    setDiagnosticoManual(valor);
+                    handleInputChange("diagnosticoPrincipal", valor);
                   }}
                   disabled={disabled || !!diagnosticoExistente}
                   className="max-w-full"
@@ -253,15 +252,14 @@ export default function ImpresionDiagnostica(props: ImpresionDiagnosticaProps) {
             <span className="text-error-500">*</span>
           </Label>
           <TextArea
-            id="descripcionDiagnostico"
-            name="descripcionDiagnostico"
+
             placeholder="Describa detalladamente el diagnóstico, justificación clínica y sintomatología observada"
             value={formData.descripcionDiagnostico}
             onChange={(v) =>
               handleInputChange("descripcionDiagnostico", v)
             }
             disabled={disabled || !!diagnosticoExistente}
-            required
+
             className="max-w-full"
             rows={6}
           />
@@ -275,18 +273,17 @@ export default function ImpresionDiagnostica(props: ImpresionDiagnosticaProps) {
           <Label htmlFor="diagnosticoSecundario">
             Diagnóstico Secundario (DSM-5 / DM11)
           </Label>
-         <SearchableSelect
-  options={diagnosticosDM11}
-  placeholder="Buscar diagnóstico secundario (opcional)"
-  onChange={(value) => {
-    handleInputChange("diagnosticoSecundario", value);
-    handleInputChange("diagnosticoPrincipalDsm5", value); // <-- agrega esta línea
-  }}
-  value={formData.diagnosticoSecundario}
-  searchPlaceholder="Buscar por código o nombre..."
-  className="max-w-full"
-  disabled={disabled || !!diagnosticoExistente}
-/>
+          <SearchableSelect
+            options={diagnosticosDM11}
+            placeholder="Buscar diagnóstico secundario (opcional)"
+            onChange={(value) => {
+              handleInputChange("diagnosticoSecundario", value);
+              handleInputChange("diagnosticoPrincipalDsm5", value); // <-- agrega esta línea
+            }}
+            value={formData.diagnosticoSecundario}
+            searchPlaceholder="Buscar por código o nombre..."
+            className="max-w-full"
+          />
           <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
             Si existe, seleccione un diagnóstico secundario o comorbilidad DSM-5
           </p>
@@ -305,8 +302,7 @@ export default function ImpresionDiagnostica(props: ImpresionDiagnosticaProps) {
                 Factores Predisponentes
               </Label>
               <TextArea
-                id="factoresPredisponentes"
-                name="factoresPredisponentes"
+
                 placeholder="Describa los factores de vulnerabilidad o riesgo previos (genéticos, familiares, temperamentales, experiencias tempranas, etc.)"
                 value={formData.factoresPredisponentes}
                 onChange={(v) =>
@@ -328,8 +324,7 @@ export default function ImpresionDiagnostica(props: ImpresionDiagnosticaProps) {
                 Factores Precipitantes
               </Label>
               <TextArea
-                id="factoresPrecipitantes"
-                name="factoresPrecipitantes"
+
                 placeholder="Describa los eventos o situaciones que desencadenaron el inicio del trastorno (pérdidas, traumas, cambios vitales, etc.)"
                 value={formData.factoresPrecipitantes}
                 onChange={(v) =>
@@ -350,8 +345,7 @@ export default function ImpresionDiagnostica(props: ImpresionDiagnosticaProps) {
                 Factores Mantenedores
               </Label>
               <TextArea
-                id="factoresMantenedores"
-                name="factoresMantenedores"
+
                 placeholder="Describa los factores que perpetúan el problema actual (conductas de evitación, reforzadores, dinámicas familiares, etc.)"
                 value={formData.factoresMantenedores}
                 onChange={(v) =>
@@ -454,8 +448,8 @@ export default function ImpresionDiagnostica(props: ImpresionDiagnosticaProps) {
                   Diagnóstico Principal:{" "}
                 </span>
                 <span className="text-purple-900 dark:text-purple-200">
-                  {typeof formData.diagnosticoPrincipal === "object" 
-                    ? formData.diagnosticoPrincipal.label 
+                  {typeof formData.diagnosticoPrincipal === "object"
+                    ? formData.diagnosticoPrincipal.label
                     : formData.diagnosticoPrincipal}
                 </span>
               </div>

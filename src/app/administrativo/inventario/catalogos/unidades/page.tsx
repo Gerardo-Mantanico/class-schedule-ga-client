@@ -37,7 +37,7 @@ export default function UnidadessPage() {
       itemsPerPage={10}
       modalSize="sm"
     >
-      <GenericForm<UnidadesForm, boolean>
+      <GenericForm<UnidadesForm>
         title="Nueva Unidad"
         description="Registre una nueva Unidad"
         onSubmit={(data) => unidades.createItem(data)}

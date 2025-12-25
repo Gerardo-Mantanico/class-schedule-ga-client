@@ -71,7 +71,6 @@ export default function DatosPersonalesForm({
                 onInputChange("fechaNacimiento", formattedDate);
               }
             }}
-            disabled={disabled}
           />
         </div>
         <div>
@@ -126,7 +125,6 @@ export default function DatosPersonalesForm({
             placeholder="Seleccione estado civil"
             onChange={(value) => onInputChange("estadoCivil", value)}
             defaultValue={formData.estadoCivil}
-            disabled={disabled}
             className="max-w-full"
           />
         </div>
@@ -139,7 +137,6 @@ export default function DatosPersonalesForm({
             placeholder="Seleccione nivel educativo"
             onChange={(value) => onInputChange("nivelEducativo", value)}
             defaultValue={formData.nivelEducativo}
-            disabled={disabled}
             className="max-w-full"
           />
         </div>
@@ -164,7 +161,6 @@ export default function DatosPersonalesForm({
       <div>
         <Label htmlFor="direccion">Dirección</Label>
         <Input
-          as="textarea"
           id="direccion"
           name="direccion"
           placeholder="Ingrese la dirección completa"
@@ -172,7 +168,6 @@ export default function DatosPersonalesForm({
           onChange={(e) => onInputChange("direccion", e.target.value)}
           disabled={disabled}
           className="max-w-full"
-          rows={3}
         />
       </div>
 

@@ -30,7 +30,8 @@ export interface Cita {
   medico: Medico;
   servicioMedico: ServicioMedico;
   fechaCita: string;
-  estadoCita: "PROGRAMADA" | "CANCELADA" | "REALIZADA" | string;
+  estadoCita: "PROGRAMADA" | "CANCELADA" | "REALIZADA" | 'EN_PROCESO';
   nota: string;
   createdAt: string;
+  estado: string;
 }

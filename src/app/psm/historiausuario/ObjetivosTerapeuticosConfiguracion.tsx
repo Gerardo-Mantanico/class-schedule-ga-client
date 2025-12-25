@@ -41,9 +41,9 @@ const enfoqueTerapeuticoOptions = [
 ];
 
 const frecuenciaOptions = [
-  { value: 1, label: "Semanal" },
-  { value: 2, label: "Quincenal" },
-  { value: 3, label: "Mensual" },
+  { value: "1", label: "Semanal" },
+  { value: "2", label: "Quincenal" },
+  { value: "3", label: "Mensual" },
 ];
 
 
@@ -62,7 +62,7 @@ export default function ObjetivosTerapeuticosConfiguracion({
   disabled = false,
 }: ObjetivosTerapeuticosConfiguracionProps) {
 
-  
+
   // Hook para operaciones CRUD de objetivos terapéuticos
   const { getItem, createItem } = useObjetivos();
 
@@ -70,6 +70,7 @@ export default function ObjetivosTerapeuticosConfiguracion({
   const [isLocked, setIsLocked] = useState(false);
 
   const [formData, setFormData] = useState<ObjetivosHC>({
+    id: 0,
     hcId,
     objetivoCortoplazo,
     objetivoMedioplazo,
@@ -84,7 +85,7 @@ export default function ObjetivosTerapeuticosConfiguracion({
 
   // Obtener hcId de localStorage
   useEffect(() => {
-      const hcId = typeof window !== "undefined" ? localStorage.getItem("HistoriClinica") : null;
+    const hcId = typeof window !== "undefined" ? localStorage.getItem("HistoriClinica") : null;
 
     if (hcId) {
       const id = parseInt(hcId, 10);
@@ -114,60 +115,60 @@ export default function ObjetivosTerapeuticosConfiguracion({
     field: keyof ObjetivosHC,
     value: any
   ) => {
-      if (isLocked) return;
-      setFormData((prev) => ({
-        ...prev,
-        [field]: value,
-      }));
+    if (isLocked) return;
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
   };
 
   const handleModalidadChange = (value: number, checked: boolean) => {
-      if (isLocked) return;
-      setFormData((prev) => {
-        const newModalidad = checked
-          ? [...prev.modalidad, value]
-          : prev.modalidad.filter((m) => m !== value);
-        return {
-          ...prev,
-          modalidad: newModalidad,
-        };
-      });
+    if (isLocked) return;
+    setFormData((prev) => {
+      const newModalidad = checked
+        ? [...prev.modalidad, value]
+        : prev.modalidad.filter((m) => m !== value);
+      return {
+        ...prev,
+        modalidad: newModalidad,
+      };
+    });
   };
 
   const handleEnfoqueChange = (value: number, checked: boolean) => {
-      if (isLocked) return;
-      setFormData((prev) => {
-        const newEnfoque = checked
-          ? [...prev.enfoqueTerapeutico, value]
-          : prev.enfoqueTerapeutico.filter((e) => e !== value);
-        return {
-          ...prev,
-          enfoqueTerapeutico: newEnfoque,
-        };
-      });
+    if (isLocked) return;
+    setFormData((prev) => {
+      const newEnfoque = checked
+        ? [...prev.enfoqueTerapeutico, value]
+        : prev.enfoqueTerapeutico.filter((e) => e !== value);
+      return {
+        ...prev,
+        enfoqueTerapeutico: newEnfoque,
+      };
+    });
   };
 
   // Handler para enviar información (crear)
-const handleEnviarInformacion = async () => {
-  if (isLocked) return;
-  try {
-    // Obtener el hcId actualizado desde localStorage
-    const storedHcId = typeof window !== "undefined" ? localStorage.getItem("HistoriClinica") : null;
-    const id = storedHcId ? parseInt(storedHcId, 10) : hcId;
+  const handleEnviarInformacion = async () => {
+    if (isLocked) return;
+    try {
+      // Obtener el hcId actualizado desde localStorage
+      const storedHcId = typeof window !== "undefined" ? localStorage.getItem("HistoriClinica") : null;
+      const id = storedHcId ? parseInt(storedHcId, 10) : hcId;
 
-    // Crear un nuevo objeto con el hcId correcto
-    const dataToSend = {
-      ...formData,
-      hcId: id,
-    };
+      // Crear un nuevo objeto con el hcId correcto
+      const dataToSend = {
+        ...formData,
+        hcId: id,
+      };
 
-    await createItem(dataToSend);
-   toast.success('Información guardada correctamente');
-    setIsLocked(true);
-  } catch (e) {
-    toast.error('Error al guardar la información');
-  }
-};
+      await createItem(dataToSend);
+      toast.success('Información guardada correctamente');
+      setIsLocked(true);
+    } catch (e) {
+      toast.error('Error al guardar la información');
+    }
+  };
 
 
   return (
@@ -191,15 +192,12 @@ const handleEnviarInformacion = async () => {
               <span className="text-error-500">*</span>
             </Label>
             <TextArea
-              id="objetivoCortoplazo"
-              name="objetivoCortoplazo"
               placeholder="Describa los objetivos a alcanzar en el corto plazo (ejemplo: reducir síntomas de ansiedad, mejorar habilidades de afrontamiento, etc.)"
               value={formData.objetivoCortoplazo}
               onChange={(v) =>
                 handleInputChange("objetivoCortoplazo", v)
               }
               disabled={disabled || isLocked}
-              required
               className="max-w-full"
               rows={4}
             />
@@ -214,12 +212,10 @@ const handleEnviarInformacion = async () => {
               Objetivo a Medio Plazo (3-6 meses)
             </Label>
             <TextArea
-              id="objetivoMedioplazo"
-              name="objetivoMedioplazo"
               placeholder="Describa los objetivos a alcanzar en el medio plazo (ejemplo: consolidar estrategias aprendidas, mejorar relaciones interpersonales, etc.)"
               value={formData.objetivoMedioplazo}
               onChange={(v) =>
-                handleInputChange("objetivoMedioplazo",v)
+                handleInputChange("objetivoMedioplazo", v)
               }
               disabled={disabled || isLocked}
               className="max-w-full"
@@ -236,8 +232,6 @@ const handleEnviarInformacion = async () => {
               Objetivo a Largo Plazo (6+ meses)
             </Label>
             <TextArea
-              id="objetivoLargoplazo"
-              name="objetivoLargoplazo"
               placeholder="Describa los objetivos a largo plazo (ejemplo: mantener estabilidad emocional, prevenir recaídas, desarrollo personal continuo, etc.)"
               value={formData.objetivoLargoplazo}
               onChange={(v) =>
@@ -272,8 +266,6 @@ const handleEnviarInformacion = async () => {
                 <Checkbox
                   key={option.value}
                   id={`modalidad-${option.value}`}
-                  name="modalidad"
-                  value={option.value}
                   label={option.label}
                   checked={formData.modalidad.includes(option.value)}
                   onChange={(v) =>
@@ -296,8 +288,6 @@ const handleEnviarInformacion = async () => {
                 <Checkbox
                   key={option.value}
                   id={`enfoque-${option.value}`}
-                  name="enfoqueTerapeutico"
-                  value={option.value}
                   label={option.label}
                   checked={formData.enfoqueTerapeutico.includes(option.value)}
                   onChange={(v) =>
@@ -317,10 +307,11 @@ const handleEnviarInformacion = async () => {
               <Select
                 options={frecuenciaOptions}
                 placeholder="Seleccione la frecuencia"
-                onChange={(value) => handleInputChange("frecuencia", value)}
-                defaultValue={formData.frecuencia}
+                onChange={(value) => handleInputChange("frecuencia", parseInt(value))}
+                defaultValue={formData.frecuencia.toString()}
                 className="max-w-full"
               />
+
             </div>
 
             {/* Sesiones por Semana */}
@@ -339,8 +330,6 @@ const handleEnviarInformacion = async () => {
                   )
                 }
                 disabled={disabled || isLocked}
-                min={1}
-                max={3}
                 className="max-w-full"
               />
               <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
@@ -369,7 +358,6 @@ const handleEnviarInformacion = async () => {
                   )
                 }
                 disabled={disabled}
-                min={1}
                 className="max-w-full"
               />
               <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
@@ -387,11 +375,13 @@ const handleEnviarInformacion = async () => {
                 placeholder="250.00"
                 value={formData.costoPorSesion}
                 onChange={(e) =>
-                  handleInputChange("costoPorSesion", e.target.value)
+                  handleInputChange(
+                    "costoPorSesion",
+                    parseFloat(e.target.value) || 0
+                  )
                 }
                 disabled={disabled}
                 step={0.01}
-                min={0}
                 className="max-w-full"
               />
               <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
@@ -404,119 +394,121 @@ const handleEnviarInformacion = async () => {
           {(formData.modalidad.length > 0 ||
             formData.enfoqueTerapeutico.length > 0 ||
             formData.frecuencia) && (
-            <div className="mt-6 rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-950">
-              <h3 className="mb-3 text-sm font-semibold text-green-800 dark:text-green-300">
-                Resumen de Configuración
-              </h3>
-              <div className="space-y-2 text-sm">
-                {formData.modalidad.length > 0 && (
-                  <div>
-                    <span className="font-medium text-green-700 dark:text-green-400">
-                      Modalidad:{" "}
-                    </span>
-                    <span className="text-green-900 dark:text-green-200">
-                      {formData.modalidad
-                        .map(
-                          (m) =>
-                            modalidadOptions.find((opt) => opt.value === m)
-                              ?.label
-                        )
-                        .join(", ")}
-                    </span>
-                  </div>
-                )}
-                {formData.enfoqueTerapeutico.length > 0 && (
-                  <div>
-                    <span className="font-medium text-green-700 dark:text-green-400">
-                      Enfoque:{" "}
-                    </span>
-                    <span className="text-green-900 dark:text-green-200">
-                      {formData.enfoqueTerapeutico
-                        .map(
-                          (e) =>
-                            enfoqueTerapeuticoOptions.find(
-                              (opt) => opt.value === e
-                            )?.label
-                        )
-                        .join(", ")}
-                    </span>
-                  </div>
-                )}
-                {formData.frecuencia && (
-                  <div>
-                    <span className="font-medium text-green-700 dark:text-green-400">
-                      Frecuencia:{" "}
-                    </span>
-                    <span className="text-green-900 dark:text-green-200">
-                      {frecuenciaOptions.find(
-                        (opt) => opt.value === formData.frecuencia
-                      )?.label || formData.frecuencia}{" "}
-                      ({formData.sesionesPorSemana}{" "}
-                      {formData.sesionesPorSemana === 1
-                        ? "sesión"
-                        : "sesiones"}{" "}
-                      por semana)
-                    </span>
-                  </div>
-                )}
-                {formData.duracionEstimada > 0 && (
-                  <div>
-                    <span className="font-medium text-green-700 dark:text-green-400">
-                      Duración estimada:{" "}
-                    </span>
-                    <span className="text-green-900 dark:text-green-200">
-                      {formData.duracionEstimada}{" "}
-                      {formData.duracionEstimada === 1 ? "semana" : "semanas"}
-                    </span>
-                  </div>
-                )}
-                {formData.costoPorSesion && parseFloat(formData.costoPorSesion) > 0 && (
-                  <div>
-                    <span className="font-medium text-green-700 dark:text-green-400">
-                      Costo por sesión:{" "}
-                    </span>
-                    <span className="text-green-900 dark:text-green-200">
-                      GTQ {parseFloat(formData.costoPorSesion).toFixed(2)}
-                    </span>
-                  </div>
-                )}
-                {formData.duracionEstimada > 0 &&
-                  formData.costoPorSesion &&
-                  parseFloat(formData.costoPorSesion) > 0 &&
-                  formData.sesionesPorSemana > 0 && (
-                    <div className="mt-3 border-t border-green-300 pt-2 dark:border-green-700">
+              <div className="mt-6 rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-950">
+                <h3 className="mb-3 text-sm font-semibold text-green-800 dark:text-green-300">
+                  Resumen de Configuración
+                </h3>
+                <div className="space-y-2 text-sm">
+                  {formData.modalidad.length > 0 && (
+                    <div>
                       <span className="font-medium text-green-700 dark:text-green-400">
-                        Costo total estimado:{" "}
+                        Modalidad:{" "}
                       </span>
-                      <span className="text-lg font-bold text-green-900 dark:text-green-200">
-                        GTQ{" "}
-                        {(
-                          parseFloat(formData.costoPorSesion) *
-                          formData.sesionesPorSemana *
-                          formData.duracionEstimada
-                        ).toFixed(2)}
+                      <span className="text-green-900 dark:text-green-200">
+                        {formData.modalidad
+                          .map(
+                            (m) =>
+                              modalidadOptions.find((opt) => opt.value === m)
+                                ?.label
+                          )
+                          .join(", ")}
                       </span>
                     </div>
                   )}
+                  {formData.enfoqueTerapeutico.length > 0 && (
+                    <div>
+                      <span className="font-medium text-green-700 dark:text-green-400">
+                        Enfoque:{" "}
+                      </span>
+                      <span className="text-green-900 dark:text-green-200">
+                        {formData.enfoqueTerapeutico
+                          .map(
+                            (e) =>
+                              enfoqueTerapeuticoOptions.find(
+                                (opt) => opt.value === e
+                              )?.label
+                          )
+                          .join(", ")}
+                      </span>
+                    </div>
+                  )}
+                  {formData.frecuencia && (
+                    <div>
+                      <span className="font-medium text-green-700 dark:text-green-400">
+                        Frecuencia:{" "}
+                      </span>
+                      <span className="text-green-900 dark:text-green-200">
+                        {frecuenciaOptions.find(
+                          (opt) => opt.value === formData.frecuencia.toString()
+                        )?.label || formData.frecuencia}{" "}
+                        ({formData.sesionesPorSemana}{" "}
+                        {formData.sesionesPorSemana === 1
+                          ? "sesión"
+                          : "sesiones"}{" "}
+                        por semana)
+                      </span>
+                    </div>
+                  )}
+                  {formData.duracionEstimada > 0 && (
+                    <div>
+                      <span className="font-medium text-green-700 dark:text-green-400">
+                        Duración estimada:{" "}
+                      </span>
+                      <span className="text-green-900 dark:text-green-200">
+                        {formData.duracionEstimada}{" "}
+                        {formData.duracionEstimada === 1 ? "semana" : "semanas"}
+                      </span>
+                    </div>
+                  )}
+
+                  {formData.costoPorSesion && formData.costoPorSesion > 0 && (
+                    <div>
+                      <span className="font-medium text-green-700 dark:text-green-400">
+                        Costo por sesión:{" "}
+                      </span>
+                      <span className="text-green-900 dark:text-green-200">
+                        GTQ {formData.costoPorSesion.toFixed(2)}
+                      </span>
+                    </div>
+                  )}
+
+                  {formData.duracionEstimada > 0 &&
+                    formData.costoPorSesion &&
+                    formData.costoPorSesion > 0 &&
+                    formData.sesionesPorSemana > 0 && (
+                      <div className="mt-3 border-t border-green-300 pt-2 dark:border-green-700">
+                        <span className="font-medium text-green-700 dark:text-green-400">
+                          Costo total estimado:{" "}
+                        </span>
+                        <span className="text-lg font-bold text-green-900 dark:text-green-200">
+                          GTQ{" "}
+                          {(
+                            formData.costoPorSesion *
+                            formData.sesionesPorSemana *
+                            formData.duracionEstimada
+                          ).toFixed(2)}
+                        </span>
+                      </div>
+                    )}
+                </div>
               </div>
-            </div>
-          )}
+            )}
         </div>
       </div>
-        {/* Botón para mandar la información solo si no está bloqueado */}
-        {!isLocked && (
-          <div className="flex justify-end mt-8">
-            <button
-              type="button"
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 disabled:bg-gray-400"
-              onClick={handleEnviarInformacion}
-              disabled={disabled}
-            >
-              Mandar información
-            </button>
-          </div>
-        )}
-      </div>
-    );
-  }
+      {/* Botón para mandar la información solo si no está bloqueado */}
+      {!isLocked && (
+        <div className="flex justify-end mt-8">
+          <button
+            type="button"
+            className="px-6 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 disabled:bg-gray-400"
+            onClick={handleEnviarInformacion}
+            disabled={disabled}
+          >
+            Mandar información
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
 

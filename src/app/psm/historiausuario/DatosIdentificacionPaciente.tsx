@@ -12,6 +12,7 @@ import type { InformacionPaciente } from "@/interfaces/historiaClinica/Informaci
 import Button from "@/components/ui/button/Button";
 import { h } from "@fullcalendar/core/preact.js";
 import { toast } from "react-hot-toast";
+import { key } from "flatpickr/dist/types/locale";
 
 interface Props extends Partial<InformacionPaciente> {
   onChange?: (data: InformacionPaciente) => void;
@@ -32,6 +33,7 @@ export default function DatosIdentificacionPaciente({
   const { getItem,createItem  } = useInformacionPaciente();
 
   const [formData, setFormData] = useState<InformacionPaciente>({
+    id:0,
     hcId: 0,
     nombreCompleto: "",
     fechaNacimiento: "",
@@ -177,7 +179,9 @@ const handleGuardar = async () => {
             correoElectronico: formData.email,
           }}
           onInputChange={(field, value) =>
-            handleChange(field === "correoElectronico" ? "email" : field, value)
+            handleChange(
+              (field === "correoElectronico" ? "email" : field) as keyof InformacionPaciente,
+              value)
           }
           disabled={readOnly}
           telefonoError={errors.telefono}
@@ -192,7 +196,7 @@ const handleGuardar = async () => {
           }}
           onInputChange={(field, value) =>
             handleChange(
-              field === "parentesco" ? "parentescoContacto" : field,
+              (field === "parentesco" ? "parentescoContacto" : field) as keyof InformacionPaciente,
               value
             )
           }

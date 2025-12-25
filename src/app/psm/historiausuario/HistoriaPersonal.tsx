@@ -30,38 +30,42 @@ const consumoTabacoOptions = [
   { value: "EXFUMADOR", label: "Exfumador" },
 ];
 
+
 export default function HistoriaPersonal({
   desarrolloEvolutivo = "",
-  historiaAcademicaLaboral = "",
-  historiaMedica = "",
+  hAcademica = "",
+  hMedica = "",
   medicacionActual = "",
-  consumoAlcohol = "nunca",
-  consumoTabaco = "nunca",
-  consumoDrogas = "",
-  tuveTratamientosPrevios = false,
-  detallesTratamientosPrevios = "",
-  tuveHospitalizaciones = false,
-  detallesHospitalizaciones = "",
+  consumoAlcohol = "NUNCA",
+  consumoTabaco = "NUNCA",
+  consumoDrogras = "",
+  tratamientosPrevios = false,
+  tratamientosPreviosDetalles = "",
+  hospitalizaciones = false,
+  hospitalizacionesDetalles = "",
   onChange,
   disabled = false,
 }: HistoriaPersonalProps) {
   const { getItem, createItem } = useHistoriaPersonal();
 
+
   const [formData, setFormData] = useState<HistoriaPersonal>({
-    id: 0,
-    hcId: 0,
-    desarrolloEvolutivo: desarrolloEvolutivo ?? "",
-    medicacionActual: medicacionActual ?? "",
-    consumoAlcohol: consumoAlcohol ?? "nunca",
-    consumoTabaco: consumoTabaco ?? "nunca",
-    consumoDrogras: consumoDrogas ?? "",
-    tratamientosPrevios: tuveTratamientosPrevios ?? false,
-    tratamientosPreviosDetalles: detallesTratamientosPrevios ?? "",
-    hospitalizaciones: tuveHospitalizaciones ?? false,
-    hospitalizacionesDetalles: detallesHospitalizaciones ?? "",
-    hmedica: historiaMedica ?? "",
-    hacademica: historiaAcademicaLaboral ?? "",
-  });
+  id: 0,
+  hcId: 0,
+  desarrolloEvolutivo: desarrolloEvolutivo ?? "",
+  hAcademica: hAcademica ?? "",
+  hMedica: hMedica ?? "",
+  medicacionActual: medicacionActual ?? "",
+  consumoAlcohol: consumoAlcohol ?? "NUNCA",
+  consumoTabaco: consumoTabaco ?? "NUNCA",
+  consumoDrogras: consumoDrogras ?? "",
+  tratamientosPrevios: tratamientosPrevios ?? false,
+  tratamientosPreviosDetalles: tratamientosPreviosDetalles ?? "",
+  hospitalizaciones: hospitalizaciones ?? false,
+  hospitalizacionesDetalles: hospitalizacionesDetalles ?? "",
+});
+
+
   const [historiaExistente, setHistoriaExistente] = useState<HistoriaPersonal | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -157,8 +161,6 @@ export default function HistoriaPersonal({
         <div>
           <Label htmlFor="desarrolloEvolutivo">Desarrollo Evolutivo</Label>
           <TextArea
-            id="desarrolloEvolutivo"
-            name="desarrolloEvolutivo"
             placeholder="Describa el desarrollo evolutivo del paciente (embarazo, parto, hitos del desarrollo, niñez, adolescencia, etc.)"
             value={formData.desarrolloEvolutivo}
             onChange={(v) => handleInputChange("desarrolloEvolutivo", v)}
@@ -178,11 +180,9 @@ export default function HistoriaPersonal({
             Historia Académica/Laboral
           </Label>
           <TextArea
-            id="historiaAcademicaLaboral"
-            name="historiaAcademicaLaboral"
             placeholder="Describa la trayectoria académica y laboral del paciente"
-            value={formData.hacademica}
-            onChange={(v) => handleInputChange("hacademica", v)}
+            value={formData.hAcademica}
+            onChange={(v) => handleInputChange("hAcademica", v)}
             disabled={readOnly}
             className="max-w-full"
             rows={5}
@@ -197,11 +197,9 @@ export default function HistoriaPersonal({
         <div>
           <Label htmlFor="historiaMedica">Historia Médica</Label>
           <TextArea
-            id="historiaMedica"
-            name="historiaMedica"
             placeholder="Describa el historial médico del paciente (enfermedades, cirugías, accidentes, condiciones crónicas, etc.)"
-            value={formData.hmedica}
-            onChange={(v) => handleInputChange("hmedica", v)}
+            value={formData.hMedica }
+            onChange={(v) => handleInputChange("hMedica", v)}
             disabled={readOnly}
             className="max-w-full"
             rows={5}
@@ -215,8 +213,6 @@ export default function HistoriaPersonal({
         <div>
           <Label htmlFor="medicacionActual">Medicación Actual</Label>
           <TextArea
-            id="medicacionActual"
-            name="medicacionActual"
             placeholder="Liste los medicamentos actuales (nombre, dosis, frecuencia, para qué condición)"
             value={formData.medicacionActual}
             onChange={(v) => handleInputChange("medicacionActual", v)}
@@ -318,8 +314,6 @@ export default function HistoriaPersonal({
             <div>
               <Label htmlFor="consumoDrogas">Consumo de Drogas</Label>
               <TextArea
-                id="consumoDrogas"
-                name="consumoDrogas"
                 placeholder="Especifique el tipo de droga y frecuencia de consumo (si aplica)"
                 value={formData.consumoDrogras}
                 onChange={(v) => handleInputChange("consumoDrogras", v)}
@@ -340,8 +334,6 @@ export default function HistoriaPersonal({
 
           <div className="mt-3">
             <Checkbox
-              id="tuveTratamientosPrevios"
-              name="tuveTratamientosPrevios"
               label="¿Ha recibido tratamiento psicológico o psiquiátrico anteriormente?"
               checked={formData.tratamientosPrevios}
               onChange={handleTratamientosChange}
@@ -355,8 +347,6 @@ export default function HistoriaPersonal({
                 Detalles de Tratamientos Previos
               </Label>
               <TextArea
-                id="detallesTratamientosPrevios"
-                name="detallesTratamientosPrevios"
                 placeholder="Describa los tratamientos previos (tipo de tratamiento, profesional, duración, resultados, etc.)"
                 value={formData.tratamientosPreviosDetalles}
                 onChange={(v) => handleInputChange("tratamientosPreviosDetalles", v)}
@@ -378,8 +368,6 @@ export default function HistoriaPersonal({
 
           <div className="mt-3">
             <Checkbox
-              id="tuveHospitalizaciones"
-              name="tuveHospitalizaciones"
               label="¿Ha sido hospitalizado por motivos psiquiátricos o de salud mental?"
               checked={formData.hospitalizaciones}
               onChange={handleHospitalizacionesChange}
@@ -393,8 +381,6 @@ export default function HistoriaPersonal({
                 Detalles de Hospitalizaciones
               </Label>
               <TextArea
-                id="detallesHospitalizaciones"
-                name="detallesHospitalizaciones"
                 placeholder="Describa las hospitalizaciones (fecha, motivo, duración, institución, tratamiento recibido, etc.)"
                 value={formData.hospitalizacionesDetalles}
                 onChange={(v) => handleInputChange("hospitalizacionesDetalles", v)}

@@ -131,10 +131,10 @@ const handleSubmit = async (e: React.FormEvent) => {
   }
   // Guardar usando el hook
   formData.hcId = hcId ? parseInt(hcId) : 0;
-  createItem(formData).then((saved: EvaluacionPeriodica) => {
-  toast.success('Información guardada correctamente');
-    onSubmit?.(saved);
-    // Limpiar formulario y recargar la página
+ createItem(formData).then((success: boolean) => {
+  if (success) {
+    toast.success('Información guardada correctamente');
+    onSubmit?.(formData); // Puedes pasar formData o undefined según tu lógica
     setFormData({
       id: 0,
       hcId: pacienteId ? parseInt(pacienteId) : 0,
@@ -149,7 +149,10 @@ const handleSubmit = async (e: React.FormEvent) => {
       reevaluacionDiagnostico: "",
     });
     window.location.reload();
-  });
+  } else {
+    toast.error('No se pudo guardar la información');
+  }
+});
 };
 
     const renderStars = () => {

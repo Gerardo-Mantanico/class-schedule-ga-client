@@ -35,7 +35,7 @@ export default function FormassPage() {
       itemsPerPage={10}
       modalSize="sm"
     >
-      <GenericForm<FormasForm, boolean>
+      <GenericForm<FormasForm>
         title="Nueva Formas"
         description="Registre una nueva Formas"
         onSubmit={(data) => formas.createItem(data)}

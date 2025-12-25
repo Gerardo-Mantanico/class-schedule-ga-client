@@ -60,13 +60,13 @@ export default function NotasProgresoPanel({ notas, onRegistrar }: NotasProgreso
     <div className="space-y-3 text-gray-700">
       <div>
         <span className="font-semibold">Fecha de Sesión:</span>{" "}
-        {notaSeleccionada.fechaSesion
-          ? notaSeleccionada.fechaSesion.replace("T", " ").slice(0, 16)
+        {notaSeleccionada.fecha
+          ? notaSeleccionada.fecha.replace("T", " ").slice(0, 16)
           : "Sin fecha"}
       </div>
       <div>
         <span className="font-semibold">Número de Sesión:</span>{" "}
-        {notaSeleccionada.numeroSesion ?? "Sin número"}
+        {notaSeleccionada.numeroSesiones ?? "Sin número"}
       </div>
       <div>
         <span className="font-semibold">Asistencia:</span>{" "}

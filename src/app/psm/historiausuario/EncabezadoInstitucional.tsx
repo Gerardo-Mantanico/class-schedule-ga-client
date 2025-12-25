@@ -4,15 +4,20 @@ import React from "react";
 import Label from "@/components/form/Label";
 import Input from "@/components/form/input/InputField";
 import { useHc } from "@/hooks/auth/useHc";
+import { Hc } from "@/interfaces/cita/hc";
 
 const EncabezadoInstitucional = () => {
   const { hc } = useHc(); // Solo necesitamos la función hc
-  const [hcs, setHcs] = React.useState(null);
+ const [hcs, setHcs] = React.useState<Hc | null>(null);
+
+
+
   const [loading, setLoading] = React.useState(true);
-  const [error, setError] = React.useState(null);
+  const [error, setError] = React.useState<string | null>(null);
+  const citaId = typeof window !== "undefined" ? localStorage.getItem("cita") : null;
 
   React.useEffect(() => {
-    hc(1)
+    hc(citaId)
       .then((data) => {
         setHcs(data);
          if (data?.id) {

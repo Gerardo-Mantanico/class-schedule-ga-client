@@ -36,7 +36,7 @@ export default function CategoriasPage() {
       itemsPerPage={10}
       modalSize="sm"
     >
-      <GenericForm<CategoriaForm, boolean>
+      <GenericForm<CategoriaForm>
         title="Nueva categoría"
         description="Registre una nueva categoría"
         onSubmit={(data) => categorias.createItem(data)}

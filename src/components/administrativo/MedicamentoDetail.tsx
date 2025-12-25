@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import useInventario from '@/hooks/useInventario';
 
 export default function MedicamentoDetail({ id }: { id: string | number }) {
-  const { getMedicamento, loading } = useInventario();
+  const { medicamentos } = useInventario();
   const [med, setMed] = useState<any | null>(null);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -13,16 +13,16 @@ export default function MedicamentoDetail({ id }: { id: string | number }) {
   useEffect(() => {
     const load = async () => {
       try {
-        const data = await getMedicamento(Number(id));
+        const data = await medicamentos.getItem(Number(id));
         setMed(data);
       } catch (e: any) {
         setError(e?.message || String(e));
       }
     };
     load();
-  }, [id, getMedicamento]);
+  }, [id, medicamentos]);
 
-  if (loading) return <div>Cargando...</div>;
+  if (medicamentos.loading) return <div>Cargando...</div>;
   if (error) return <div className="text-error-500">{error}</div>;
   if (!med) return <div>No se encontró el medicamento</div>;
 

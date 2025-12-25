@@ -44,6 +44,7 @@ export interface CatalogItem {
 }
 
 export interface conceptosNomina {
+  id:number;
   nominaId: number;
   tipoId: number;
   monto: number;

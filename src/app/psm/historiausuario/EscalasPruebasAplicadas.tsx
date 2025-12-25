@@ -251,7 +251,7 @@ export default function EscalasPruebasAplicadas({
                 <Label>Prueba</Label>
                 <Select
                   options={pruebasOptions}
-                  value={String(prueba.prueba)}
+                  defaultValue={String(prueba.prueba)}
                   onChange={(v) =>
                     actualizarPrueba(prueba.id, "prueba", Number(v))
                   }

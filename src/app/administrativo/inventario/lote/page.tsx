@@ -59,17 +59,15 @@ export default function LotesPage() {
       <GenericForm<LoteForm>
         title="Lote"
         description="Crear / editar lote"
-        initial={(item) =>
-          item
-            ? {
-                id: (item as any).id,
-                medicamentoId: (item as any).medicamentoId,
-                proveedorId: (item as any).proveedorId,
-                ubicacionId: (item as any).ubicacionId,
-                numeroLote: (item as any).numeroLote,
-                fechaVencimiento: (item as any).fechaVencimiento,
-                cantidad: (item as any).cantidad,
-                precioCompra: (item as any).precioCompra,
+   initial={lotes.item ? {
+                id: (lotes.item as any).id,
+                medicamentoId: (lotes.item as any).medicamentoId,
+                proveedorId: (lotes.item as any).proveedorId,
+                ubicacionId: (lotes.item as any).ubicacionId,
+                numeroLote: (lotes.item as any).numeroLote,
+                fechaVencimiento: (lotes.item as any).fechaVencimiento,
+                cantidad: (lotes.item as any).cantidad,
+                precioCompra: (lotes.item as any).precioCompra,
               }
             : ({})
         }

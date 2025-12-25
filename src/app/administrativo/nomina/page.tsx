@@ -123,7 +123,10 @@ export default function NominaPage() {
           <NominaSection
             title="Retenciones"
             icon={<BoltIcon className="w-6 h-6" />}
-            items={nomina.retenciones || []}
+              items={(nomina.retenciones || []).map(item => ({
+    ...item,
+    tipoDescripcion: item.tipoDescripcion ?? "",
+  }))}
             colorClass="bg-yellow-100"
             itemColorClass="bg-yellow-50"
             emptyMessage="Sin retenciones."
@@ -143,7 +146,10 @@ export default function NominaPage() {
           <NominaSection
             title="Bonos"
             icon={<GroupIcon className="w-6 h-6" />}
-            items={nomina.bonos || []}
+              items={(nomina.bonos || []).map(item => ({
+    ...item,
+    tipoDescripcion: item.tipoDescripcion ?? "",
+  }))}
             colorClass="bg-green-200"
             itemColorClass="bg-green-100"
             emptyMessage="Sin bonos."
@@ -162,7 +168,10 @@ export default function NominaPage() {
           <NominaSection
             title="Descuentos"
             icon={<PageIcon className="w-6 h-6" />}
-            items={nomina.descuentos || []}
+              items={(nomina.descuentos || []).map(item => ({
+    ...item,
+    tipoDescripcion: item.tipoDescripcion ?? "",
+  }))}
             colorClass="bg-red-200"
             itemColorClass="bg-red-100"
             emptyMessage="Sin descuentos."
@@ -280,7 +289,7 @@ export default function NominaPage() {
                 try {
                   setOpLoading(true);
                   const data = {
-                    tipoId: selectedTipo,
+                     tipoId: Number(selectedTipo),
                     monto: parseFloat(monto),
                     nominaId : nomina?.id || 0,
 

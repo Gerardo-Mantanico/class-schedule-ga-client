@@ -21,7 +21,7 @@ interface User {
   firstname: string;
   lastname: string;
   email: string;
-  dpi: string;
+  dpi: number;
   phoneNumber: string;
   createdAt: string;
   updatedAt: string;
@@ -128,7 +128,7 @@ export default function UserTable() {
     firstname: "",
     lastname: "",
     email: "",
-    dpi: "",
+    dpi: 0,
     phoneNumber: "",
     active: true,
     use2fa: false,
@@ -153,7 +153,7 @@ export default function UserTable() {
       firstname: "",
       lastname: "",
       email: "",
-      dpi: "",
+      dpi: 0,
       phoneNumber: "",
       active: true,
       use2fa: false,
@@ -202,7 +202,7 @@ export default function UserTable() {
         firstname: formData.firstname,
         lastname: formData.lastname,
         email: formData.email,
-        dpi: formData.dpi,
+        dpi: Number(formData.dpi),
         phoneNumber: formData.phoneNumber,
         password: "123456789", 
         roleId: formData.roleId,
@@ -220,7 +220,7 @@ export default function UserTable() {
         firstname: formData.firstname,
         lastname: formData.lastname,
         email: formData.email,
-        dpi: formData.dpi,
+        dpi: Number(formData.dpi),
         phoneNumber: formData.phoneNumber,
         isActive: formData.active,
         use2fa: formData.use2fa,
@@ -330,14 +330,12 @@ export default function UserTable() {
                   <div className="col-span-2 lg:col-span-1">
                     <Label>DPI</Label>
                     <Input
-                      type="text"
+                      type="number"
                       placeholder="Ingrese el DPI"
                       value={formData.dpi}
                       onChange={(e) =>
-                        setFormData({ ...formData, dpi: e.target.value })
+                        setFormData({ ...formData, dpi: Number(e.target.value) })
                       }
-                      maxLength={13}
-                      pattern="[0-9]*"
                     />
                   </div>
 

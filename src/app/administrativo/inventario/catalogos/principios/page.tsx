@@ -35,7 +35,7 @@ export default function PrincipiossPage() {
       itemsPerPage={10}
       modalSize="sm"
     >
-      <GenericForm<PrincipiosForm, boolean>
+      <GenericForm<PrincipiosForm>
         title="Nuevo Principio"
         description="Registre un nuevo Principio"
         onSubmit={(data) => principios.createItem(data)}

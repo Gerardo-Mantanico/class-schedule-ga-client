@@ -1,4 +1,5 @@
 export interface InformacionPaciente {
+  id:number;
   hcId: number;
   edad: number;
   nombreCompleto: string;
@@ -14,4 +15,5 @@ export interface InformacionPaciente {
   telefonoContacto: string;
   procedencia: string;
   motivoConsulta: string;
+  fechaNacimiento: string;
 }

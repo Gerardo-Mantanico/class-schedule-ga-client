@@ -18,7 +18,7 @@ const nextConfig: NextConfig = {
     });
     return config;
   },
-  output: 'export',
+   output: 'export',
     turbopack: {
       rules: {
         '*.svg': {

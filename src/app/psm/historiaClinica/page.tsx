@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-
+import type { JSX } from "react";
 
 import {
   MdOutlineMedicalServices,
@@ -178,10 +178,11 @@ export default function PsmHome() {
                   key={tab.key}
                   className={getTabClassName(tab.key, activeTab)}
                   onClick={() => {
-                     if (tab.key === "finalizar") {
-                   localStorage.removeItem("HistoriClinica");
-                    window.location.href = "/psm";
-        }
+                    if (tab.key === "finalizar") {
+                      localStorage.removeItem("HistoriClinica");
+                      localStorage.removeItem("cita");
+                      window.location.href = "/psm";
+                    }
                     setActiveTab(tab.key);
                     setShowForm(false);
                     setSelected(null);
@@ -291,7 +292,7 @@ export default function PsmHome() {
                 </div>
                 <div className="mb-6 overflow-hidden rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50">
                   <div className="divide-y divide-gray-200 dark:divide-gray-800">
- 
+
                   </div>
                 </div>
                 {showForm && (
@@ -351,7 +352,7 @@ export default function PsmHome() {
                       if (idx !== -1 && idx < TABS.length - 1) setActiveTab(TABS[idx + 1].key as TabKey);
                     }}
                   >
-                    Guardar
+                    siguiente
                   </button>
                 </div>
               </div>
@@ -407,6 +408,7 @@ export default function PsmHome() {
             {activeTab === "impresion" && (
               <div className="mb-6">
                 <ImpresionDiagnostica />
+
                 <div className="flex justify-end mt-4">
                   <button
                     className="rounded-lg bg-blue-600 px-6 py-2 text-white font-semibold shadow hover:bg-blue-700 transition-colors"
@@ -436,7 +438,7 @@ export default function PsmHome() {
                 </div>
               </div>
             )}
-                        {activeTab === "registro medicamento" && (
+            {activeTab === "registro medicamento" && (
               <div className="mb-6">
                 <RecetaMedica />
               </div>

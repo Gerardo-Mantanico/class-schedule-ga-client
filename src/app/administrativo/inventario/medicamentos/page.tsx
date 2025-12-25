@@ -21,7 +21,6 @@ import {
   PageIcon,
 } from "@/icons";
 
-
 export interface UnidadMedida {
   id: number;
   nombre: string;
@@ -56,9 +55,7 @@ export interface Medicamento {
   precioVenta: number;
   activo: boolean;
   principiosActivos: PrincipioActivo[];
-  
 }
-
 
 interface MedicamentoForm {
   id?: number;
@@ -74,7 +71,6 @@ interface MedicamentoForm {
   concentracion?: number;
   unidadMedidaId?: number;
 }
-
 
 export default function MedicamentosPage() {
   const {
@@ -146,7 +142,6 @@ export default function MedicamentosPage() {
         <CatalogCard icon={<GroupIcon />} title="Proveedores" href="/administrativo/inventario/catalogos/proveedores" />
         <CatalogCard icon={<PageIcon />} title="Ubicaciones" href="/administrativo/inventario/catalogos/ubicaciones" />
         <CatalogCard icon={<PageIcon />} title="Ingresar Medicamento" href="/administrativo/inventario/lote" />
-  
       </div>
 
       {/* TABLA + FORM */}
@@ -163,23 +158,21 @@ export default function MedicamentosPage() {
         <GenericForm<MedicamentoForm>
           title="Medicamento"
           description="Crear / editar medicamento"
-          initialValues={(item) =>
-            item
+          initial={
+            medicamentos.item
               ? {
-                  id: item.id,
-                  nombreComercial: item.nombreComercial,
-                  categoriaId: item.categoria?.id,
-                  formaFarmaceuticaId: item.formaFarmaceutica?.id,
-                  unidadesPorEmpaque: item.unidadesPorEmpaque,
-                  stockMinimo: item.stockMinimo,
-                  stockTotal: item.stockTotal,
-                  precioVenta: item.precioVenta,
-                  activo: item.activo,
-
-                  principioActivoId: item.principiosActivos?.[0]?.id,
-                  concentracion: item.principiosActivos?.[0]?.concentracion,
-                  unidadMedidaId:
-                    item.principiosActivos?.[0]?.unidadMedida?.id,
+                  id: medicamentos.item.id,
+                  nombreComercial: medicamentos.item.nombreComercial,
+                  categoriaId: medicamentos.item.categoria?.id,
+                  formaFarmaceuticaId: medicamentos.item.formaFarmaceutica?.id,
+                  unidadesPorEmpaque: medicamentos.item.unidadesPorEmpaque,
+                  stockMinimo: medicamentos.item.stockMinimo,
+                  stockTotal: medicamentos.item.stockTotal,
+                  precioVenta: medicamentos.item.precioVenta,
+                  activo: medicamentos.item.activo,
+                  principioActivoId: medicamentos.item.principiosActivos?.[0]?.id,
+                  concentracion: medicamentos.item.principiosActivos?.[0]?.concentracion,
+                  unidadMedidaId: medicamentos.item.principiosActivos?.[0]?.unidadMedida?.id,
                 }
               : { nombreComercial: "", activo: true }
           }
@@ -190,23 +183,14 @@ export default function MedicamentosPage() {
             };
 
             if (data.categoriaId) payload.categoriaId = data.categoriaId;
-            if (data.formaFarmaceuticaId)
-              payload.formaFarmaceuticaId = data.formaFarmaceuticaId;
-            if (data.unidadesPorEmpaque)
-              payload.unidadesPorEmpaque = data.unidadesPorEmpaque;
-            if (data.stockMinimo)
-              payload.stockMinimo = data.stockMinimo;
-            if (typeof data.stockTotal !== "undefined")
-              payload.stockTotal = data.stockTotal;
-            if (data.precioVenta)
-              payload.precioVenta = data.precioVenta;
-
-            if (data.principioActivoId)
-              payload.principioActivoId = data.principioActivoId;
-            if (data.concentracion)
-              payload.concentracion = data.concentracion;
-            if (data.unidadMedidaId)
-              payload.unidadMedidaId = data.unidadMedidaId;
+            if (data.formaFarmaceuticaId) payload.formaFarmaceuticaId = data.formaFarmaceuticaId;
+            if (data.unidadesPorEmpaque) payload.unidadesPorEmpaque = data.unidadesPorEmpaque;
+            if (data.stockMinimo) payload.stockMinimo = data.stockMinimo;
+            if (typeof data.stockTotal !== "undefined") payload.stockTotal = data.stockTotal;
+            if (data.precioVenta) payload.precioVenta = data.precioVenta;
+            if (data.principioActivoId) payload.principioActivoId = data.principioActivoId;
+            if (data.concentracion) payload.concentracion = data.concentracion;
+            if (data.unidadMedidaId) payload.unidadMedidaId = data.unidadMedidaId;
 
             return data.id
               ? medicamentos.updateItem(data.id, payload)
@@ -214,94 +198,82 @@ export default function MedicamentosPage() {
           }}
           renderFields={({ values, setField, isSaving, onCancel }) => (
             <>
-                <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
-                      <FormInput
-                label="Nombre comercial"
-                value={values.nombreComercial}
-                onChange={(v) => setField("nombreComercial", v)}
-              />
+              <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
+                <FormInput
+                  label="Nombre comercial"
+                  value={values.nombreComercial ??  ""}
+                  onChange={(v: string) => setField("nombreComercial", v)}
+                />
 
-              <FormSelect
-                label="Categoría"
-                options={categorias.items.map((c) => ({
-                  value: String(c.id),
-                  label: c.nombre,
-                }))}
-                value={values.categoriaId ? String(values.categoriaId) : ""}
-                onChange={(v) => setField("categoriaId", v)}
-              />
+                <FormSelect
+                  label="Categoría"
+                  options={categorias.items.map((c) => ({
+                    value: String(c.id),
+                    label: c.nombre,
+                  }))}
+                  value={values.categoriaId ? String(values.categoriaId) : ""}
+                  onChange={(v) => setField("categoriaId", v !== "" ? Number(v) : undefined)}
+                />
+              </div>
 
-                </div>
-          
-            <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
+              <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
+                <FormSelect
+                  label="Forma farmacéutica"
+                  options={formas.items.map((f) => ({
+                    value: String(f.id),
+                    label: f.nombre,
+                  }))}
+                  value={values.formaFarmaceuticaId ? String(values.formaFarmaceuticaId) : ""}
+                  onChange={(v) => setField("formaFarmaceuticaId", v !== "" ? Number(v) : undefined)}
+                />
 
-                     <FormSelect
-                label="Forma farmacéutica"
-                options={formas.items.map((f) => ({
-                  value: String(f.id),
-                  label: f.nombre,
-                }))}
-                value={
-                  values.formaFarmaceuticaId
-                    ? String(values.formaFarmaceuticaId)
-                    : ""
-                }
-                onChange={(v) => setField("formaFarmaceuticaId", v)}
-              />
-
-              <FormNumber
-                label="Unidades por empaque"
-                value={values.unidadesPorEmpaque}
-                onChange={(v) => setField("unidadesPorEmpaque", v)}
-              />
-
-            </div>
-                <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
                 <FormNumber
-                label="Stock mínimo"
-                value={values.stockMinimo}
-                onChange={(v) => setField("stockMinimo", v)}
-              />
+                  label="Unidades por empaque"
+                  value={values.unidadesPorEmpaque}
+                  onChange={(v) => setField("unidadesPorEmpaque", v)}
+                />
+              </div>
 
-              <FormNumber
-                label="Precio"
-                step={0.01}
-                value={values.precioVenta}
-                onChange={(v) => setField("precioVenta", v)}
-              />
-                </div>
-                <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
+              <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
                 <FormNumber
-                label="Stock total"
-                value={values.stockTotal}
-                onChange={(v) => setField("stockTotal", v)}
-              />
-              <div />
-                </div>
-           
-             <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
+                  label="Stock mínimo"
+                  value={values.stockMinimo}
+                  onChange={(v) => setField("stockMinimo", v)}
+                />
+                <FormNumber
+                  label="Precio"
+                  step={0.01}
+                  value={values.precioVenta}
+                  onChange={(v) => setField("precioVenta", v)}
+                />
+              </div>
 
-              <FormSelect
-                label="Principio activo"
-                options={principios.items.map((p) => ({
-                  value: String(p.id),
-                  label: p.nombre,
-                }))}
-                value={
-                  values.principioActivoId
-                    ? String(values.principioActivoId)
-                    : ""
-                }
-                onChange={(v) => setField("principioActivoId", v)}
-              />
+              <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
+                <FormNumber
+                  label="Stock total"
+                  value={values.stockTotal}
+                  onChange={(v) => setField("stockTotal", v)}
+                />
+                <div />
+              </div>
 
-              <FormNumber
-                label="Concentración"
-                value={values.concentracion}
-                onChange={(v) => setField("concentracion", v)}
-              />
+              <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
+                <FormSelect
+                  label="Principio activo"
+                  options={principios.items.map((p) => ({
+                    value: String(p.id),
+                    label: p.nombre,
+                  }))}
+                  value={values.principioActivoId ? String(values.principioActivoId) : ""}
+                  onChange={(v) => setField("principioActivoId", v !== "" ? Number(v) : undefined)}
+                />
 
-             </div>
+                <FormNumber
+                  label="Concentración"
+                  value={values.concentracion}
+                  onChange={(v) => setField("concentracion", v)}
+                />
+              </div>
 
               <FormSelect
                 label="Unidad de medida"
@@ -309,12 +281,8 @@ export default function MedicamentosPage() {
                   value: String(u.id),
                   label: `${u.nombre} (${u.simbolo})`,
                 }))}
-                value={
-                  values.unidadMedidaId
-                    ? String(values.unidadMedidaId)
-                    : ""
-                }
-                onChange={(v) => setField("unidadMedidaId", v)}
+                value={values.unidadMedidaId ? String(values.unidadMedidaId) : ""}
+                onChange={(v) => setField("unidadMedidaId", v !== "" ? Number(v) : undefined)}
               />
 
               <div className="flex items-center gap-2">
@@ -335,10 +303,7 @@ export default function MedicamentosPage() {
                 >
                   Cancelar
                 </Button>
-                <Button
-                  type="submit"
-                  disabled={!values.nombreComercial || isSaving}
-                >
+                <Button type="submit" disabled={!values.nombreComercial || isSaving}>
                   Guardar
                 </Button>
               </div>
@@ -349,7 +314,6 @@ export default function MedicamentosPage() {
     </div>
   );
 }
-
 
 function CatalogCard({
   icon,
@@ -373,7 +337,7 @@ function CatalogCard({
   );
 }
 
-function FormInput({ label, value, onChange }: any) {
+function FormInput({ label, value, onChange }: { label: string; value: string; onChange: (val: string) => void }) {
   return (
     <div className="flex flex-col gap-1">
       <Label>{label}</Label>
@@ -382,7 +346,7 @@ function FormInput({ label, value, onChange }: any) {
   );
 }
 
-function FormNumber({ label, value, onChange, step }: any) {
+function FormNumber({ label, value, onChange, step }: { label: string; value?: number; onChange: (val?: number) => void; step?: number }) {
   return (
     <div className="flex flex-col gap-1">
       <Label>{label}</Label>
@@ -390,21 +354,20 @@ function FormNumber({ label, value, onChange, step }: any) {
         type="number"
         step={step}
         value={value ?? ""}
-        onChange={(e) => onChange(Number(e.target.value))}
+        onChange={(e) => {
+          const val = e.target.value;
+          onChange(val === "" ? undefined : Number(val));
+        }}
       />
     </div>
   );
 }
 
-function FormSelect({ label, options, value, onChange }: any) {
+function FormSelect({ label, options, value, onChange }: { label: string; options: { value: string; label: string }[]; value: string; onChange: (val: string) => void }) {
   return (
     <div className="flex flex-col gap-1">
       <Label>{label}</Label>
-      <Select
-        options={options}
-        value={value}
-        onChange={(v) => onChange(v ? Number(v) : undefined)}
-      />
+      <Select options={options} defaultValue={value} onChange={onChange} />
     </div>
   );
 }

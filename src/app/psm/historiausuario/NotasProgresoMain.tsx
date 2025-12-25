@@ -14,17 +14,23 @@ export default function NotasProgresoMain() {
 
     const { getItemSesion } = useSesiones();
 
-    useEffect(() => {
-        async function cargarNotas() {
-            try {
-                const notasServidor = await getItemSesion(hcId ? parseInt(hcId) : 0);
-                setNotas(notasServidor || []);
-            } catch (error) {
-                console.error("Error al cargar notas de progreso:", error);
+   useEffect(() => {
+    async function cargarNotas() {
+        try {
+            const notasServidor = await getItemSesion(hcId ? parseInt(hcId) : 0);
+            if (Array.isArray(notasServidor)) {
+                setNotas(notasServidor);
+            } else if (notasServidor) {
+                setNotas([notasServidor]);
+            } else {
+                setNotas([]);
             }
+        } catch (error) {
+            console.error("Error al cargar notas de progreso:", error);
         }
-        cargarNotas();
-    }, []);
+    }
+    cargarNotas();
+}, []);
 
     // Cuando se guarda una nueva nota
     const handleGuardarNota = (nuevaNota: Sesion) => {

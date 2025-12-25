@@ -1,4 +1,4 @@
-import { TipoImpresionDiagnostico } from "./TipoImprecion";
+
 
 export interface ImpresionDiagnostica {
   id: number;

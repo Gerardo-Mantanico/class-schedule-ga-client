@@ -99,13 +99,13 @@ export default function CatalogosIndex() {
           </div>
           <Link href="/administrativo/inventario/catalogos/principios" className="text-brand-500 dark:text-brand-400">Ver principios</Link>
         </div>
-        <div className="bg-white rounded-xl shadow p-4 dark:bg-gray-800">
+        {/* <div className="bg-white rounded-xl shadow p-4 dark:bg-gray-800">
           <div className="flex items-center gap-3 rounded-xl">
             <GroupIcon className="w-6 h-6 text-brand-500" />
             <h3 className="font-medium text-gray-900 dark:text-white">Proveedores</h3>
           </div>
-          <Link href="/administrativo/inventario/catalogos/proveedores" className="text-brand-500 dark:text-brand-400">Ver proveedores</Link>
-        </div>
+         <Link href="/administrativo/inventario/catalogos/proveedores" className="text-brand-500 dark:text-brand-400">Ver proveedores</Link>
+        </div> */}
         <div className="bg-white rounded-xl shadow p-4 dark:bg-gray-800">
           <div className="flex items-center gap-3 rounded-xl">
             <PageIcon className="w-6 h-6 text-brand-500" />

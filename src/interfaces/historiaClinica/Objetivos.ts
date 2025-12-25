@@ -1,4 +1,5 @@
 export interface ObjetivosHC {
+  id:number;
   hcId: number;
   objetivoCortoplazo: string;
   objetivoMedioplazo: string;

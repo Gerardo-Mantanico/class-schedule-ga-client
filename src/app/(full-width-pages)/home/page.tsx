@@ -62,13 +62,11 @@ export default function HomePage() {
       <section className="relative overflow-hidden min-h-[600px] flex items-center">
         {/* Background Image */}
         <div className="absolute inset-0">
-          <Image
-          src="/images/carousel/vitaly-gariev-iyeUwItlIPk-unsplash.jpg" 
-            alt="Hero Background"
-            fill
-            className="object-cover blur-[3px] scale-105"
-            priority
-          />
+          <img
+    src="/images/carousel/vitaly-gariev-iyeUwItlIPk-unsplash.jpg"
+    alt="Hero Background"
+    className="w-full h-full object-cover blur-[3px] scale-105"
+  />
         </div>
         
         {/* Overlay - Minimal dark overlay for text readability */}

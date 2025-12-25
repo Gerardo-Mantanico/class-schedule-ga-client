@@ -6,6 +6,7 @@ export interface Hc {
   date: string;
   psicologo: string;
   estado: boolean;
+  colegiadoPsicologo: string;
 }
 
 

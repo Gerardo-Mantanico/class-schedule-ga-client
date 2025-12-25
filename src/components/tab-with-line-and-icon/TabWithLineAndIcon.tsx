@@ -2,8 +2,10 @@
 
 import React, { useState } from 'react';
 
+type TabId = 'Overview' | 'Notification' | 'Analytics' | 'Customers';
+
 const TabWithLineAndIcon = () => {
-  const [activeTab, setActiveTab] = useState('Customers');
+ const [activeTab, setActiveTab] = useState<TabId>('Customers');
 
   const tabs = [
     {
@@ -40,7 +42,7 @@ const TabWithLineAndIcon = () => {
     }
   ];
 
-  const getTabClassName = (tabId) => {
+  const getTabClassName = (tabId : string) => {
     const baseClasses = "inline-flex items-center gap-2 border-b-2 px-2.5 py-2 text-sm font-medium transition-colors duration-200 ease-in-out";
     
     if (activeTab === tabId) {
@@ -85,7 +87,7 @@ const TabWithLineAndIcon = () => {
             <button
               key={tab.id}
               className={getTabClassName(tab.id)}
-              onClick={() => setActiveTab(tab.id)}
+              onClick={() => setActiveTab(tab.id as TabId)}
             >
               {tab.icon}
               {tab.id}

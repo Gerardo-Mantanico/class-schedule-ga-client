@@ -29,9 +29,8 @@ const EscalaPruebaForm: React.FC<EscalaPruebaFormProps> = ({
     <Label>Prueba</Label>
     <Select
       options={pruebasOptions}
-      value={String(prueba.pruebaSeleccionada || prueba.prueba)}
-      onChange={(value) => onChange("pruebaSeleccionada", value)}
-      disabled={disabled}
+      defaultValue={String(prueba.prueba || prueba.prueba)}
+      onChange={(value) => onChange("prueba", value)}
     />
     <Label>Fecha de aplicación</Label>
     <Input
@@ -50,13 +49,13 @@ const EscalaPruebaForm: React.FC<EscalaPruebaFormProps> = ({
     <Label>Interpretación</Label>
     <TextArea
       value={prueba.interpretacion || ""}
-      onChange={(e) => onChange("interpretacion", e.target.value)}
+      onChange={(value) => onChange("interpretacion",value)}
       disabled={disabled}
     />
     <Label>Archivo adjunto</Label>
     <Input
       type="file"
-      accept=".pdf,.png,.jpg,.jpeg"
+      //accept=".pdf,.png,.jpg,.jpeg"
       onChange={(e) => {
         if (e.target.files?.[0]) onFileChange(e.target.files[0]);
       }}

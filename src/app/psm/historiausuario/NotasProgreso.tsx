@@ -23,26 +23,26 @@ export default function NotasProgreso({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const signaturePadRef = useRef<SignaturePad | null>(null);
 
-  const [formData, setFormData] = useState<Sesion>({
-    fechaSesion: new Date().toISOString().slice(0, 16),
-    numeroSesion: 1,
-    asistencia: true,
-    justificacionInasistencia: "",
-    temasAbordados: " ",
-    intervencionesRealizadas: "",
-    repuestaPaciente: "",
-    tareasAsignadas: "",
-    observaciones: "",
-    proximaCita: "",
-    firmaPsicologo: "",
-  });
+const [formData, setFormData] = useState<Sesion>({
+  id: 0, // Valor temporal, será reemplazado al guardar
+  hcId: 0, // Valor temporal, lo reemplazas antes de guardar
+  fecha: new Date().toISOString().slice(0, 16),
+  numeroSesiones: 1,
+  asistencia: true,
+  justificacionInasistencia: "",
+  temasAbordados: "",
+  intervencionesRealizadas: "",
+  repuestaPaciente: "",
+  tareasAsignadas: "",
+  observaciones: "",
+  proximaCita: "",
+  firmaPsicologo: "",
+});
 
   const [etiquetasInput, setEtiquetasInput] = useState("");
   const [errores, setErrores] = useState<Record<string, string>>({});
 
   
-
-
 
   // Inicializar SignaturePad
   useEffect(() => {
@@ -96,7 +96,7 @@ export default function NotasProgreso({
 
 const hcId = typeof window !== "undefined" ? localStorage.getItem("HistoriClinica") : null;
 
- const { getItem, createItem } = useSesiones();
+ const { getItemSesion, createItem } = useSesiones();
 
  const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
@@ -143,7 +143,7 @@ const hcId = typeof window !== "undefined" ? localStorage.getItem("HistoriClinic
             <input
               disabled
               type="datetime-local"
-              value={formData.fechaSesion}
+              value={formData.fecha}
              ></input>
           </div>
 
@@ -154,11 +154,11 @@ const hcId = typeof window !== "undefined" ? localStorage.getItem("HistoriClinic
             </label>
             <input
               type="number"
-              value={formData.numeroSesion}
+              value={formData.numeroSesiones}
               onChange={(e) =>
                 setFormData({
                   ...formData,
-                  numeroSesion: parseInt(e.target.value) || 1,
+                  numeroSesiones: parseInt(e.target.value) || 1,
                 })
               }
               disabled

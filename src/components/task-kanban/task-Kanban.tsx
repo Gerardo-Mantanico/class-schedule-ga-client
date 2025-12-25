@@ -64,6 +64,7 @@ const KanbanBoard = () => {
                             onClick={async (e) => {
                               e.preventDefault();
                               await updateCita(cita.id, {  'estado': "EN_PROCESO" });
+                              localStorage.setItem("cita", cita.id.toString());
                               window.location.href = `/psm/historiaClinica?id=${cita.historiaClinicaId}`;
                             }}
                           >

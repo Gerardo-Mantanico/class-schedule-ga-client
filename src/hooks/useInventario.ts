@@ -44,6 +44,7 @@ export interface Medicamento {
   categoria: Categoria;
   unidadesPorEmpaque: number;
   stockMinimo: number;
+  stockTotal: number;
   precioVenta: number;
   activo: boolean;
   principiosActivos: PrincipioActivo[];

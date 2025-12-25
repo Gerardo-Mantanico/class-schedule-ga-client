@@ -30,7 +30,7 @@ const opciones = [
   { value: "conciliacionPagos", label: "Conciliación de Pagos" },
 ];
 
-function exportar(ref: React.RefObject<HTMLDivElement>, nombre: string, tipo: "pdf" | "img") {
+function exportar(ref: React.RefObject<HTMLDivElement | null>, nombre: string, tipo: "pdf" | "img") {
   if (!ref.current) return;
   html2canvas(ref.current).then(canvas => {
     if (tipo === "pdf") {

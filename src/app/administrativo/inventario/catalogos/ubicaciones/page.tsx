@@ -35,7 +35,7 @@ export default function UbicacionessPage() {
       itemsPerPage={10}
       modalSize="sm"
     >
-      <GenericForm<UbicacionesForm, boolean>
+      <GenericForm<UbicacionesForm>
         title="Nueva Ubicaciones"
         description="Registre una nueva Ubicaciones"
         onSubmit={(data) => ubicaciones.createItem(data)}

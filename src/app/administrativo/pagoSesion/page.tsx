@@ -92,7 +92,6 @@ export default function PagoSesion() {
             <Input
               type="number"
               min="0"
-              step="0.01"
               value={monto}
               onChange={e => setMonto(e.target.value)}
               required

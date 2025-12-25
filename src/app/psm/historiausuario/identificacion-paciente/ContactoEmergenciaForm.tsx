@@ -57,7 +57,6 @@ export default function ContactoEmergenciaForm({
               placeholder="Seleccione parentesco"
               onChange={(value) => onInputChange("parentesco", value)}
               defaultValue={formData.parentesco}
-              disabled={disabled}
               className="max-w-full"
             />
           </div>

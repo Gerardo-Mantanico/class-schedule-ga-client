@@ -158,7 +158,6 @@ export default function AntecedentesFamiliares({
           <div className="mt-3">
             <Checkbox
               id="hayTrastornosFamiliares"
-              name="hayTrastornosFamiliares"
               label="¿Hay antecedentes de trastornos mentales o enfermedades relevantes en la familia?"
               checked={formData.hayTrastornosFamiliares}
               onChange={handleCheckboxChange}

@@ -69,7 +69,7 @@ const motivosAlta = {
   // Inicializar SignaturePads
   useEffect(() => {
     const initializeSignaturePad = (
-      ref: React.RefObject<HTMLCanvasElement>,
+      ref: React.RefObject<HTMLCanvasElement  | null>,
       signaturePadRef: React.MutableRefObject<SignaturePad | null>
     ) => {
       if (ref.current && !signaturePadRef.current) {
@@ -340,7 +340,6 @@ const motivosAlta = {
               ref={canvasPacienteRef}
               className="block w-full cursor-crosshair bg-white"
               style={{ height: "200px" }}
-              disabled={!!altaExistente}
             />
           </div>
           <div className="mt-2 flex gap-2">
@@ -368,7 +367,6 @@ const motivosAlta = {
               ref={canvasPsicologoRef}
               className="block w-full cursor-crosshair bg-white"
               style={{ height: "200px" }}
-              disabled={!!altaExistente}
             />
           </div>
           <div className="mt-2 flex gap-2">

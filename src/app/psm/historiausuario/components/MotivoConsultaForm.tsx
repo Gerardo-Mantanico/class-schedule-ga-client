@@ -15,18 +15,15 @@ export default function MotivoConsultaForm({ value, onChange, disabled }: Props)
         Motivo de Consulta<span className="text-error-500">*</span>
       </Label>
       <TextArea
-        id="motivoConsulta"
-        name="motivoConsulta"
         placeholder="Describa el motivo de consulta (máximo 500 caracteres)"
         value={value}
-        onChange={(e) => {
-          const val = e.target.value;
+        onChange={(value) => {
+          const val = value;
           if (val.length <= 500) {
             onChange(val);
           }
         }}
         disabled={disabled}
-        required
         className="max-w-full"
         rows={5}
       />

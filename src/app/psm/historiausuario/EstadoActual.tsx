@@ -243,8 +243,8 @@ export default function EstadoActual({
             Observaciones Generales
           </Label>
           <TextArea
-            id="observacionesGenerales"
-            name="observacionesGenerales"
+           // id="observacionesGenerales"
+           // name="observacionesGenerales"
             placeholder="Incluya observaciones adicionales sobre el estado actual del paciente"
             value={formData.observacionesGenerales}
             onChange={(v) =>
