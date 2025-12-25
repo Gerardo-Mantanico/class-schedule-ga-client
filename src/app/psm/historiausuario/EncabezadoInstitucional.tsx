@@ -17,7 +17,7 @@ const EncabezadoInstitucional = () => {
   const citaId = typeof window !== "undefined" ? localStorage.getItem("cita") : null;
 
   React.useEffect(() => {
-    hc(citaId)
+    hc(citaId ?? 0)
       .then((data) => {
         setHcs(data);
          if (data?.id) {
