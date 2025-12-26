@@ -26,15 +26,20 @@ const navItems: NavItem[] = [
     name: "Servicios",
     path: "/paciente",
   },
-  {
-    icon: <CalenderIcon />,
-    name: "Citas",
-    path: "/paciente/calendar",
-  },
+  // {
+  //   icon: <CalenderIcon />,
+  //   name: "Citas",
+  //   path: "/paciente/calendar",
+  // },
   {
     icon: <UserCircleIcon />,
     name: "User Profile",
     path: "/paciente/profile",
+  },
+   {
+    icon: <CalenderIcon />,
+    name: "Citas ",
+    path: "/paciente/cita",
   },
 ];
 

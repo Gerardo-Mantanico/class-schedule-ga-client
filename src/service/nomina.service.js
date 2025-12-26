@@ -1,3 +1,4 @@
+import { create } from 'domain';
 import { createCrudService } from './crud.factory';
 
 const NOMINAS = '/nomina';
@@ -15,6 +16,7 @@ export const retencionesApi =  createCrudService("/nomina/retenciones");
 export const descuentosApi =  createCrudService("/nomina/descuentos");
 export const bonosApi =  createCrudService("/nomina/bonos");
 
+export const pagarNomina = createCrudService("/nomina-pagada");
 
 
 export const nominaService = {
@@ -23,4 +25,5 @@ export const nominaService = {
   retencionesApi,
   descuentosApi,
   bonosApi,
+  pagarNomina,
 };

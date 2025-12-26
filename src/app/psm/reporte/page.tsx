@@ -7,17 +7,11 @@ import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
-
-// Datos de ejemplo
-const estadisticas = [
-  { area: "Psicología Infantil", sesiones: 24 },
-  { area: "Psicología Adultos", sesiones: 31 },
-  { area: "Terapia Familiar", sesiones: 12 },
-  { area: "Psicopedagogía", sesiones: 8 },
-];
+import { useReporteSesiones } from "@/hooks/reporte/useReporteSesiones";
 
 export default function ReporteClinico() {
   const refReporte = useRef<HTMLDivElement>(null);
+  const { reportes: estadisticas, loading } = useReporteSesiones();
 
   // Descargar como PDF
   const handleDescargarPDF = async () => {
@@ -78,23 +72,29 @@ export default function ReporteClinico() {
         </Button>
       </div>
       <div ref={refReporte} className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-        <h2 className="text-base font-semibold mb-3 text-gray-800 dark:text-gray-200">Estadísticas de atención por área</h2>
-        <table className="w-full text-left border-collapse text-sm">
-          <thead>
-            <tr>
-              <th className="border-b py-1 px-2 text-gray-700 dark:text-gray-300 font-medium">Área</th>
-              <th className="border-b py-1 px-2 text-gray-700 dark:text-gray-300 font-medium">Número de sesiones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {estadisticas.map((item, idx) => (
-              <tr key={item.area} className={idx % 2 === 0 ? "bg-white dark:bg-gray-900" : "bg-gray-100 dark:bg-gray-700"}>
-                <td className="py-1 px-2">{item.area}</td>
-                <td className="py-1 px-2">{item.sesiones}</td>
+        <h2 className="text-base font-semibold mb-3 text-gray-800 dark:text-gray-200">Estadísticas de atención por área y servicio</h2>
+        {loading ? (
+          <div>Cargando...</div>
+        ) : (
+          <table className="w-full text-left border-collapse text-sm">
+            <thead>
+              <tr>
+                <th className="border-b py-1 px-2 text-gray-700 dark:text-gray-300 font-medium">Área</th>
+                <th className="border-b py-1 px-2 text-gray-700 dark:text-gray-300 font-medium">Servicio</th>
+                <th className="border-b py-1 px-2 text-gray-700 dark:text-gray-300 font-medium">Número de sesiones</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {estadisticas.map((item, idx) => (
+                <tr key={item.servicioId} className={idx % 2 === 0 ? "bg-white dark:bg-gray-900" : "bg-gray-100 dark:bg-gray-700"}>
+                  <td className="py-1 px-2">{item.areaNombre}</td>
+                  <td className="py-1 px-2">{item.servicioNombre}</td>
+                  <td className="py-1 px-2">{item.sesiones}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );

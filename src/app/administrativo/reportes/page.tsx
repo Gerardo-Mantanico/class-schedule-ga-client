@@ -7,16 +7,15 @@ import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import useInventario from "@/hooks/reporte/useReporteGlobal";
+import useNomina from "@/hooks/useNomina";
+
 
 // Datos de ejemplo
 const reportes = {
   financieros: [
     { periodo: "Enero 2025", ingresos: 12000, ganancias: 4000, nomina: 3000 },
     { periodo: "Febrero 2025", ingresos: 15000, ganancias: 5000, nomina: 3200 },
-  ],
-  inventario: [
-    { medicamento: "Paracetamol", stock: 15, minimo: 10, ventas: 120 },
-    { medicamento: "Ibuprofeno", stock: 8, minimo: 10, ventas: 95 },
   ],
   recursosHumanos: [
     { empleado: "Ana Pérez", pagos: 2000, bonos: 200, retenciones: 150 },
@@ -61,6 +60,16 @@ const opciones = [
 export default function Reportes() {
   const [tipo, setTipo] = useState("financieros");
   const refTabla = useRef<HTMLDivElement>(null);
+  const { reporteMedicamentos } = useInventario();
+  const { items: inventario } = reporteMedicamentos;
+
+  const {pagarNomina} = useNomina();
+  const { items: recursosHumanos } = pagarNomina;
+
+
+
+
+
 
   return (
     <div className="max-w-4xl mx-auto p-8 bg-white dark:bg-gray-900 rounded-xl shadow-lg">
@@ -118,21 +127,26 @@ export default function Reportes() {
           <table className="w-full text-left border-collapse text-sm">
             <thead>
               <tr>
-                <th className="border-b py-1 px-2">Medicamento</th>
-                <th className="border-b py-1 px-2">Stock</th>
-                <th className="border-b py-1 px-2">Mínimo</th>
-                <th className="border-b py-1 px-2">Ventas</th>
+                  <th className="border-b py-1 px-2">Nombre Comercial</th>
+                  <th className="border-b py-1 px-2">Stock Total</th>
+                  <th className="border-b py-1 px-2">Stock Mínimo</th>
+                  <th className="border-b py-1 px-2">Precio Venta</th>
+                  <th className="border-b py-1 px-2">Diferencia</th>
+                  <th className="border-b py-1 px-2">Activo</th>
+
               </tr>
             </thead>
             <tbody>
-              {reportes.inventario.map((item, idx) => (
-                <tr key={item.medicamento} className={idx % 2 === 0 ? "bg-white dark:bg-gray-900" : "bg-gray-100 dark:bg-gray-700"}>
-                  <td className="py-1 px-2">{item.medicamento}</td>
-                  <td className="py-1 px-2">{item.stock}</td>
-                  <td className="py-1 px-2">{item.minimo}</td>
-                  <td className="py-1 px-2">{item.ventas}</td>
-                </tr>
-              ))}
+              {inventario.map((item, idx) => (
+                  <tr key={item.medicamentoId} className={idx % 2 === 0 ? "bg-white dark:bg-gray-900" : "bg-gray-100 dark:bg-gray-700"}>
+                    <td className="py-1 px-2">{item.nombreComercial}</td>
+                    <td className="py-1 px-2">{item.stockTotal}</td>
+                    <td className="py-1 px-2">{item.stockMinimo}</td>
+                    <td className="py-1 px-2">{item.precioVenta}</td>
+                    <td className="py-1 px-2">{item.diferencia}</td>
+                    <td className="py-1 px-2">{item.activo ? "Sí" : "No"}</td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         )}
@@ -140,21 +154,35 @@ export default function Reportes() {
           <table className="w-full text-left border-collapse text-sm">
             <thead>
               <tr>
+                <th className="border-b py-1 px-2">Factura</th>
                 <th className="border-b py-1 px-2">Empleado</th>
                 <th className="border-b py-1 px-2">Pagos</th>
                 <th className="border-b py-1 px-2">Bonos</th>
                 <th className="border-b py-1 px-2">Retenciones</th>
+                <th className="border-b py-1 px-2">Netos</th>
+                <th className="border-b py-1 px-2">Fecha Pago</th>
+                <th className="border-b py-1 px-2">Método Pago</th>
               </tr>
             </thead>
             <tbody>
-              {reportes.recursosHumanos.map((item, idx) => (
-                <tr key={item.empleado} className={idx % 2 === 0 ? "bg-white dark:bg-gray-900" : "bg-gray-100 dark:bg-gray-700"}>
-                  <td className="py-1 px-2">{item.empleado}</td>
-                  <td className="py-1 px-2">${item.pagos}</td>
-                  <td className="py-1 px-2">${item.bonos}</td>
-                  <td className="py-1 px-2">${item.retenciones}</td>
-                </tr>
-              ))}
+            {recursosHumanos.map((item, idx) => {
+        // Parsear dataJson si es string
+        const data = typeof item.dataJson === "string" ? JSON.parse(item.dataJson) : item.dataJson;
+        const bonos = (data.bonos || []).reduce((sum: number, b: { monto?: number }) => sum + (b.monto || 0), 0);
+                  const retenciones = (data.retenciones || []).reduce((sum: number, r: { monto?: number }) => sum + (r.monto || 0), 0);
+        return (
+          <tr key={item.codigoFactura} className={idx % 2 === 0 ? "bg-white dark:bg-gray-900" : "bg-gray-100 dark:bg-gray-700"}>
+            <td className="py-1 px-2">{item.codigoFactura}</td>
+            <td className="py-1 px-2">{data.user.firstname} {data.user.lastname}</td>
+            <td className="py-1 px-2">${data.salarioBase}</td>
+            <td className="py-1 px-2">${bonos}</td>
+            <td className="py-1 px-2">${retenciones}</td>
+            <td className="py-1 px-2">${data.salarioBase + bonos - retenciones}</td>
+            <td className="py-1 px-2">{item.fechaPago ? new Date(item.fechaPago).toLocaleDateString() : "N/A"}</td>
+            <td className="py-1 px-2">{data.metodoPago}</td>
+          </tr>
+        );
+      })}
             </tbody>
           </table>
         )}

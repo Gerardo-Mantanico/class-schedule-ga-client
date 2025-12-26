@@ -49,6 +49,58 @@ export interface conceptosNomina {
   tipoId: number;
   monto: number;
 }
+
+export interface NominaReporte {
+  id: number;
+  nominaId: number;
+  userId: number;
+  codigoFactura: string;
+  dataJson: DataJsonNomina; // Puedes usar DataJsonNomina si lo parseas
+  fechaPago: string | null;
+  pagado: boolean;
+  createdAt: string;
+  email: string;
+}
+
+
+export interface DataJsonNomina {
+  id: number;
+  user: {
+    id: number;
+    email: string;
+    lastname: string;
+    firstname: string;
+    phoneNumber?: string;
+  };
+  bonos: {
+    id: number;
+    monto: number;
+    tipoId: number;
+    tipoDescripcion: string;
+  }[];
+  periodo: string;
+  descuentos: {
+    id: number;
+    monto: number;
+    tipoId: number;
+    tipoDescripcion: string;
+  }[];
+  metodoPago: string;
+  detallePago: string;
+  fechaCierre: string;
+  retenciones: {
+    id: number;
+    monto: number;
+    tipoId: number;
+    tipoDescripcion: string;
+  }[];
+  salarioBase: number;
+  salarioBruto: number;
+  sesionesTrabajadas: number;
+  salarioNetoAdeudado: number;
+}
+
+
  
 export const useNomina = () => {
 
@@ -59,6 +111,7 @@ export const useNomina = () => {
   const  retenciones = useCrud<conceptosNomina>(nominaService.retencionesApi);
   const  bonos = useCrud<conceptosNomina>(nominaService.bonosApi);
   const  descuentos = useCrud<conceptosNomina>(nominaService.descuentosApi);
+  const  pagarNomina = useCrud<NominaReporte>(nominaService.pagarNomina);
 
 
 
@@ -67,7 +120,8 @@ export const useNomina = () => {
     retenciones,
     bonos,
     descuentos,
-    tipoPago
+    tipoPago,
+    pagarNomina
   };
 };
 

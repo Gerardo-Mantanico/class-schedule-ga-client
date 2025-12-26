@@ -9,9 +9,10 @@ import { NominaSection } from "@/components/administrativo/NominaSection";
 import GenericModal from "@/components/ui/modal/GenericModal";
 import Select from "@/components/form/Select";
 import Label from "@/components/form/Label";
+import { toast } from "react-hot-toast";
 
 export default function NominaPage() {
-  const { nominas, retenciones, bonos, descuentos } = useNomina();
+  const { nominas, retenciones, bonos, descuentos, pagarNomina } = useNomina();
 
   const [emailSearch, setEmailSearch] = useState("webbank404@gmail.com");
   
@@ -35,6 +36,19 @@ export default function NominaPage() {
   const nomina: NominaDetail | null = nominas.item;
 
   let mainContent: React.ReactNode;
+
+  const pagarNominaHandler = async () => {
+    if (!nomina) return;
+    setOpLoading(true);
+    const success = await pagarNomina.createItem({ email: nomina.user?.email || "" });
+    if (success) {
+      await nominas.getItem(emailSearch);
+        toast.success('La nomina fue pagada a '+nomina.user?.firstname+'');
+      
+    }
+    setOpLoading(false);
+  };
+
 
   if (nominas.loading) {
     mainContent = (
@@ -95,6 +109,10 @@ export default function NominaPage() {
                 className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
               >
                 Eliminar Nómina
+              </Button>
+              <Button className="bg-green-500 hover:bg-green-700" onClick={pagarNominaHandler}>
+                
+                Pagar empleado
               </Button>
             </div>
             <div className="text-sm space-y-1">
