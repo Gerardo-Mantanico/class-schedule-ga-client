@@ -27,55 +27,62 @@ export default function CrearCitaPsicologica() {
 
 
 
-  function generarHorarios(fecha: string) {
-    if (!fecha) return [];
+  function generarHorarios() {
     const horarios: string[] = [];
     for (let h = 8; h <= 16; h++) {
       const horaStr = h.toString().padStart(2, "0") + ":00";
-      horarios.push(`${fecha}T${horaStr}`);
+      horarios.push(horaStr);
     }
     return horarios;
   }
 
 
-  const handleConfirmar = async () => {
-    setError("");
-    setSuccess("");
-    const fechaCita = `${fecha}T${hora}`;
-    const fechaSeleccionada = new Date(fechaCita);
-    const ahora = new Date();
+const handleConfirmar = async () => {
+  setError("");
+  setSuccess("");
+  if (!fecha || !hora) {
+    setError("Selecciona fecha y hora.");
+    return;
+  }
 
-    if (fechaSeleccionada < ahora) {
-      setError("No puedes seleccionar una fecha y hora pasada.");
-      return;
-    }
+  // Construir fecha en UTC para evitar desfase horario
+  const [year, month, day] = fecha.split("-");
+  const [hour, minute] = hora.split(":");
+  const fechaSeleccionada = new Date(Date.UTC(
+    Number(year),
+    Number(month) - 1,
+    Number(day),
+    Number(hour),
+    Number(minute)
+  ));
 
-    const citaNueva = {
-      servicioMedicoId,
-      fechaCita: fechaSeleccionada.toISOString(),
-      nota,
-    };
+  const ahora = new Date();
 
+  if (fechaSeleccionada < ahora) {
+    setError("No puedes seleccionar una fecha y hora pasada.");
+    return;
+  }
 
-    const response = await createCita(citaNueva);
-  
-    if(response){
-       toast.success("cita registrada exitosamente");
-      //etSuccess("¡Tu cita ha sido confirmada!");
-    }
-    else{
-       toast.error("No esta disponbile la cita en este momento, intenta con otra hora o fecha.");
-      // setError("No esta disponbile la cita en este momento, intenta con otra hora o fecha.");
-    }
-   
+  const citaNueva = {
+    servicioMedicoId,
+    fechaCita: fechaSeleccionada.toISOString(),
+    nota,
+  };
 
-    // Limpiar formulario
-    setServicioMedicoId(null);
-    setFecha("");
-    setHora("");
-    setNota("");
-    setStep(1);
+  const response = await createCita(citaNueva);
 
+  if (response) {
+    toast.success("cita registrada exitosamente");
+    window.location.reload();
+  } else {
+    toast.error("No esta disponbile la cita en este momento, intenta con otra hora o fecha.");
+  }
+
+  setServicioMedicoId(null);
+  setFecha("");
+  setHora("");
+  setNota("");
+  setStep(1);
 };
 
   return (
@@ -129,8 +136,8 @@ export default function CrearCitaPsicologica() {
                   onChange={e => setHora(e.target.value)}
                 >
                   <option value="">Selecciona hora</option>
-                  {generarHorarios(fecha).map(h => (
-                    <option key={h} value={h.split("T")[1]}>{h.split("T")[1]}</option>
+                  {generarHorarios().map(h => (
+                    <option key={h} value={h}>{h}</option>
                   ))}
                 </select>
               </div>
@@ -207,6 +214,9 @@ export default function CrearCitaPsicologica() {
                 <div className="flex items-center gap-2 text-gray-700">
                   <MdCalendarToday className="text-blue-500" /> {cita.fechaCita.split("T")[0]}
                   <MdAccessTime className="text-green-500" /> {cita.fechaCita.split("T")[1].substring(0, 5)}
+                </div>
+                <div className="flex items-center gap-2 font-medium text-gray-800">
+                  <MdNoteAdd className="text-purple-600" /> {cita.nota || "(Sin motivo)"}
                 </div>
                 <div className="flex items-center gap-2">
                   {cita.estado === "PROGRAMADA" ? (

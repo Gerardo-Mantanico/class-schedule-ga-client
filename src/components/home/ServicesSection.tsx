@@ -82,8 +82,8 @@ export default function ServicesSection() {
             {services.map((service) => (
                 <div key={service.id} className="group relative p-8 bg-gray-50 dark:bg-white/5 rounded-3xl hover:bg-brand-600 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
                     <div className="mb-6 inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white text-brand-600 shadow-sm group-hover:bg-white/20 group-hover:text-white transition-colors">
-                         {service.image ? (
-                            <Image src={service.image} width={32} height={32} alt={service.nombre} className="rounded-lg object-cover w-8 h-8"/>
+                         {service.img ? (
+                            <Image src={service.img} width={32} height={32} alt={service.nombre} className="rounded-lg object-cover w-8 h-8"/>
                          ) : (
                             <BoxIcon className="w-8 h-8" />
                          )}

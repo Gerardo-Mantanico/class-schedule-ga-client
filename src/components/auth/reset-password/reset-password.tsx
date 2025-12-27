@@ -56,7 +56,7 @@ const ResetPasswordChangeForm = ({ email }: { email: string }) => {
         if (passOk) {
             setSuccess(true);
             setTimeout(() => {
-                window.location.href = "/auth/signIn";
+                window.location.href = "/signin";
             }, 2000);
         }
     };

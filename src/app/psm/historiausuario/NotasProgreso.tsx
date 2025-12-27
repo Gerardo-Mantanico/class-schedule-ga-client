@@ -59,32 +59,31 @@ const [formData, setFormData] = useState<Sesion>({
     }
   }, []);
 
-  const validar = () => {
-    const nuevosErrores: Record<string, string> = {};
 
+const validar = () => {
+  const nuevosErrores: Record<string, string> = {};
 
-    // Validar próxima cita
-    const proximaCita = new Date(formData.proximaCita);
-    if (proximaCita <= new Date()) {
-      nuevosErrores.proximaCita = "La próxima cita debe ser posterior a hoy";
-    }
+  // Validar próxima cita: debe ser mayor a la fecha de la sesión
+  const fechaSesion = new Date(formData.fecha);
+  const proximaCita = new Date(formData.proximaCita);
+  if (!formData.proximaCita || proximaCita <= fechaSesion) {
+    nuevosErrores.proximaCita = "La próxima cita debe ser posterior a la fecha de la sesión";
+  }
 
-    // Si no asiste, requiere justificación
-    if (!formData.asistencia && !formData.justificacionInasistencia) {
-      nuevosErrores.justificacionInasistencia =
-        "La justificación es requerida cuando el paciente no asiste";
-    }
+  // Si no asiste, requiere justificación
+  if (!formData.asistencia && !formData.justificacionInasistencia) {
+    nuevosErrores.justificacionInasistencia =
+      "La justificación es requerida cuando el paciente no asiste";
+  }
 
+  // Validar firma
+  if (signaturePadRef.current?.isEmpty()) {
+    nuevosErrores.firma = "La firma digital es requerida";
+  }
 
-
-    // Validar firma
-    if (signaturePadRef.current?.isEmpty()) {
-      nuevosErrores.firma = "La firma digital es requerida";
-    }
-
-    setErrores(nuevosErrores);
-    return Object.keys(nuevosErrores).length === 0;
-  };
+  setErrores(nuevosErrores);
+  return Object.keys(nuevosErrores).length === 0;
+};
 
 
 

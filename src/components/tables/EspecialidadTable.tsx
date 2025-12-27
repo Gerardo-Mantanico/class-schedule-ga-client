@@ -10,6 +10,7 @@ import Input from "../form/input/InputField";
 import Label from "../form/Label";
 import TextArea from "../form/input/TextArea";
 import { GenericTable, Column } from "../ui/table/GenericTable";
+import { toast } from "react-hot-toast";
 
 interface Especialidad {
   id: number;
@@ -95,6 +96,7 @@ export default function EspecialidadTable() {
     if (success) {
       closeModal();
     }
+    toast.success(`Especialidad ${selectedEspecialidad ? "actualizada" : "creada"} con éxito`);
   };
 
   if (loading && especialidades.length === 0) return <div>Cargando especialidad...</div>;

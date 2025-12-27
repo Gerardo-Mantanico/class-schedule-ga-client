@@ -7,22 +7,7 @@ import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
-
-// Datos de ejemplo
-const reportes = {
-  cuentasPorCobrar: [
-    { cliente: "Ana Pérez", total: 1200, vencimiento: "2025-01-15" },
-    { cliente: "Luis Gómez", total: 800, vencimiento: "2025-01-20" },
-  ],
-  historialClientes: [
-    { cliente: "Ana Pérez", sesiones: 10, ultimoPago: "2024-12-10" },
-    { cliente: "Luis Gómez", sesiones: 8, ultimoPago: "2024-12-15" },
-  ],
-  conciliacionPagos: [
-    { fecha: "2024-12-10", cliente: "Ana Pérez", monto: 300, metodo: "Efectivo" },
-    { fecha: "2024-12-15", cliente: "Luis Gómez", monto: 200, metodo: "Tarjeta" },
-  ],
-};
+import { usePagoSesion } from "@/hooks/usePagoSesion";
 
 const opciones = [
   { value: "cuentasPorCobrar", label: "Cuentas por Cobrar" },
@@ -59,8 +44,24 @@ function exportarExcel(datos: any[], nombre: string) {
 }
 
 export default function HistorialReportes() {
-  const [tipo, setTipo] = useState("cuentasPorCobrar");
+  const [tipo, setTipo] = useState("conciliacionPagos");
   const refTabla = useRef<HTMLDivElement>(null);
+
+  // Usa el hook para obtener los pagos
+  const { pagos, loading, error } = usePagoSesion();
+
+  // Estructura para conciliación de pagos
+  const conciliacionPagos = pagos.map(p => ({
+    id: p.id,
+    codigo: p.codigo,
+    fecha: p.fechaPago ? new Date(p.fechaPago).toLocaleDateString() : "",
+    cliente: p.pacienteId,
+    sesion: p.sessionId,
+    monto: p.monto,
+    pagado: p.pagado ? "Sí" : "No",
+    nota: p.nota,
+    comprobante: p.comprobante,
+  }));
 
   return (
     <div className="max-w-4xl mx-auto p-8 bg-white dark:bg-gray-900 rounded-xl shadow-lg">
@@ -88,67 +89,50 @@ export default function HistorialReportes() {
       <div className="flex gap-1 mb-2">
         <Button onClick={() => exportar(refTabla, tipo, "pdf")} className="bg-red-500 hover:bg-red-600 text-white text-xs px-2 py-1 rounded flex items-center gap-1"><MdPictureAsPdf size={14}/>PDF</Button>
         <Button onClick={() => exportar(refTabla, tipo, "img")} className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-2 py-1 rounded flex items-center gap-1"><MdImage size={14}/>Imagen</Button>
-        <Button onClick={() => exportarExcel(reportes[tipo as keyof typeof reportes], tipo)} className="bg-green-500 hover:bg-green-600 text-white text-xs px-2 py-1 rounded flex items-center gap-1"><MdTableChart size={14}/>Excel</Button>
+        <Button onClick={() => exportarExcel(conciliacionPagos, tipo)} className="bg-green-500 hover:bg-green-600 text-white text-xs px-2 py-1 rounded flex items-center gap-1"><MdTableChart size={14}/>Excel</Button>
       </div>
 
       <div ref={refTabla} className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-        {tipo === "cuentasPorCobrar" && (
+        {loading ? (
+          <div>Cargando pagos...</div>
+        ) : error ? (
+          <div className="text-red-600">{error}</div>
+        ) : (
           <table className="w-full text-left border-collapse text-sm">
             <thead>
               <tr>
-                <th className="border-b py-1 px-2">Cliente</th>
-                <th className="border-b py-1 px-2">Total ($)</th>
-                <th className="border-b py-1 px-2">Vencimiento</th>
-              </tr>
-            </thead>
-            <tbody>
-              {reportes.cuentasPorCobrar.map((item, idx) => (
-                <tr key={item.cliente} className={idx % 2 === 0 ? "bg-white dark:bg-gray-900" : "bg-gray-100 dark:bg-gray-700"}>
-                  <td className="py-1 px-2">{item.cliente}</td>
-                  <td className="py-1 px-2">${item.total}</td>
-                  <td className="py-1 px-2">{item.vencimiento}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-        {tipo === "historialClientes" && (
-          <table className="w-full text-left border-collapse text-sm">
-            <thead>
-              <tr>
-                <th className="border-b py-1 px-2">Cliente</th>
-                <th className="border-b py-1 px-2">Sesiones</th>
-                <th className="border-b py-1 px-2">Último Pago</th>
-              </tr>
-            </thead>
-            <tbody>
-              {reportes.historialClientes.map((item, idx) => (
-                <tr key={item.cliente} className={idx % 2 === 0 ? "bg-white dark:bg-gray-900" : "bg-gray-100 dark:bg-gray-700"}>
-                  <td className="py-1 px-2">{item.cliente}</td>
-                  <td className="py-1 px-2">{item.sesiones}</td>
-                  <td className="py-1 px-2">{item.ultimoPago}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-        {tipo === "conciliacionPagos" && (
-          <table className="w-full text-left border-collapse text-sm">
-            <thead>
-              <tr>
+                <th className="border-b py-1 px-2">Código</th>
                 <th className="border-b py-1 px-2">Fecha</th>
                 <th className="border-b py-1 px-2">Cliente</th>
+                <th className="border-b py-1 px-2">Sesión</th>
                 <th className="border-b py-1 px-2">Monto ($)</th>
-                <th className="border-b py-1 px-2">Método</th>
+                <th className="border-b py-1 px-2">Pagado</th>
+                <th className="border-b py-1 px-2">Comprobante</th>
               </tr>
             </thead>
             <tbody>
-              {reportes.conciliacionPagos.map((item, idx) => (
-                <tr key={item.fecha + item.cliente} className={idx % 2 === 0 ? "bg-white dark:bg-gray-900" : "bg-gray-100 dark:bg-gray-700"}>
+              {conciliacionPagos.map((item, idx) => (
+                <tr key={item.id} className={idx % 2 === 0 ? "bg-white dark:bg-gray-900" : "bg-gray-100 dark:bg-gray-700"}>
+                  <td className="py-1 px-2">{item.codigo}</td>
                   <td className="py-1 px-2">{item.fecha}</td>
                   <td className="py-1 px-2">{item.cliente}</td>
+                  <td className="py-1 px-2">{item.sesion}</td>
                   <td className="py-1 px-2">${item.monto}</td>
-                  <td className="py-1 px-2">{item.metodo}</td>
+                  <td className="py-1 px-2">{item.pagado}</td>
+                  <td className="py-1 px-2">
+                    {item.comprobante ? (
+                      <a
+                        href={item.comprobante}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 underline"
+                      >
+                        Ver comprobante
+                      </a>
+                    ) : (
+                      <span className="text-gray-400">Sin comprobante</span>
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>

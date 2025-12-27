@@ -123,6 +123,18 @@ const KanbanBoard = () => {
                               </span>
                             </div>
                           </div>
+                             <Link
+        href={`/psm/historiaClinica?id=${cita.historiaClinicaId}`}
+        className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-orange-50 text-orange-700 hover:bg-orange-100 dark:bg-orange-400/10 dark:text-orange-300 dark:hover:bg-orange-400/20 transition"
+        title="Continuar consulta"
+        onClick={async (e) => {
+          e.preventDefault();
+          localStorage.setItem("cita", cita.id.toString());
+          window.location.href = `/psm/historiaClinica?id=${cita.historiaClinicaId}`;
+        }}
+      >
+          <span className="text-sm font-medium">En proceso</span>
+      </Link>
                         </div>
                         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
                           <div className="flex-1">

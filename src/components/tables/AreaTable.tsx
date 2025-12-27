@@ -1,21 +1,23 @@
 "use client";
 import React, { useState } from "react";
 import Image from "next/image";
-
 import { useModal } from "../../hooks/useModal";
 import { useArea } from "../../hooks/useArea";
+import { useServicios } from "../../hooks/useServicios"; // Importa el hook de servicios
 import { Modal } from "../ui/modal";
 import Button from "../ui/button/Button";
 import Input from "../form/input/InputField";
 import Label from "../form/Label";
 import TextArea from "../form/input/TextArea";
 import { GenericTable, Column } from "../ui/table/GenericTable";
+import { toast } from "react-hot-toast";
 
 interface Area {
   id: number;
   nombre: string;
   descripcion?: string;
   image?: string;
+  servicioId?: number;
 }
 
 const columns: Column<Area>[] = [
@@ -47,13 +49,15 @@ const columns: Column<Area>[] = [
 
 export default function AreaTable() {
   const { isOpen, openModal, closeModal } = useModal();
-  const {areas, loading, error, createArea, updateArea, deleteArea } = useArea();
+  const { areas, loading, error, createArea, updateArea, deleteArea } = useArea();
+  const { services } = useServicios(); // Obtén los servicios
 
   const [selectedArea, setSelectedArea] = useState<Area | null>(null);
   const [formData, setFormData] = useState({
     nombre: "",
     descripcion: "",
     image: "",
+    servicioId: 0,
   });
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -69,6 +73,7 @@ export default function AreaTable() {
       nombre: "",
       descripcion: "",
       image: "",
+      servicioId: 0,
     });
     openModal();
   };
@@ -79,8 +84,23 @@ export default function AreaTable() {
       nombre: area.nombre,
       descripcion: area.descripcion || "",
       image: area.image || "",
+      servicioId: area.servicioId || 0,
     });
     openModal();
+  };
+
+  // Manejar la carga de imagen y convertirla a base64
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setFormData((prev) => ({
+        ...prev,
+        image: reader.result as string,
+      }));
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleSave = async (e: React.FormEvent) => {
@@ -91,22 +111,20 @@ export default function AreaTable() {
     } else {
       success = await createArea(formData);
     }
-    
     if (success) {
       closeModal();
     }
+    toast.success(`Área ${selectedArea ? "actualizada" : "creada"} con éxito`);
   };
 
   if (loading && areas.length === 0) return <div>Cargando area...</div>;
-  // Solo mostrar error a pantalla completa si no hay datos
   if (error && areas.length === 0) return <div>Error: {error}</div>;
 
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/5 dark:bg-white/3">
-      {/* Header con botón a la derecha */}
       <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-white/5">
         <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-          Areaes
+          Areas
         </h3>
         <Button size="sm" onClick={handleAdd}>
           Agregar Area
@@ -132,8 +150,8 @@ export default function AreaTable() {
             </h4>
             <p className="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
               {selectedArea
-                ? "Actualizar los detalles del la area"
-                : "Agregar un nueva area"}
+                ? "Actualizar los detalles del área"
+                : "Agregar un nueva área"}
             </p>
           </div>
           <form className="flex flex-col" onSubmit={handleSave}>
@@ -167,8 +185,37 @@ export default function AreaTable() {
                     ></TextArea>
                   </div>
                   <div className="col-span-2">
+                    <Label>Seleccionar servicio</Label>
+                    <select
+                      className="w-full border rounded px-3 py-2 dark:bg-gray-800 dark:text-white"
+                      value={formData.servicioId}
+                      onChange={e =>
+                        setFormData({ ...formData, servicioId: Number(e.target.value) })
+                      }
+                      required
+                    >
+                      <option value={0}>Seleccione un servicio</option>
+                      {services.map((servicio: any) => (
+                        <option key={servicio.id} value={servicio.id}>
+                          {servicio.nombre}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="col-span-2">
                     <Label>Subir imagen</Label>
-                    <Input type="file" />
+                    <Input type="file"  onChange={handleImageChange} />
+                    {formData.image && (
+                      <div className="mt-2">
+                        <Image
+                          src={formData.image}
+                          alt="Vista previa"
+                          width={80}
+                          height={80}
+                          className="rounded"
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

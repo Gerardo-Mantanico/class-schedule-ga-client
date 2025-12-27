@@ -177,7 +177,6 @@ const handleSubmit = async (e: React.FormEvent) => {
     return (
       <div className="rounded-sm border border-stroke bg-white shadow-default">
         {loading && <div className="text-center text-gray-500">Cargando...</div>}
-        {error && <div className="text-center text-red-500">{String(error)}</div>}
         <div className="border-b border-stroke px-4 py-6 sm:px-6">
           <h3 className="font-medium text-black">Evaluaciones Periódicas</h3>
         </div>

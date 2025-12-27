@@ -6,7 +6,7 @@ interface Service {
   nombre: string;
   descripcion: string;
   precio: string;
-  image?: string;
+  img?: string;
 }
 
 export const useServicios = () => {
@@ -16,7 +16,7 @@ export const useServicios = () => {
       ...typedData,
       id: typedData.id ? Number(typedData.id) : undefined,
       precio: typedData.precio ? Number(typedData.precio) : undefined,
-      image: typedData.image === "" ? null : typedData.image
+      img: typedData.img === "" ? null : typedData.img
     };
   };
 

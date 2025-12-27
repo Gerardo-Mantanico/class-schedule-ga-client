@@ -10,13 +10,14 @@ import Input from "../form/input/InputField";
 import Label from "../form/Label";
 import TextArea from "../form/input/TextArea";
 import { GenericTable, Column } from "../ui/table/GenericTable";
+import toast from "react-hot-toast";
 
 interface Service {
   id: number;
   nombre: string;
   descripcion: string;
   precio: string;
-  image?: string;
+  img?: string;
 }
 
 const columns: Column<Service>[] = [
@@ -28,7 +29,7 @@ const columns: Column<Service>[] = [
           <Image
             width={40}
             height={40}
-            src={service.image || "/images/user/user-17.jpg"}
+            src={service.img || "/images/user/user-17.jpg"}
             alt={service.nombre}
           />
         </div>
@@ -59,7 +60,7 @@ export default function ServiceTable() {
     nombre: "",
     precio: "",
     descripcion: "",
-    image: "",
+    img: "",
   });
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -75,7 +76,7 @@ export default function ServiceTable() {
       nombre: "",
       precio: "",
       descripcion: "",
-      image: "",
+      img: "",
     });
     openModal();
   };
@@ -86,7 +87,7 @@ export default function ServiceTable() {
       nombre: service.nombre,
       precio: service.precio,
       descripcion: service.descripcion,
-      image: service.image || "",
+      img: service.img || "",
     });
     openModal();
   };
@@ -98,6 +99,7 @@ export default function ServiceTable() {
     } else {
       await createService(formData);
     }
+    toast.success(`Servicio ${selectedService ? "actualizado" : "creado"} con éxito`);
     closeModal();
   };
 
@@ -177,7 +179,32 @@ export default function ServiceTable() {
                   </div>
                   <div className="col-span-2">
                     <Label>Subir imagen</Label>
-                    <Input type="file" />
+                    <Input
+                      type="file"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onloadend = () => {
+                            setFormData((prev) => ({
+                              ...prev,
+                              img: reader.result as string,
+                            }));
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
+                    {/* Vista previa de la imagen */}
+                    {formData.img && (
+                      <div className="mt-2">
+                        <img
+                          src={formData.img}
+                          alt="Vista previa"
+                          className="h-20 w-20 object-cover rounded"
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
