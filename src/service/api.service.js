@@ -1,5 +1,5 @@
 // Configuración base
-const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8090/api/v1';
+const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8090/api/v1' || 'http://alb-mi-app-1501020194.us-east-2.elb.amazonaws.com/api/v1';
 
 // Función interna para hacer requests
 const request = async (endpoint, method, data = null, customHeaders = {}) => {
