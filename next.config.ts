@@ -2,8 +2,10 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: 'export',
+  trailingSlash: true, // Agrega esto para que S3 encuentre las rutas correctamente
   images: { unoptimized: true },
-  // Esto silencia el error de Turbopack
+  
+  // Configuración para SVGs
   turbopack: {
     rules: {
       '*.svg': {
