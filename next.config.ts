@@ -1,16 +1,17 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  async redirects() {
-    return [
-      {
-        source: '/',
-        destination: '/home',
-        permanent: true,
+  output: 'export',
+  images: { unoptimized: true },
+  // Esto silencia el error de Turbopack
+  turbopack: {
+    rules: {
+      '*.svg': {
+        loaders: ['@svgr/webpack'],
+        as: '*.js',
       },
-    ]
+    },
   },
-  /* config options here */
   webpack(config) {
     config.module.rules.push({
       test: /\.svg$/,
@@ -18,17 +19,6 @@ const nextConfig: NextConfig = {
     });
     return config;
   },
-  output: 'export',
-  images: { unoptimized: true },
-    turbopack: {
-      rules: {
-        '*.svg': {
-          loaders: ['@svgr/webpack'],
-          as: '*.js',
-        },
-      },
-    },
-  
 };
 
 export default nextConfig;
