@@ -202,21 +202,7 @@ export default function AreaTable() {
                       ))}
                     </select>
                   </div>
-                  <div className="col-span-2">
-                    <Label>Subir imagen</Label>
-                    <Input type="file"  onChange={handleImageChange} />
-                    {formData.image && (
-                      <div className="mt-2">
-                        <Image
-                          src={formData.image}
-                          alt="Vista previa"
-                          width={80}
-                          height={80}
-                          className="rounded"
-                        />
-                      </div>
-                    )}
-                  </div>
+
                 </div>
               </div>
             </div>

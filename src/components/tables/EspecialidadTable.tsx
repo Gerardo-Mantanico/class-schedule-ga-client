@@ -168,10 +168,6 @@ export default function EspecialidadTable() {
                       }
                     ></TextArea>
                   </div>
-                  <div className="col-span-2">
-                    <Label>Subir imagen</Label>
-                    <Input type="file" />
-                  </div>
                 </div>
               </div>
             </div>

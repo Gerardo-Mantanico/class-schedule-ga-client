@@ -78,37 +78,58 @@ export default function ServicesSection() {
         </div>
 
         {/* Services Grid */}
+
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {services.map((service) => (
-                <div key={service.id} className="group relative p-8 bg-gray-50 dark:bg-white/5 rounded-3xl hover:bg-brand-600 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
-                    <div className="mb-6 inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white text-brand-600 shadow-sm group-hover:bg-white/20 group-hover:text-white transition-colors">
-                         {service.img ? (
-                            <Image src={service.img} width={32} height={32} alt={service.nombre} className="rounded-lg object-cover w-8 h-8"/>
-                         ) : (
-                            <BoxIcon className="w-8 h-8" />
-                         )}
-                    </div>
-                    <h3 className="mb-3 text-xl font-bold text-gray-900 dark:text-white group-hover:text-white transition-colors">
-                        {service.nombre}
+                <div
+                  key={service.id}
+                  className="group relative flex flex-col bg-white dark:bg-gray-800 rounded-3xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300"
+                >
+                  {/* Imagen del servicio */}
+                  <div className="relative w-full h-48 bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+                    {service.img ? (
+                      <Image
+                        src={service.img}
+                        alt={service.nombre}
+                        fill
+                        style={{ objectFit: "cover" }}
+                        className="transition-transform duration-500 group-hover:scale-105"
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                      />
+                    ) : (
+                      <Image
+                        src="/images/servicio-generico.png"
+                        alt="Servicio genérico"
+                        fill
+                        style={{ objectFit: "cover" }}
+                        className="transition-transform duration-500 group-hover:scale-105"
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                      />
+                    )}
+                  </div>
+                  {/* Contenido de la card */}
+                  <div className="flex-1 flex flex-col p-6">
+                    <h3 className="mb-2 text-xl font-bold text-gray-900 dark:text-white group-hover:text-brand-600 transition-colors">
+                      {service.nombre}
                     </h3>
-                    <p className="text-gray-600 dark:text-gray-400 group-hover:text-white/90 transition-colors mb-6 line-clamp-3">
-                        {service.descripcion}
+                    <p className="mb-4 text-gray-600 dark:text-gray-300 line-clamp-3 flex-1">
+                      {service.descripcion}
                     </p>
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center text-brand-600 font-semibold group-hover:text-white transition-colors cursor-pointer">
-                            <span>Más información</span>
-                            <ArrowRightIcon className="w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform" />
-                        </div>
-                        {service.precio && (
-                           <span className="text-sm font-bold text-gray-900 dark:text-white bg-white/20 px-3 py-1 rounded-full group-hover:text-white group-hover:bg-white/20">
-                             ${service.precio}
-                           </span>
-                        )}
+                    <div className="flex items-center justify-between mt-auto">
+                      <span className="inline-flex items-center text-brand-600 font-semibold group-hover:text-brand-800 transition-colors cursor-pointer">
+                        Más información
+                        <ArrowRightIcon className="w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform" />
+                      </span>
+                      {service.precio && (
+                        <span className="text-sm font-bold text-brand-600 bg-brand-50 dark:bg-brand-900/30 px-3 py-1 rounded-full">
+                          ${service.precio}
+                        </span>
+                      )}
                     </div>
+                  </div>
                 </div>
             ))}
         </div>
-
       </div>
     </section>
   );

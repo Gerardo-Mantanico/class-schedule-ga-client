@@ -11,6 +11,7 @@ import Label from "../form/Label";
 import TextArea from "../form/input/TextArea";
 import { GenericTable, Column } from "../ui/table/GenericTable";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 interface Service {
   id: number;
@@ -54,7 +55,7 @@ const columns: Column<Service>[] = [
 export default function ServiceTable() {
   const { isOpen, openModal, closeModal } = useModal();
   const { services, loading, error, createService, updateService, deleteService } = useServicios();
-
+  const router = useRouter();
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [formData, setFormData] = useState({
     nombre: "",
@@ -100,6 +101,7 @@ export default function ServiceTable() {
       await createService(formData);
     }
     toast.success(`Servicio ${selectedService ? "actualizado" : "creado"} con éxito`);
+    router.refresh();
     closeModal();
   };
 

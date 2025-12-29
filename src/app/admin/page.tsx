@@ -29,14 +29,6 @@ export default function Ecommerce() {
       <div className="col-span-12">
         <StatisticsChart />
       </div>
-
-      <div className="col-span-12 xl:col-span-5">
-        <DemographicCard />
-      </div>
-
-      <div className="col-span-12 xl:col-span-7">
-        <RecentOrders />
-      </div>
     </div>
   );
 }
