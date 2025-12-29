@@ -221,7 +221,7 @@ export default function SearchPSMPage() {
             <div className="lg:col-span-2">
               <AsyncSearchableSelect
                 label="Buscar Empleado"
-                searchEndpoint="http://localhost:8090/api/v1/users/search"
+                searchEndpoint="http://alb-mi-app-1501020194.us-east-2.elb.amazonaws.com/api/v1/users/search"
                 placeholder="Buscar por nombre o DPI..."
                 searchPlaceholder="Escribe nombre o DPI del empleado..."
                 value={selectedUserId ? String(selectedUserId) : ""}
