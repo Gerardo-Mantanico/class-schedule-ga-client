@@ -53,7 +53,7 @@ export default function NewNominaPage() {
             <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
               <AsyncSearchableSelect
                 label="Usuario / Empleado"
-                searchEndpoint="http://localhost:8090/api/v1/users/search"
+                searchEndpoint="http://alb-mi-app-1501020194.us-east-2.elb.amazonaws.com/api/v1/users/search"
                 placeholder="Buscar empleado por nombre o DPI..."
                 searchPlaceholder="Escribe nombre o DPI del empleado..."
                 value={values.userId ? String(values.userId) : ""}

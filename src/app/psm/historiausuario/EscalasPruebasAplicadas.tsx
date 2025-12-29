@@ -140,7 +140,7 @@ export default function EscalasPruebasAplicadas({
       }
 
       const response = await fetch(
-        "http://localhost:8090/api/v1/escala-pruebas",
+        "http://alb-mi-app-1501020194.us-east-2.elb.amazonaws.com/api/v1/escala-pruebas",
         {
           method: "POST",
           headers: {
