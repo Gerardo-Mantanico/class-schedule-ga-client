@@ -130,7 +130,7 @@ export default function AreaPage() {
 
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `http://localhost:8090/api/v1/psm/${selectedUserId}`,
+        `http://alb-mi-app-1501020194.us-east-2.elb.amazonaws.com/api/v1/psm/${selectedUserId}`,
         
         {
           method: "POST",
