@@ -24,7 +24,7 @@ jobs:
       - name: Build project
         env:
           # Esta variable es la que usará tu código de React/Vite para hablar con el Backend
-          NEXT_PUBLIC_API_URL: "http://${{ secrets.EC2_HOST }}:8080/api/v1"
+          NEXT_PUBLIC_API_URL: "http://alb-mi-app-1501020194.us-east-2.elb.amazonaws.com/api/v1"
           
         run: npm run build
 
