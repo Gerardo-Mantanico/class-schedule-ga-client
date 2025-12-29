@@ -6,16 +6,18 @@ import Input from "../form/input/InputField";
 import Label from "../form/Label";
 import { useAuth } from "../../context/AuthContext";
 import { userApi } from "../../service/user.service";
+import Select from "../form/Select";
 
 export default function UserInfoCard() {
   const { isOpen, openModal, closeModal } = useModal();
   const { currentUser, refreshUser, isLoading } = useAuth();
-  
+
   const [formData, setFormData] = useState({
     firstname: "",
     lastname: "",
     email: "",
     phoneNumber: "",
+    use2fa: false,
   });
 
   useEffect(() => {
@@ -25,22 +27,24 @@ export default function UserInfoCard() {
         lastname: currentUser.lastname,
         email: currentUser.email,
         phoneNumber: currentUser.phoneNumber,
+        use2fa: currentUser.use2fa,
       });
     }
   }, [currentUser]);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!currentUser) return;
-    
+
     const dataToSend = {
       firstname: formData.firstname,
       lastname: formData.lastname,
       email: formData.email,
       phoneNumber: formData.phoneNumber,
+      use2fa: formData.use2fa,
     };
-    
+
     await userApi.update(currentUser.id, dataToSend);
     await refreshUser();
     closeModal();
@@ -131,6 +135,19 @@ export default function UserInfoCard() {
                 {currentUser.active ? "Activo" : "Inactivo"}
               </p>
             </div>
+            <div>
+              <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
+                2FA
+              </p>
+              <p
+                className={`text-sm font-medium ${currentUser.use2fa
+                  ? "text-green-600 dark:text-green-400"
+                  : "text-red-600 dark:text-red-400"
+                  }`}
+              >
+                {currentUser.use2fa ? "Activo" : "Inactivo"}
+              </p>
+            </div>
           </div>
         </div>
 
@@ -177,8 +194,8 @@ export default function UserInfoCard() {
                 <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
                   <div className="col-span-2 lg:col-span-1">
                     <Label>Nombre</Label>
-                    <Input 
-                      type="text" 
+                    <Input
+                      type="text"
                       value={formData.firstname}
                       onChange={(e) => setFormData({ ...formData, firstname: e.target.value })}
                       required
@@ -187,8 +204,8 @@ export default function UserInfoCard() {
 
                   <div className="col-span-2 lg:col-span-1">
                     <Label>Apellido</Label>
-                    <Input 
-                      type="text" 
+                    <Input
+                      type="text"
                       value={formData.lastname}
                       onChange={(e) => setFormData({ ...formData, lastname: e.target.value })}
                     />
@@ -196,8 +213,8 @@ export default function UserInfoCard() {
 
                   <div className="col-span-2 lg:col-span-1">
                     <Label>Email</Label>
-                    <Input 
-                      type="email" 
+                    <Input
+                      type="email"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       required
@@ -206,12 +223,26 @@ export default function UserInfoCard() {
 
                   <div className="col-span-2 lg:col-span-1">
                     <Label>Teléfono</Label>
-                    <Input 
-                      type="tel" 
+                    <Input
+                      type="tel"
                       value={formData.phoneNumber}
                       onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
                     />
                   </div>
+                  <div className="col-span-2 lg:col-span-1">
+                    <Label>2FA</Label>
+                    <Select
+                      defaultValue={formData.use2fa ? "true" : "false"}
+                      options={[
+                        { value: "true", label: "Activo" },
+                        { value: "false", label: "Inactivo" },
+                      ]}
+                      onChange={(value: string) =>
+                        setFormData({ ...formData, use2fa: value === "true" })
+                      }
+                    />
+                  </div>
+
                 </div>
               </div>
             </div>

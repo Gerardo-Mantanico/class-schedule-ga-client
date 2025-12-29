@@ -14,15 +14,15 @@ import {
 } from '@/icons';
 
 const inventarioMinimo = [
-  { nombre: "Paracetamol", stock: 5, minimo: 10 },
-  { nombre: "Ibuprofeno", stock: 8, minimo: 10 },
+  { nombre: "Aspirina", stock: 100, minimo: 50 },
+  { nombre: "Ibuprofeno", stock: 5, minimo: 20 },
 ];
 
 export default function CatalogosIndex() {
   // Ejemplo de datos para gráfica (puedes integrar una librería real como recharts/chart.js)
-  const totalCategorias = 6;
-  const totalProductos = 120;
-  const totalProveedores = 8;
+  const totalCategorias = 3;
+  const totalProductos = 2;
+  const totalProveedores = 1;
 
   return (
     <div className="space-y-4">
