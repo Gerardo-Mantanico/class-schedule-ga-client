@@ -1,9 +1,9 @@
 import { createCrudService } from './crud.factory';
 
-const ENDPOINT_BASE = '/reporte/sesiones-area-servicio'; 
+const ENDPOINT_BASE = '/reporte/sesiones-congreso-servicio'; 
 
-export const sesionesAreaServicioApi = createCrudService(ENDPOINT_BASE);
+export const sesionesCongresoServicioApi = createCrudService(ENDPOINT_BASE);
 
 export default
 
-sesionesAreaServicioApi;
+sesionesCongresoServicioApi;

@@ -10,7 +10,7 @@ interface HorarioDto {
 interface ILEmpleadoReqDto {
   especialidadId: number;
   colegiado: string;
-  areaId: number;
+  congresoId: number;
 }
 
 interface PSMData {
@@ -21,7 +21,7 @@ interface PSMData {
       descripcion?: string;
     };
     colegiado?: string;
-    area?: {
+    congreso?: {
       id: number;
       nombre: string;
       descripcion?: string;

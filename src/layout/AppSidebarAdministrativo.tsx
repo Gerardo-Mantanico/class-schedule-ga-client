@@ -10,8 +10,10 @@ import {
   GridIcon,
   ListIcon,
   MoreDotIcon,
+  TableIcon,
 
 } from "../icons/index";
+import { useAuth } from "@/context/AuthContext";
 
 
 type NavItem = {
@@ -43,10 +45,10 @@ const navItems: NavItem[] = [
 
    {
     icon: <ListIcon />,
-    name: "Asignacion de area",
+    name: "Asignacion de congreso",
     subItems: [
-      { name: "Registro de area", path: "/administrativo/area", pro: false },
-      { name: "Busqueda de area", path: "/administrativo/area/search", pro: false },
+      { name: "Registro de congreso", path: "/administrativo/congreso", pro: false },
+      { name: "Busqueda de congreso", path: "/administrativo/congreso/search", pro: false },
     ],
   },
    {
@@ -65,13 +67,26 @@ const navItems: NavItem[] = [
   },
 ];
 
+const navItemsAdminCongreso: NavItem[] = [
+  {
+    icon: <TableIcon />,
+    name: "Congresos",
+    path: "/administrativo",
+  },
+];
+
 const AppSidebarAdministrativo: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const pathname = usePathname();
+  const { currentUser } = useAuth();
+
+  const roleName = String(currentUser?.role?.name || "").toUpperCase();
+  const isAdminCongreso = roleName === "ADMIN_CONGRESO" || roleName === "ROLE_ADMIN_CONGRESO";
+  const menuItems = isAdminCongreso ? navItemsAdminCongreso : navItems;
 
   const renderMenuItems = () => (
     <ul className="flex flex-col gap-4">
-      {navItems.map((nav, index) => (
+      {menuItems.map((nav, index) => (
         <li key={nav.name}>
           {nav.subItems ? (
             <button
@@ -203,7 +218,7 @@ const AppSidebarAdministrativo: React.FC = () => {
   useEffect(() => {
     // Check if the current path matches any submenu item
     let submenuMatched = false;
-    navItems.forEach((nav, index) => {
+    menuItems.forEach((nav, index) => {
       if (nav.subItems) {
         nav.subItems.forEach((subItem) => {
           if (isActive(subItem.path)) {
@@ -218,7 +233,7 @@ const AppSidebarAdministrativo: React.FC = () => {
     if (!submenuMatched) {
       setOpenSubmenu(null);
     }
-  }, [pathname, isActive]);
+  }, [pathname, isActive, menuItems]);
 
   useEffect(() => {
     // Set the height of the submenu items when the submenu is opened

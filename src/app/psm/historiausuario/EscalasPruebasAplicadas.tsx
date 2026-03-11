@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import Label from "@/components/form/Label";
 import Input from "@/components/form/input/InputField";
 import Select from "@/components/form/Select";
-import TextArea from "@/components/form/input/TextArea";
+import TextCongreso from "@/components/form/input/TextArea";
 import Button from "@/components/ui/button/Button";
 import { EscalaPruebaAplicada } from "@/interfaces/historiaClinica/EscalaPrueba";
 import { useEscalaPrueba } from "../../../hooks/useEscalaPrueba";
@@ -284,7 +284,7 @@ export default function EscalasPruebasAplicadas({
                 />
 
                 <Label>Interpretación</Label>
-                <TextArea
+                <TextCongreso
                   value={prueba.interpretacion}
                   onChange={(v) =>
                     actualizarPrueba(

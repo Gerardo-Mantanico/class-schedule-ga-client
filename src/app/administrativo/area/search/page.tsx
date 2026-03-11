@@ -6,7 +6,7 @@ import Button from "@/components/ui/button/Button";
 import Label from "@/components/form/Label";
 import Input from "@/components/form/input/InputField";
 import Select from "@/components/form/Select";
-import { useArea } from "@/hooks/useArea";
+import { useCongreso } from "@/hooks/useCongreso";
 import { useEspecialidad } from "@/hooks/useEspecialidad";
 import { usePsm } from "@/hooks/usePsm";
 
@@ -36,8 +36,7 @@ const diasSemana = [
   { value: "DOMINGO", label: "Domingo" },
 ];
 
-export default function SearchPSMPage() {
-  const { areas, fetchAreas } = useArea();
+  const { congresos, fetchCongresos } = useCongreso();
   const { especialidades, fetchEspecialidades } = useEspecialidad();
   const { 
     psmData, 
@@ -55,12 +54,12 @@ export default function SearchPSMPage() {
 
   // Estados para edición
   const [editEspecialidadId, setEditEspecialidadId] = useState<number>(0);
-  const [editAreaId, setEditAreaId] = useState<number>(0);
+  const [editCongresoId, setEditCongresoId] = useState<number>(0);
   const [editColegiado, setEditColegiado] = useState<string>("");
   const [editHorarios, setEditHorarios] = useState<HorarioDto[]>([]);
 
   React.useEffect(() => {
-    fetchAreas();
+    fetchCongresos();
     fetchEspecialidades();
   }, []);
 
@@ -74,7 +73,7 @@ export default function SearchPSMPage() {
     if (data) {
       // Cargar datos en los estados de edición
       setEditEspecialidadId(data.ilempleadoResDto.especialidad?.id || 0);
-      setEditAreaId(data.ilempleadoResDto.area?.id || 0);
+      setEditCongresoId(data.ilempleadoResDto.congreso?.id || 0);
       setEditColegiado(data.ilempleadoResDto.colegiado || "");
       setEditHorarios(data.horarioReqDto || []);
     }
@@ -86,7 +85,7 @@ export default function SearchPSMPage() {
     clearPsmData();
     setIsEditing(false);
     setEditEspecialidadId(0);
-    setEditAreaId(0);
+    setEditCongresoId(0);
     setEditColegiado("");
     setEditHorarios([]);
   };
@@ -100,7 +99,7 @@ export default function SearchPSMPage() {
     // Restaurar valores originales
     if (psmData) {
       setEditEspecialidadId(psmData.ilempleadoResDto.especialidad?.id || 0);
-      setEditAreaId(psmData.ilempleadoResDto.area?.id || 0);
+      setEditCongresoId(psmData.ilempleadoResDto.congreso?.id || 0);
       setEditColegiado(psmData.ilempleadoResDto.colegiado || "");
       setEditHorarios(psmData.horarioReqDto || []);
     }
@@ -115,7 +114,7 @@ export default function SearchPSMPage() {
       return;
     }
 
-    if (!editAreaId || editAreaId === 0) {
+    if (!editCongresoId || editCongresoId === 0) {
       console.error("Área no seleccionada");
       return;
     }
@@ -139,7 +138,7 @@ export default function SearchPSMPage() {
         ilempleadoReqDto: {
           especialidadId: editEspecialidadId,
           colegiado: editColegiado,
-          areaId: editAreaId,
+          congresoId: editCongresoId,
         },
         horarioReqDto: horariosValidos,
       };
@@ -175,6 +174,32 @@ export default function SearchPSMPage() {
     const newHorarios = [...editHorarios];
     newHorarios[index][field] = value;
     setEditHorarios(newHorarios);
+  };
+
+  const selectedCongresoCard = congresos.find(
+    (congreso) => congreso.id === (psmData?.ilempleadoResDto.congreso?.id ?? editCongresoId)
+  );
+
+  const formatDateTime = (value?: string) => {
+    if (!value) return "N/A";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return value;
+    return new Intl.DateTimeFormat("es-MX", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(date);
+  };
+
+  const formatCurrency = (value?: number) => {
+    if (typeof value !== "number" || Number.isNaN(value)) return "N/A";
+    return new Intl.NumberFormat("es-MX", {
+      style: "currency",
+      currency: "MXN",
+      maximumFractionDigits: 2,
+    }).format(value);
   };
 
   return (
@@ -392,7 +417,7 @@ export default function SearchPSMPage() {
                     </div>
                   )}
 
-                  {psmData.ilempleadoResDto.area && (
+                  {psmData.ilempleadoResDto.congreso && (
                     <div className="group rounded-lg border-2 border-blue-200 bg-white p-4 transition-all hover:border-blue-400 hover:shadow-lg dark:border-blue-800/30 dark:bg-gray-800 dark:hover:border-blue-700">
                       <div className="mb-3 flex items-center gap-2">
                         <div className="rounded-md bg-blue-100 p-2 dark:bg-blue-900/30">
@@ -406,17 +431,38 @@ export default function SearchPSMPage() {
                           </svg>
                         </div>
                         <p className="text-xs font-medium uppercase tracking-wide text-blue-600 dark:text-blue-400">
-                          Área
+                          Congreso
                         </p>
                       </div>
                       <p className="mb-2 text-lg font-bold text-gray-900 dark:text-white">
-                        {psmData.ilempleadoResDto.area.nombre}
+                        {selectedCongresoCard?.titulo || psmData.ilempleadoResDto.congreso.nombre}
                       </p>
-                      {psmData.ilempleadoResDto.area.descripcion && (
-                        <p className="text-xs leading-relaxed text-gray-600 dark:text-gray-400">
-                          {psmData.ilempleadoResDto.area.descripcion}
+                      <div className="space-y-1 text-xs leading-relaxed text-gray-600 dark:text-gray-400">
+                        <p>
+                          <span className="font-medium">Descripción:</span>{" "}
+                          {selectedCongresoCard?.descripcion || psmData.ilempleadoResDto.congreso.descripcion || "N/A"}
                         </p>
-                      )}
+                        <p>
+                          <span className="font-medium">Inicio:</span> {formatDateTime(selectedCongresoCard?.fechaInicio)}
+                        </p>
+                        <p>
+                          <span className="font-medium">Fin:</span> {formatDateTime(selectedCongresoCard?.fechaFin)}
+                        </p>
+                        <p>
+                          <span className="font-medium">Ubicación:</span> {selectedCongresoCard?.ubicacion || "N/A"}
+                        </p>
+                        <p>
+                          <span className="font-medium">Precio:</span> {formatCurrency(selectedCongresoCard?.precioInscripcion)}
+                        </p>
+                        <p>
+                          <span className="font-medium">Comisión:</span>{" "}
+                          {selectedCongresoCard?.comisionPorcentaje != null ? `${selectedCongresoCard.comisionPorcentaje}%` : "N/A"}
+                        </p>
+                        <p>
+                          <span className="font-medium">Estado:</span>{" "}
+                          {selectedCongresoCard?.activo != null ? (selectedCongresoCard.activo ? "ACTIVO" : "INACTIVO") : "N/A"}
+                        </p>
+                      </div>
                     </div>
                   )}
 
@@ -573,16 +619,16 @@ export default function SearchPSMPage() {
                   </div>
 
                   <div>
-                    <Label>Área</Label>
+                    <Label>Congreso</Label>
                     <Select
-                      key={`area-${editAreaId}-${isEditing}`}
-                      options={(areas || []).map((a) => ({
+                      key={`congreso-${editCongresoId}-${isEditing}`}
+                      options={(congresos || []).map((a) => ({
                         value: String(a.id),
-                        label: a.nombre,
+                        label: a.titulo,
                       }))}
-                      placeholder="Seleccione área"
-                      defaultValue={editAreaId ? String(editAreaId) : ""}
-                      onChange={(value) => setEditAreaId(Number(value))}
+                      placeholder="Seleccione congreso"
+                      defaultValue={editCongresoId ? String(editCongresoId) : ""}
+                      onChange={(value) => setEditCongresoId(Number(value))}
                     />
                   </div>
 

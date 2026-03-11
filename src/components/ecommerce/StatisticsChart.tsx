@@ -140,7 +140,7 @@ export default function StatisticsChart() {
           <ReactApexChart
             options={options}
             series={series}
-            type="area"
+            type="congreso"
             height={310}
           />
         </div>

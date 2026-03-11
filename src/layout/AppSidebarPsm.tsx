@@ -53,7 +53,7 @@ const navItems: NavItem[] = [
   },
   {
     icon: <ChatIcon />,
-    name: "Soporte de tarea/actividades",
+    name: "Soporte de tcongreso/actividades",
     path: "/psm/soporte",
   },
 ];

@@ -27,7 +27,7 @@ export default function PsmLayout({
       {/* Sidebar and Backdrop */}
       <AppSidebarPsm />
       <Backdrop />
-      {/* Main Content Area */}
+      {/* Main Content Congreso */}
       <div
         className={`flex-1 transition-all  duration-300 ease-in-out ${mainContentMargin}`}
       >

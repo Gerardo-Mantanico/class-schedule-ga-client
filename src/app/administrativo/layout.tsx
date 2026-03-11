@@ -5,7 +5,7 @@ import AppHeader from "@/layout/AppHeader";
 import AppSidebarAdministration from "@/layout/AppSidebarAdministrativo";
 import Backdrop from "@/layout/Backdrop";
 import React from "react";
-// import RequireRole from "@/components/auth/RequireRole";
+import RequireRole from "@/components/auth/RequireRole";
 
 export default function PacienteLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const { isExpanded, isHovered, isMobileOpen } = useSidebar();
@@ -24,7 +24,7 @@ export default function PacienteLayout({ children }: Readonly<{ children: React.
       {/* Sidebar and Backdrop */}
       <AppSidebarAdministration />
       <Backdrop />
-      {/* Main Content Area */}
+      {/* Main Content Congreso */}
       <div
         className={`flex-1 transition-all  duration-300 ease-in-out ${mainContentMargin}`}
       >
@@ -32,10 +32,16 @@ export default function PacienteLayout({ children }: Readonly<{ children: React.
         <AppHeader />
         {/* Page Content */}
         <div className="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">
-           {/* <RequireRole allowedRoles={["CLIENTE", "PACIENTE", "ROLE_PACIENTE"]}>
-                     {children}
-           </RequireRole> */}
+          <RequireRole
+            allowedRoles={[
+              "ADMINISTRATIVO",
+              "ROLE_ADMINISTRATIVO",
+              "ADMIN_CONGRESO",
+              "ROLE_ADMIN_CONGRESO",
+            ]}
+          >
             {children}
+          </RequireRole>
         </div>
       </div>
     </div>

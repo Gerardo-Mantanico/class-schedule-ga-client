@@ -240,7 +240,7 @@ const motivosAlta = {
           <label className="mb-3 block text-sm font-medium text-black">
             Estado al Alta <span className="text-red-500">*</span>
           </label>
-          <textarea
+          <textcongreso
             value={formData.estadoAlta}
             onChange={(e) =>
               setFormData({ ...formData, estadoAlta: e.target.value })
@@ -262,7 +262,7 @@ const motivosAlta = {
           <label className="mb-3 block text-sm font-medium text-black">
             Recomendaciones Posteriores
           </label>
-          <textarea
+          <textcongreso
             value={formData.recomendacionesPosteriores || ""}
             onChange={(e) =>
               setFormData({

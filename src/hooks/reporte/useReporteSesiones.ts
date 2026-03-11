@@ -1,10 +1,10 @@
 import { useCrud } from '../useCrud';
-import { sesionesAreaServicioApi } from '../../service/Reportes.service';
+import { sesionesCongresoServicioApi } from '../../service/Reportes.service';
 
 export interface ReporteSesion {
   id: number;
-  areaId: number;
-  areaNombre: string;
+  congresoId: number;
+  congresoNombre: string;
   servicioId: number;
   servicioNombre: string;
   sesiones: number;
@@ -16,7 +16,7 @@ export const useReporteSesiones = () => {
     loading,
     error,
    
-  } = useCrud<ReporteSesion>(sesionesAreaServicioApi);
+  } = useCrud<ReporteSesion>(sesionesCongresoServicioApi);
 
   return {
     reportes,

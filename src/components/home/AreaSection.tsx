@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { useArea } from "../../hooks/useArea";
+import { useCongreso } from "../../hooks/useCongreso";
 import { 
   UserIcon, 
   ShootingStarIcon, 
@@ -43,16 +43,17 @@ const cardStyles = [
   }
 ];
 
-export default function AreaSection() {
-  const { areas, loading, error } = useArea();
+export default function CongresoSection() {
 
-  console.log("AreaSection State:", { areas, loading, error });
+  const { congresos, loading, error } = useCongreso();
+
+  console.log("CongresoSection State:", { congresos, loading, error });
 
   if (loading) {
     return (
-      <section id="areas" className="px-4 py-16 mx-auto max-w-7xl sm:px-6 lg:px-8 lg:py-24">
+      <section id="congresos" className="px-4 py-16 mx-auto max-w-7xl sm:px-6 lg:px-8 lg:py-24">
         <div className="text-center">
-          <p className="text-lg text-gray-600 dark:text-gray-400">Cargando áreas...</p>
+          <p className="text-lg text-gray-600 dark:text-gray-400">Cargando congresos...</p>
         </div>
       </section>
     );
@@ -60,29 +61,29 @@ export default function AreaSection() {
 
   if (error) {
     return (
-      <section id="areas" className="px-4 py-16 mx-auto max-w-7xl sm:px-6 lg:px-8 lg:py-24">
+      <section id="congresos" className="px-4 py-16 mx-auto max-w-7xl sm:px-6 lg:px-8 lg:py-24">
         <div className="text-center">
-          <p className="text-lg text-red-600 dark:text-red-400">Error al cargar áreas: {error}</p>
+          <p className="text-lg text-red-600 dark:text-red-400">Error al cargar congresos: {error}</p>
         </div>
       </section>
     );
   }
 
-  if (!areas || areas.length === 0) {
+  if (!congresos || congresos.length === 0) {
      return (
-      <section id="areas" className="px-4 py-16 mx-auto max-w-7xl sm:px-6 lg:px-8 lg:py-24">
+      <section id="congresos" className="px-4 py-16 mx-auto max-w-7xl sm:px-6 lg:px-8 lg:py-24">
         <div className="text-center">
            <h2 className="mb-4 text-3xl font-bold text-gray-900 sm:text-4xl dark:text-white">
-              Áreas de Atención
+              Congresos
             </h2>
-          <p className="text-lg text-gray-600 dark:text-gray-400">No hay áreas registradas aún.</p>
+          <p className="text-lg text-gray-600 dark:text-gray-400">No hay congresos registrados aún.</p>
         </div>
       </section>
     );
   }
 
   return (
-   <section id="areas" className="px-4 py-20 bg-white dark:bg-gray-900 sm:px-6 lg:px-8 lg:py-28 relative overflow-hidden">
+   <section id="congresos" className="px-4 py-20 bg-white dark:bg-gray-900 sm:px-6 lg:px-8 lg:py-28 relative overflow-hidden">
         {/* Background Decoration */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
             <div className="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] rounded-full bg-brand-50/50 blur-3xl dark:bg-brand-900/10"></div>
@@ -92,29 +93,29 @@ export default function AreaSection() {
         <div className="mx-auto max-w-7xl">
           <div className="mb-16 text-center">
             <h2 className="mb-6 text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl dark:text-white">
-              Áreas de Atención
+              Congresos
             </h2>
             <p className="max-w-2xl mx-auto text-xl text-gray-600 dark:text-gray-400">
-              Contamos con un equipo multidisciplinario de especialistas dedicados a tu bienestar mental y emocional.
+              Explora nuestros congresos disponibles y su información más relevante.
             </p>
           </div>
           
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {areas.map((area, index) => {
+            {congresos.map((congreso, index) => {
               const style = cardStyles[index % cardStyles.length];
               return (
                 <div
-                  key={area.id}
+                  key={congreso.id}
                   className={`group relative p-8 transition-all duration-300 border rounded-3xl hover:-translate-y-2 hover:shadow-xl ${style.containerClass}`}
                 >
                   <div className={`inline-flex items-center justify-center w-16 h-16 mb-6 rounded-2xl transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3 shadow-sm ${style.iconClass}`}>
                     {style.icon}
                   </div>
                   <h3 className="mb-4 text-2xl font-bold text-gray-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
-                    {area.nombre}
+                    {congreso.titulo}
                   </h3>
                   <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                    {area.descripcion}
+                    {congreso.descripcion}
                   </p>
                 </div>
               );

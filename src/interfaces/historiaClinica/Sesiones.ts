@@ -8,7 +8,7 @@ export interface Sesion {
   temasAbordados: string;
   intervencionesRealizadas: string;
   repuestaPaciente: string;
-  tareasAsignadas: string;
+  tcongresosAsignadas: string;
   observaciones: string;
   proximaCita: string; 
   firmaPsicologo: string;

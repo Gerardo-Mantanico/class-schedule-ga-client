@@ -139,7 +139,7 @@ export default function SignUpForm() {
                     Dpi<span className="text-error-500">*</span>
                   </Label>
                   <Input
-                    type="number"
+                    type="text"
                     id="dpi"
                     name="dpi"
                     value={formData.dpi}

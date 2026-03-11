@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect } from "react";
 import Label from "@/components/form/Label";
-import TextArea from "@/components/form/input/TextArea";
+import TextCongreso from "@/components/form/input/TextArea";
 import Checkbox from "@/components/form/input/Checkbox";
 
 import type { HistoriaPersonal } from "@/interfaces/historiaClinica/HistoriaPersonal";
@@ -160,7 +160,7 @@ export default function HistoriaPersonal({
         {/* Desarrollo Evolutivo */}
         <div>
           <Label htmlFor="desarrolloEvolutivo">Desarrollo Evolutivo</Label>
-          <TextArea
+          <TextCongreso
             placeholder="Describa el desarrollo evolutivo del paciente (embarazo, parto, hitos del desarrollo, niñez, adolescencia, etc.)"
             value={formData.desarrolloEvolutivo}
             onChange={(v) => handleInputChange("desarrolloEvolutivo", v)}
@@ -179,7 +179,7 @@ export default function HistoriaPersonal({
           <Label htmlFor="historiaAcademicaLaboral">
             Historia Académica/Laboral
           </Label>
-          <TextArea
+          <TextCongreso
             placeholder="Describa la trayectoria académica y laboral del paciente"
             value={formData.hAcademica}
             onChange={(v) => handleInputChange("hAcademica", v)}
@@ -196,7 +196,7 @@ export default function HistoriaPersonal({
         {/* Historia Médica */}
         <div>
           <Label htmlFor="historiaMedica">Historia Médica</Label>
-          <TextArea
+          <TextCongreso
             placeholder="Describa el historial médico del paciente (enfermedades, cirugías, accidentes, condiciones crónicas, etc.)"
             value={formData.hMedica }
             onChange={(v) => handleInputChange("hMedica", v)}
@@ -212,7 +212,7 @@ export default function HistoriaPersonal({
         {/* Medicación Actual */}
         <div>
           <Label htmlFor="medicacionActual">Medicación Actual</Label>
-          <TextArea
+          <TextCongreso
             placeholder="Liste los medicamentos actuales (nombre, dosis, frecuencia, para qué condición)"
             value={formData.medicacionActual}
             onChange={(v) => handleInputChange("medicacionActual", v)}
@@ -313,7 +313,7 @@ export default function HistoriaPersonal({
             {/* Consumo de Drogas */}
             <div>
               <Label htmlFor="consumoDrogas">Consumo de Drogas</Label>
-              <TextArea
+              <TextCongreso
                 placeholder="Especifique el tipo de droga y frecuencia de consumo (si aplica)"
                 value={formData.consumoDrogras}
                 onChange={(v) => handleInputChange("consumoDrogras", v)}
@@ -346,7 +346,7 @@ export default function HistoriaPersonal({
               <Label htmlFor="detallesTratamientosPrevios">
                 Detalles de Tratamientos Previos
               </Label>
-              <TextArea
+              <TextCongreso
                 placeholder="Describa los tratamientos previos (tipo de tratamiento, profesional, duración, resultados, etc.)"
                 value={formData.tratamientosPreviosDetalles}
                 onChange={(v) => handleInputChange("tratamientosPreviosDetalles", v)}
@@ -380,7 +380,7 @@ export default function HistoriaPersonal({
               <Label htmlFor="detallesHospitalizaciones">
                 Detalles de Hospitalizaciones
               </Label>
-              <TextArea
+              <TextCongreso
                 placeholder="Describa las hospitalizaciones (fecha, motivo, duración, institución, tratamiento recibido, etc.)"
                 value={formData.hospitalizacionesDetalles}
                 onChange={(v) => handleInputChange("hospitalizacionesDetalles", v)}

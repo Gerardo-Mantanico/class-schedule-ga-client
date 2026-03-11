@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import Label from "@/components/form/Label";
 import Input from "@/components/form/input/InputField";
 import Select from "@/components/form/Select";
-import TextArea from "@/components/form/input/TextArea";
+import TextCongreso from "@/components/form/input/TextArea";
 import Checkbox from "@/components/form/input/Checkbox";
 import { ObjetivosHC } from "@/interfaces/historiaClinica/Objetivos";
 import { useObjetivos } from "../../../hooks/historaClinica/useObjetivos";
@@ -191,7 +191,7 @@ export default function ObjetivosTerapeuticosConfiguracion({
               Objetivo a Corto Plazo (1-3 meses)
               <span className="text-error-500">*</span>
             </Label>
-            <TextArea
+            <TextCongreso
               placeholder="Describa los objetivos a alcanzar en el corto plazo (ejemplo: reducir síntomas de ansiedad, mejorar habilidades de afrontamiento, etc.)"
               value={formData.objetivoCortoplazo}
               onChange={(v) =>
@@ -211,7 +211,7 @@ export default function ObjetivosTerapeuticosConfiguracion({
             <Label htmlFor="objetivoMedioplazo">
               Objetivo a Medio Plazo (3-6 meses)
             </Label>
-            <TextArea
+            <TextCongreso
               placeholder="Describa los objetivos a alcanzar en el medio plazo (ejemplo: consolidar estrategias aprendidas, mejorar relaciones interpersonales, etc.)"
               value={formData.objetivoMedioplazo}
               onChange={(v) =>
@@ -231,7 +231,7 @@ export default function ObjetivosTerapeuticosConfiguracion({
             <Label htmlFor="objetivoLargoplazo">
               Objetivo a Largo Plazo (6+ meses)
             </Label>
-            <TextArea
+            <TextCongreso
               placeholder="Describa los objetivos a largo plazo (ejemplo: mantener estabilidad emocional, prevenir recaídas, desarrollo personal continuo, etc.)"
               value={formData.objetivoLargoplazo}
               onChange={(v) =>

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Label from "@/components/form/Label";
-import TextArea from "@/components/form/input/TextArea";
+import TextCongreso from "@/components/form/input/TextArea";
 import Radio from "@/components/form/input/Radio";
 import type { EstadoActual } from "@/interfaces/historiaClinica/EstadoActual";
 import { useEstadoActual } from "../../../hooks/historaClinica/useEstadoActual";
@@ -242,7 +242,7 @@ export default function EstadoActual({
           <Label htmlFor="observacionesGenerales">
             Observaciones Generales
           </Label>
-          <TextArea
+          <TextCongreso
            // id="observacionesGenerales"
            // name="observacionesGenerales"
             placeholder="Incluya observaciones adicionales sobre el estado actual del paciente"

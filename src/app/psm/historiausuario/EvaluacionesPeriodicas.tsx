@@ -216,7 +216,7 @@ const handleSubmit = async (e: React.FormEvent) => {
           {/* Progreso Observado */}
           <div className="mb-6">
             <label className="mb-3 block text-sm font-medium text-black">Progreso Observado</label>
-            <textarea
+            <textcongreso
               value={formData.progresoObservado}
               onChange={(e) => setFormData({ ...formData, progresoObservado: e.target.value })}
               rows={4}
@@ -233,7 +233,7 @@ const handleSubmit = async (e: React.FormEvent) => {
           {/* Objetivos Alcanzados */}
           <div className="mb-6">
             <label className="mb-3 block text-sm font-medium text-black">Objetivos Alcanzados</label>
-            <textarea
+            <textcongreso
               value={formData.objetivoAlcanzado}
               onChange={(e) => setFormData({ ...formData, objetivoAlcanzado: e.target.value })}
               rows={4}
@@ -250,7 +250,7 @@ const handleSubmit = async (e: React.FormEvent) => {
           {/* Objetivos Pendientes */}
           <div className="mb-6">
             <label className="mb-3 block text-sm font-medium text-black">Objetivos Pendientes</label>
-            <textarea
+            <textcongreso
               value={formData.objetivosPedientes}
               onChange={(e) => setFormData({ ...formData, objetivosPedientes: e.target.value })}
               rows={4}
@@ -267,7 +267,7 @@ const handleSubmit = async (e: React.FormEvent) => {
           {/* Recomendaciones */}
           <div className="mb-6">
             <label className="mb-3 block text-sm font-medium text-black">Recomendaciones</label>
-            <textarea
+            <textcongreso
               value={formData.recomendaciones}
               onChange={(e) => setFormData({ ...formData, recomendaciones: e.target.value })}
               rows={4}
@@ -295,7 +295,7 @@ const handleSubmit = async (e: React.FormEvent) => {
           {/* Modificación del Plan de Tratamiento */}
           <div className="mb-6">
             <label className="mb-3 block text-sm font-medium text-black">Modificación del Plan de Tratamiento</label>
-            <textarea
+            <textcongreso
               value={formData.modificacionPlanTratamiento}
               onChange={(e) => setFormData({ ...formData, modificacionPlanTratamiento: e.target.value })}
               rows={3}
@@ -307,7 +307,7 @@ const handleSubmit = async (e: React.FormEvent) => {
           {/* Re-evaluación Diagnóstico */}
           <div className="mb-6">
             <label className="mb-3 block text-sm font-medium text-black">Re-evaluación Diagnóstico</label>
-            <textarea
+            <textcongreso
               value={formData.reevaluacionDiagnostico}
               onChange={(e) => setFormData({ ...formData, reevaluacionDiagnostico: e.target.value })}
               rows={3}

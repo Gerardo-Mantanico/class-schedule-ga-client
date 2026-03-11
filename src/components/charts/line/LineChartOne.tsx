@@ -124,7 +124,7 @@ export default function LineChartOne() {
         <ReactApexChart
           options={options}
           series={series}
-          type="area"
+          type="congreso"
           height={310}
         />
       </div>

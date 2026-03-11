@@ -29,8 +29,8 @@ const navItems: NavItem[] = [
   },
   {
     icon: <ListIcon />,
-    name: "Servicios",
-    path: "/admin/servicios",
+    name: "Instituciones",
+    path: "/admin/instituciones",
   },
   {
     icon: <GroupIcon />,
@@ -39,8 +39,18 @@ const navItems: NavItem[] = [
   },
    {
     icon: <TableIcon />,
-    name: "Areas",
-    path: "/admin/area",
+    name: "Congresos",
+    path: "/admin/congreso",
+  },
+  {
+    icon: <TableIcon />,
+    name: "Actividades",
+    path: "/admin/actividades",
+  },
+  {
+    icon: <TableIcon />,
+    name: "Salones",
+    path: "/admin/salones",
   },
 
    {
@@ -52,6 +62,11 @@ const navItems: NavItem[] = [
     icon: <TableIcon />,
     name: "Reportes",
     path: "/admin/reporte",
+  },
+  {
+    icon: <TableIcon />,
+    name: "Config. Sistema",
+    path: "/admin/configuracion-sistema",
   },
    
 ];

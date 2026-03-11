@@ -4,12 +4,39 @@ import React, { useState } from "react";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { useAuth } from "@/context/AuthContext";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+
+const resolveProfileHref = (pathname: string, roleName?: string) => {
+  const firstSegment = pathname.split("/").find(Boolean);
+
+  if (firstSegment === "admin") return "/admin/profile";
+  if (firstSegment === "administrativo") return "/administrativo/profile";
+  if (firstSegment === "participante") return "/participante/profile";
+  if (firstSegment === "psm") return "/psm/profile";
+
+  const normalizedRole = (roleName || "").toUpperCase();
+  if (normalizedRole.includes("ADMINISTRATIVO") || normalizedRole.includes("ADMIN_CONGRESO")) {
+    return "/administrativo/profile";
+  }
+  if (normalizedRole.includes("ADMIN")) return "/admin/profile";
+  if (normalizedRole.includes("PSM")) return "/psm/profile";
+  if (
+    normalizedRole.includes("PARTICIPANTE") ||
+    normalizedRole.includes("PACIENTE") ||
+    normalizedRole.includes("CLIENT")
+  ) {
+    return "/participante/profile";
+  }
+
+  return "/profile";
+};
 
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
   const { currentUser } = useAuth();
+  const profileHref = resolveProfileHref(pathname, currentUser?.role?.name);
 
   function toggleDropdown(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
     e.stopPropagation();
@@ -81,7 +108,7 @@ export default function UserDropdown() {
           </span>
           {currentUser?.role && (
             <span className="mt-1 inline-block px-2 py-0.5 text-xs font-medium rounded-full bg-brand-100 text-brand-700 dark:bg-brand-900/30 dark:text-brand-300">
-              {currentUser.role.description || currentUser.role.name}
+              {currentUser.role.name || currentUser.role.name}
             </span>
           )}
         </div>
@@ -91,7 +118,7 @@ export default function UserDropdown() {
             <DropdownItem
               onItemClick={closeDropdown}
               tag="a"
-              href="/profile"
+              href={profileHref}
               className="flex items-center gap-3 px-3 py-2 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
             >
               <svg

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import AsyncSearchableSelect from "@/components/form/AsyncSearchableSelect";
-import { useArea } from "@/hooks/useArea";
+import { useCongreso } from "@/hooks/useCongreso";
 import { useEspecialidad } from "@/hooks/useEspecialidad";
 import Label from "@/components/form/Label";
 import Input from "@/components/form/input/InputField";
@@ -18,7 +18,7 @@ interface HorarioDto {
 interface ILEmpleadoReqDto {
   especialidadId: number;
   colegiado: string;
-  areaId: number;
+  congresoId: number;
 }
 
 interface FormData {
@@ -40,8 +40,7 @@ const diasSemana = [
 
 ];
 
-export default function AreaPage() {
-  const { areas, fetchAreas } = useArea();
+  const { congresos, fetchCongresos } = useCongreso();
   const { especialidades, fetchEspecialidades } = useEspecialidad();
 
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
@@ -50,7 +49,7 @@ export default function AreaPage() {
   const [empleadoData, setEmpleadoData] = useState<ILEmpleadoReqDto>({
     especialidadId: 0,
     colegiado: "",
-    areaId: 0,
+    congresoId: 0,
   });
 
   const [horarios, setHorarios] = useState<HorarioDto[]>([
@@ -62,7 +61,7 @@ export default function AreaPage() {
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
-    fetchAreas();
+    fetchCongresos();
     fetchEspecialidades();
   }, []);
 
@@ -98,7 +97,7 @@ export default function AreaPage() {
       return;
     }
 
-    if (!empleadoData.areaId || empleadoData.areaId === 0) {
+    if (!empleadoData.congresoId || empleadoData.congresoId === 0) {
       setError("Debe seleccionar un área");
       return;
     }
@@ -156,7 +155,7 @@ export default function AreaPage() {
       setEmpleadoData({
         especialidadId: 0,
         colegiado: "",
-        areaId: 0,
+        congresoId: 0,
       });
       setHorarios([{ diaSemana: "", horaInicio: "", horaFin: "" }]);
     } catch (err: any) {
@@ -329,16 +328,16 @@ export default function AreaPage() {
                       </div>
 
                       <div>
-                        <Label>Área</Label>
+                        <Label>Congreso</Label>
                         <Select
-                          options={(areas || []).map((a) => ({
+                          options={(congresos || []).map((a) => ({
                             value: String(a.id),
-                            label: a.nombre,
+                            label: a.titulo,
                           }))}
-                          placeholder="Seleccione área"
-                          defaultValue={empleadoData.areaId ? String(empleadoData.areaId) : ""}
+                          placeholder="Seleccione congreso"
+                          defaultValue={empleadoData.congresoId ? String(empleadoData.congresoId) : ""}
                           onChange={(value) =>
-                            setEmpleadoData({ ...empleadoData, areaId: Number(value) })
+                            setEmpleadoData({ ...empleadoData, congresoId: Number(value) })
                           }
                         />
                       </div>
@@ -471,7 +470,7 @@ export default function AreaPage() {
                   setEmpleadoData({
                     especialidadId: 0,
                     colegiado: "",
-                    areaId: 0,
+                    congresoId: 0,
                   });
                   setHorarios([{ diaSemana: "", horaInicio: "", horaFin: "" }]);
                   setError(null);

@@ -91,8 +91,8 @@ export default function NotasProgresoPanel({ notas, onRegistrar }: NotasProgreso
         {notaSeleccionada.repuestaPaciente || "Sin respuesta"}
       </div>
       <div>
-        <span className="font-semibold">Tareas Asignadas:</span>{" "}
-        {notaSeleccionada.tareasAsignadas || "Sin tareas"}
+        <span className="font-semibold">Tcongresos Asignadas:</span>{" "}
+        {notaSeleccionada.tcongresosAsignadas || "Sin tcongresos"}
       </div>
       <div>
         <span className="font-semibold">Observaciones:</span>{" "}

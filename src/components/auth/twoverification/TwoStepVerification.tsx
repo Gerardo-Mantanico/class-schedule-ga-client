@@ -64,7 +64,8 @@ export default function TwoStepVerification() {
                             window.location.href = "/admin";
                             break;
                         case "CLIENT":
-                            window.location.href = "/paciente";
+                        case "PARTICIPANTE":
+                            window.location.href = "/participante";
                             break;
                         case "PSM":
                             window.location.href = "/psm";
@@ -72,8 +73,12 @@ export default function TwoStepVerification() {
                         case "ADMINISTRATIVO":
                             window.location.href = "/administrativo/inventario/medicamentos";
                             break;
+                        case "ADMIN_CONGRESO":
+                        case "ROLE_ADMIN_CONGRESO":
+                            window.location.href = "/administrativo";
+                            break;
                         default:
-                            window.location.href = "/paciente";
+                            window.location.href = "/participante";
                     }
                 }, 0);
             } else {

@@ -33,7 +33,7 @@ export default function AuthLayout({
                   />
                 </Link>
                 <p className="text-center text-gray-400 dark:text-white/60">
-                  El espacio seguro donde podrás consultar tus citas, acceder a tus tareas terapéuticas y dar seguimiento a tu tratamiento de forma personalizada. 
+                  El espacio seguro donde podrás consultar tus citas, acceder a tus tcongresos terapéuticas y dar seguimiento a tu tratamiento de forma personalizada. 
                 </p>
               </div>
             </div>

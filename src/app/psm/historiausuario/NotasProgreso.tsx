@@ -33,7 +33,7 @@ const [formData, setFormData] = useState<Sesion>({
   temasAbordados: "",
   intervencionesRealizadas: "",
   repuestaPaciente: "",
-  tareasAsignadas: "",
+  tcongresosAsignadas: "",
   observaciones: "",
   proximaCita: "",
   firmaPsicologo: "",
@@ -249,7 +249,7 @@ const hcId = typeof window !== "undefined" ? localStorage.getItem("HistoriClinic
           <label className="mb-3 block text-sm font-medium text-black">
             Intervenciones <span className="text-red-500">*</span>
           </label>
-          <textarea
+          <textcongreso
             value={formData.intervencionesRealizadas}
             onChange={(e) =>
               setFormData({ ...formData, intervencionesRealizadas: e.target.value })
@@ -265,7 +265,7 @@ const hcId = typeof window !== "undefined" ? localStorage.getItem("HistoriClinic
           <label className="mb-3 block text-sm font-medium text-black">
             Respuesta del Paciente <span className="text-red-500">*</span>
           </label>
-          <textarea
+          <textcongreso
             value={formData.repuestaPaciente}
             onChange={(e) =>
               setFormData({ ...formData, repuestaPaciente: e.target.value })
@@ -276,18 +276,18 @@ const hcId = typeof window !== "undefined" ? localStorage.getItem("HistoriClinic
           />
         </div>
 
-        {/* Tareas Asignadas */}
+        {/* Tcongresos Asignadas */}
         <div className="mb-6">
           <label className="mb-3 block text-sm font-medium text-black">
-            Tareas Asignadas
+            Tcongresos Asignadas
           </label>
-          <textarea
-            value={formData.tareasAsignadas || ""}
+          <textcongreso
+            value={formData.tcongresosAsignadas || ""}
             onChange={(e) =>
-              setFormData({ ...formData, tareasAsignadas: e.target.value })
+              setFormData({ ...formData, tcongresosAsignadas: e.target.value })
             }
             rows={3}
-            placeholder="Describa las tareas asignadas al paciente (opcional)"
+            placeholder="Describa las tcongresos asignadas al paciente (opcional)"
             className="w-full appearance-none rounded border border-stroke bg-white px-4 py-2 text-black outline-none transition focus:border-primary"
           />
         </div>
@@ -297,7 +297,7 @@ const hcId = typeof window !== "undefined" ? localStorage.getItem("HistoriClinic
           <label className="mb-3 block text-sm font-medium text-black">
             Observaciones
           </label>
-          <textarea
+          <textcongreso
             value={formData.observaciones || ""}
             onChange={(e) =>
               setFormData({ ...formData, observaciones: e.target.value })

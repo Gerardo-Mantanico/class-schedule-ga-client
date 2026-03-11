@@ -1,8 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: 'export',
-  trailingSlash: true, // Agrega esto para que S3 encuentre las rutas correctamente
+  //output: 'export',
+ // trailingSlash: true, // Agrega esto para que S3 encuentre las rutas correctamente
   images: { unoptimized: true },
   
   // Configuración para SVGs

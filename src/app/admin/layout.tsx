@@ -22,7 +22,7 @@ export default function AdminLayout({ children }: Readonly<{ children: React.Rea
       {/* Sidebar and Backdrop */}
       <AppSidebarAdmin />
       <Backdrop />
-      {/* Main Content Area */}
+      {/* Main Content Congreso */}
       <div
         className={`flex-1 transition-all  duration-300 ease-in-out ${mainContentMargin}`}
       >

@@ -1,35 +1,35 @@
 "use client";
 import React, { useState } from "react";
 import ComponentCard from "../../common/ComponentCard";
-import TextArea from "../input/TextArea";
+import TextCongreso from "../input/TextArea";
 import Label from "../Label";
 
-export default function TextAreaInput() {
+export default function TextCongresoInput() {
   const [message, setMessage] = useState("");
   const [messageTwo, setMessageTwo] = useState("");
   return (
-    <ComponentCard title="Textarea input field">
+    <ComponentCard title="Textcongreso input field">
       <div className="space-y-6">
-        {/* Default TextArea */}
+        {/* Default TextCongreso */}
         <div>
           <Label>Description</Label>
-          <TextArea
+          <TextCongreso
             value={message}
             onChange={(value) => setMessage(value)}
             rows={6}
           />
         </div>
 
-        {/* Disabled TextArea */}
+        {/* Disabled TextCongreso */}
         <div>
           <Label>Description</Label>
-          <TextArea rows={6} disabled />
+          <TextCongreso rows={6} disabled />
         </div>
 
-        {/* Error TextArea */}
+        {/* Error TextCongreso */}
         <div>
           <Label>Description</Label>
-          <TextArea
+          <TextCongreso
             rows={6}
             value={messageTwo}
             error

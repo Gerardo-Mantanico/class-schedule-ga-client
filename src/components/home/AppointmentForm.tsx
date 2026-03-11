@@ -2,10 +2,10 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { useServicios } from "../../hooks/useServicios";
+import { useInstituciones } from "../../hooks/useInstituciones";
 
 export default function AppointmentForm() {
-  const { services } = useServicios();
+  const { instituciones } = useInstituciones();
   const [formData, setFormData] = useState({
     nombre: "",
     telefono: "",
@@ -18,7 +18,7 @@ export default function AppointmentForm() {
   const [error, setError] = useState("");
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextCongresoElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -198,23 +198,23 @@ export default function AppointmentForm() {
 
         <div>
           <label
-            htmlFor="servicio"
+            htmlFor="institucion"
             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
           >
-            Servicio de Interés <span className="text-error-500">*</span>
+            Institución <span className="text-error-500">*</span>
           </label>
           <select
-            id="servicio"
+            id="institucion"
             name="servicio"
             required
             value={formData.servicio}
             onChange={handleChange}
             className="w-full px-4 py-3 text-gray-900 transition-colors border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-brand-500 focus:border-transparent dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:focus:ring-brand-600"
           >
-            <option value="">Selecciona un servicio</option>
-            {services.map((service) => (
-              <option key={service.id} value={service.nombre}>
-                {service.nombre}
+            <option value="">Selecciona una institución</option>
+            {instituciones.map((institucion) => (
+              <option key={institucion.id} value={institucion.nombre}>
+                {institucion.nombre}
               </option>
             ))}
           </select>
@@ -227,7 +227,7 @@ export default function AppointmentForm() {
           >
             Mensaje <span className="text-gray-500 text-xs">(Opcional)</span>
           </label>
-          <textarea
+          <textcongreso
             id="mensaje"
             name="mensaje"
             rows={4}

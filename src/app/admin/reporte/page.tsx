@@ -87,7 +87,7 @@ export default function ReporteClinico() {
             <tbody>
               {estadisticas.map((item, idx) => (
                 <tr key={item.servicioId} className={idx % 2 === 0 ? "bg-white dark:bg-gray-900" : "bg-gray-100 dark:bg-gray-700"}>
-                  <td className="py-1 px-2">{item.areaNombre}</td>
+                  <td className="py-1 px-2">{item.congresoNombre}</td>
                   <td className="py-1 px-2">{item.servicioNombre}</td>
                   <td className="py-1 px-2">{item.sesiones}</td>
                 </tr>

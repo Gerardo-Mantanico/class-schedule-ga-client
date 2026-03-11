@@ -71,7 +71,7 @@ const columns: Column<User>[] = [
           case "ADMIN":
             return "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300";
   
-          case "MANTENIMIENTO":
+          case "PARTICIPANTE":
             return "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300";
           case "CLIENTE":
             return "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300";
@@ -85,7 +85,7 @@ const columns: Column<User>[] = [
       };
       return (
         <span className={`inline-block px-3 py-1 text-xs font-medium rounded-full ${getRoleColor(user.role.name)}`}>
-          {user.role.description}
+          {user.role.name}
         </span>
       );
     },
@@ -366,7 +366,7 @@ export default function UserTable() {
                       <option value="0" disabled>Seleccione un rol</option>
                       {roles.map((role) => (
                         <option key={role.id} value={role.id}>
-                          {role.description}
+                          {role.name}
                         </option>
                       ))}
                     </select>

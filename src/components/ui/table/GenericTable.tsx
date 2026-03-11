@@ -22,6 +22,7 @@ interface GenericTableProps<T> {
   onEdit?: (item: T) => void;
   onDelete?: (item: T) => void;
   actions?: (item: T) => React.ReactNode;
+  onRowClick?: (item: T) => void;
   pagination?: {
     currentPage: number;
     totalPages: number;
@@ -35,6 +36,7 @@ export function GenericTable<T extends { id: string | number }>({
   onEdit,
   onDelete,
   actions,
+  onRowClick,
   pagination
 }: Readonly<GenericTableProps<T>>) {
   const renderCellContent = (row: T, col: Column<T>) => {
@@ -75,11 +77,16 @@ export function GenericTable<T extends { id: string | number }>({
           </TableHeader>
           <TableBody className="divide-y divide-gray-100 dark:divide-white/5">
             {data.map((row) => (
-              <TableRow key={row.id} className="hover:bg-gray-50 dark:hover:bg-white/5">
+              <TableRow
+                key={row.id}
+                className={`hover:bg-gray-50 dark:hover:bg-white/5 ${onRowClick ? 'cursor-pointer' : ''}`}
+                onClick={() => onRowClick?.(row)}
+              >
                 {columns.map((col, index) => (
                   <TableCell
                     key={`${col.header}-${index}`}
                     className={`px-5 py-4 text-gray-500 text-start text-theme-sm dark:text-gray-400 ${col.className || ''}`}
+                    onClick={() => onRowClick?.(row)}
                   >
                     {renderCellContent(row, col)}
                   </TableCell>
@@ -90,7 +97,10 @@ export function GenericTable<T extends { id: string | number }>({
                       {actions?.(row)}
                       {onEdit && (
                         <button
-                          onClick={() => onEdit(row)}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            onEdit(row);
+                          }}
                           className="p-2 text-gray-500 transition-colors rounded-lg hover:bg-brand-50 hover:text-brand-600 dark:hover:bg-brand-900/20 dark:hover:text-brand-400"
                         >
                           <PencilIcon className="w-5 h-5" />
@@ -98,7 +108,10 @@ export function GenericTable<T extends { id: string | number }>({
                       )}
                       {onDelete && (
                         <button
-                          onClick={() => onDelete(row)}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            onDelete(row);
+                          }}
                           className="p-2 text-gray-500 transition-colors rounded-lg hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
                         >
                           <TrashBinIcon className="w-5 h-5" />

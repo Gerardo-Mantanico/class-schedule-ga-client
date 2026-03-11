@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Label from "@/components/form/Label";
 import Input from "@/components/form/input/InputField";
-import TextArea from "@/components/form/input/TextArea";
+import TextCongreso from "@/components/form/input/TextArea";
 import SearchableSelect from "@/components/form/SearchableSelect";
 import { useImpresionDiagnostica, useTipoImpresionDiagnosticoC11, useTipoImpresionDiagnosticoD5 } from "../../../hooks/historaClinica/useImpresionDiagnostica";
 import type { ImpresionDiagnostica } from "@/interfaces/historiaClinica/ImpresionDiagnostica";
@@ -251,7 +251,7 @@ export default function ImpresionDiagnostica(props: ImpresionDiagnosticaProps) {
             Descripción del Diagnóstico
             <span className="text-error-500">*</span>
           </Label>
-          <TextArea
+          <TextCongreso
 
             placeholder="Describa detalladamente el diagnóstico, justificación clínica y sintomatología observada"
             value={formData.descripcionDiagnostico}
@@ -301,7 +301,7 @@ export default function ImpresionDiagnostica(props: ImpresionDiagnosticaProps) {
               <Label htmlFor="factoresPredisponentes">
                 Factores Predisponentes
               </Label>
-              <TextArea
+              <TextCongreso
 
                 placeholder="Describa los factores de vulnerabilidad o riesgo previos (genéticos, familiares, temperamentales, experiencias tempranas, etc.)"
                 value={formData.factoresPredisponentes}
@@ -323,7 +323,7 @@ export default function ImpresionDiagnostica(props: ImpresionDiagnosticaProps) {
               <Label htmlFor="factoresPrecipitantes">
                 Factores Precipitantes
               </Label>
-              <TextArea
+              <TextCongreso
 
                 placeholder="Describa los eventos o situaciones que desencadenaron el inicio del trastorno (pérdidas, traumas, cambios vitales, etc.)"
                 value={formData.factoresPrecipitantes}
@@ -344,7 +344,7 @@ export default function ImpresionDiagnostica(props: ImpresionDiagnosticaProps) {
               <Label htmlFor="factoresMantenedores">
                 Factores Mantenedores
               </Label>
-              <TextArea
+              <TextCongreso
 
                 placeholder="Describa los factores que perpetúan el problema actual (conductas de evitación, reforzadores, dinámicas familiares, etc.)"
                 value={formData.factoresMantenedores}

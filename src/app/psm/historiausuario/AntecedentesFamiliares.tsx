@@ -8,7 +8,7 @@ import toast from 'react-hot-toast'
 
 import Button from "@/components/ui/button/Button";
 import Label from "@/components/form/Label";
-import TextArea from "@/components/form/input/TextArea";
+import TextCongreso from "@/components/form/input/TextArea";
 import Checkbox from "@/components/form/input/Checkbox";
 
 
@@ -137,7 +137,7 @@ export default function AntecedentesFamiliares({
           <Label htmlFor="estructuraFamiliar">
             Estructura Familiar Actual
           </Label>
-          <TextArea
+          <TextCongreso
             placeholder="Describa la estructura familiar actual (miembros del núcleo familiar, dinámica familiar, etc.)"
             value={formData.estructuraFamiliar}
             onChange={(v) => handleInputChange("estructuraFamiliar", v)}
@@ -165,13 +165,13 @@ export default function AntecedentesFamiliares({
             />
           </div>
 
-          {/* TextArea condicional - se muestra solo si está marcado el checkbox */}
+          {/* TextCongreso condicional - se muestra solo si está marcado el checkbox */}
           {formData.hayTrastornosFamiliares && (
             <div className="mt-4">
               <Label htmlFor="detallesTrastornosFamiliares">
                 Detalles de los Antecedentes
               </Label>
-              <TextArea
+              <TextCongreso
                 placeholder="Describa los antecedentes de trastornos mentales o enfermedades en la familia (tipo de trastorno, familiar afectado, tratamiento recibido, etc.)"
                 value={formData.detallesTrastornosFamiliares}
                 onChange={(v) => handleInputChange("detallesTrastornosFamiliares", v)}
@@ -192,7 +192,7 @@ export default function AntecedentesFamiliares({
           <Label htmlFor="eventosFamiliaresRelevantes">
             Eventos Familiares Relevantes
           </Label>
-          <TextArea
+          <TextCongreso
             placeholder="Describa eventos familiares significativos que puedan ser relevantes (pérdidas, divorcios, migraciones, traumas, logros importantes, etc.)"
             value={formData.eventosFamiliaresRelevantes}
             onChange={(v) => handleInputChange("eventosFamiliaresRelevantes", v)}

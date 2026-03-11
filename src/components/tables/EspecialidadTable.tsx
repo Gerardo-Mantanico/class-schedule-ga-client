@@ -8,7 +8,7 @@ import { Modal } from "../ui/modal";
 import Button from "../ui/button/Button";
 import Input from "../form/input/InputField";
 import Label from "../form/Label";
-import TextArea from "../form/input/TextArea";
+import TextCongreso from "../form/input/TextArea";
 import { GenericTable, Column } from "../ui/table/GenericTable";
 import { toast } from "react-hot-toast";
 
@@ -160,13 +160,13 @@ export default function EspecialidadTable() {
                   </div>
                   <div className="col-span-2">
                     <Label>Descripción del servicio</Label>
-                    <TextArea
+                    <TextCongreso
                       placeholder="Escribe una descripción del servicio aquí..."
                       value={formData.descripcion}
                       onChange={(value) =>
                         setFormData({ ...formData, descripcion: value })
                       }
-                    ></TextArea>
+                    ></TextCongreso>
                   </div>
                 </div>
               </div>

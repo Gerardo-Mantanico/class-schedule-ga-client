@@ -5,7 +5,7 @@ import React from "react";
 import AppointmentForm from "@/components/home/AppointmentForm";
 import ThemeTogglerTwo from "@/components/common/ThemeTogglerTwo";
 import ServicesSection from "@/components/home/ServicesSection";
-import AreaSection from "@/components/home/AreaSection";
+import CongresoSection from "@/components/home/CongresoSection";
 import EspecialidadSection from "@/components/home/EspecialidadSection";
 
 export const metadata: Metadata = {
@@ -144,7 +144,7 @@ export default function HomePage() {
       <EspecialidadSection />
 
       {/* Áreas de Atención Section */}
-      <AreaSection />
+      <CongresoSection />
 
       {/* Profesionales Section */}
       <section id="profesionales" className="px-4 py-16 bg-white dark:bg-gray-900 sm:px-6 lg:px-8 lg:py-24">

@@ -10,7 +10,7 @@ type Especialidad = {
   updatedAt: string;
 };
 
-type Area = {
+type Congreso = {
   id: number;
   nombre: string;
   descripcion: string;
@@ -21,7 +21,7 @@ type Area = {
 type ILEmpleadoResDto = {
   especialidad: Especialidad;
   colegiado: string;
-  area: Area;
+  congreso: Congreso;
   tipoContrato: string;
   tarifa: number;
 };
@@ -81,7 +81,7 @@ export default function UserInfoPsmCard() {
   }
 
   const { ilempleadoResDto, horarioReqDto } = data;
-  const { especialidad, colegiado, area, tipoContrato, tarifa } = ilempleadoResDto;
+  const { especialidad, colegiado, congreso, tipoContrato, tarifa } = ilempleadoResDto;
 
   const getTipoContratoClasses = (tipo?: string) => {
     const t = (tipo || "").toLowerCase();
@@ -164,14 +164,14 @@ export default function UserInfoPsmCard() {
 
         <div className="col-span-1">
           <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">Área</p>
-          {area?.nombre ? (
+          {congreso?.nombre ? (
             <span className="inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium bg-teal-100 text-teal-700 border-teal-300 dark:bg-teal-900/20 dark:text-teal-300 dark:border-teal-800">
-              {area.nombre}
+              {congreso.nombre}
             </span>
           ) : (
             <p className="text-sm font-medium text-gray-800 dark:text-white/90">-</p>
           )}
-          <p className="mt-1 text-xs text-gray-600 dark:text-gray-400">{area?.descripcion || ""}</p>
+          <p className="mt-1 text-xs text-gray-600 dark:text-gray-400">{congreso?.descripcion || ""}</p>
         </div>
 
         <div className="col-span-1">

@@ -55,7 +55,7 @@ export default function EspecialidadSection() {
 
   if (loading) {
     return (
-      <section id="areas" className="px-4 py-16 mx-auto max-w-7xl sm:px-6 lg:px-8 lg:py-24">
+      <section id="congresos" className="px-4 py-16 mx-auto max-w-7xl sm:px-6 lg:px-8 lg:py-24">
         <div className="text-center">
           <p className="text-lg text-gray-600 dark:text-gray-400">Cargando especialidades...</p>
         </div>
@@ -65,7 +65,7 @@ export default function EspecialidadSection() {
 
   if (error) {
     return (
-      <section id="areas" className="px-4 py-16 mx-auto max-w-7xl sm:px-6 lg:px-8 lg:py-24">
+      <section id="congresos" className="px-4 py-16 mx-auto max-w-7xl sm:px-6 lg:px-8 lg:py-24">
         <div className="text-center">
           <p className="text-lg text-red-600 dark:text-red-400">Error al cargar especialidades: {error}</p>
         </div>

@@ -93,7 +93,8 @@ export default function SignInForm() {
               window.location.href = "/admin";
               break;
             case "CLIENT":
-              window.location.href = "/paciente";
+            case "PARTICIPANTE":
+              window.location.href = "/participante";
               break;
             case "PSM":
               window.location.href = "/psm";
@@ -101,9 +102,13 @@ export default function SignInForm() {
             case "ADMINISTRATIVO":
               window.location.href = "/administrativo/inventario/medicamentos";
               break;
+            case "ADMIN_CONGRESO":
+            case "ROLE_ADMIN_CONGRESO":
+              window.location.href = "/administrativo";
+              break;
             default:
               console.log("Redirigiendo por defecto (Rol: " + role + ")");
-              window.location.href = "/paciente";
+              window.location.href = "/participante";
           }
         }, 0);
       } else {

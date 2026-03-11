@@ -90,12 +90,39 @@ export const useCrud = <T extends { id: number | string }>(
   }, [apiService]);
 
   // Crear elemento
+  const extractCreatedItem = (response: unknown): T | null => {
+    if (!response || typeof response !== 'object') return null;
+
+    type CreateResp = {
+      data?: unknown;
+      content?: unknown;
+      item?: unknown;
+      result?: unknown;
+    };
+
+    const respObj = response as CreateResp;
+    const candidate = respObj.data || respObj.content || respObj.item || respObj.result || response;
+
+    if (!candidate || typeof candidate !== 'object') return null;
+    if (!('id' in (candidate as Record<string, unknown>))) return null;
+
+    return candidate as T;
+  };
+
   const createItem = async (data: Partial<T>) => {
     setLoading(true);
     try {
       const payload = transformPayload ? transformPayload(data) : data;
-      await apiService.create(payload);
-     // await fetchItems(); // Recargar lista
+      const response = await apiService.create(payload);
+      const createdItem = extractCreatedItem(response);
+
+      if (createdItem) {
+        setItems((prev) => [...prev, createdItem]);
+        setTotalItems((prev) => (typeof prev === 'number' ? prev + 1 : prev));
+      } else {
+        await fetchItems();
+      }
+
       return true;
     } catch (err: unknown) {
       let errorMessage = 'Error al crear elemento';
@@ -233,7 +260,6 @@ export const useCrud = <T extends { id: number | string }>(
         }
       });
       await apiService.create(formData);
-      // await fetchItems(); // Si quieres recargar la lista
       return true;
     } catch (err: unknown) {
       let errorMessage = 'Error al crear elemento (FormData)';

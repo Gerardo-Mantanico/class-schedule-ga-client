@@ -1,6 +1,6 @@
 import React from "react";
 import Label from "@/components/form/Label";
-import TextArea from "@/components/form/input/TextArea";
+import TextCongreso from "@/components/form/input/TextArea";
 
 interface Props {
   value: string;
@@ -14,7 +14,7 @@ export default function MotivoConsultaForm({ value, onChange, disabled }: Props)
       <Label htmlFor="motivoConsulta">
         Motivo de Consulta<span className="text-error-500">*</span>
       </Label>
-      <TextArea
+      <TextCongreso
         placeholder="Describa el motivo de consulta (máximo 500 caracteres)"
         value={value}
         onChange={(value) => {

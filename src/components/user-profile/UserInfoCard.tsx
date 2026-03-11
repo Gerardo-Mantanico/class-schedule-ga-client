@@ -123,7 +123,7 @@ export default function UserInfoCard() {
                 Rol
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                {currentUser.role.description}
+                {currentUser.role.name}
               </p>
             </div>
 

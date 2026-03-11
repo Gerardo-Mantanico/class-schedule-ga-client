@@ -2,7 +2,7 @@ import React from "react";
 import Label from "@/components/form/Label";
 import Input from "@/components/form/input/InputField";
 import Select from "@/components/form/Select";
-import TextArea from "@/components/form/input/TextArea";
+import TextCongreso from "@/components/form/input/TextArea";
 import Button from "@/components/ui/button/Button";
 import { EscalaPruebaAplicada } from "@/interfaces/historiaClinica/EscalaPrueba";
 
@@ -47,7 +47,7 @@ const EscalaPruebaForm: React.FC<EscalaPruebaFormProps> = ({
       disabled={disabled}
     />
     <Label>Interpretación</Label>
-    <TextArea
+    <TextCongreso
       value={prueba.interpretacion || ""}
       onChange={(value) => onChange("interpretacion",value)}
       disabled={disabled}
