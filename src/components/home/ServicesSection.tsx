@@ -57,6 +57,16 @@ export default function ServicesSection() {
                     {institucion.direccion && (
                       <p><span className="font-medium">Dirección:</span> {institucion.direccion}</p>
                     )}
+                    {typeof institucion.activo === "boolean" && (
+                      <p>
+                        <span className="font-medium">Estado:</span> {institucion.activo ? "Activa" : "Inactiva"}
+                      </p>
+                    )}
+                    {Array.isArray(institucion.imgs) && institucion.imgs.length > 0 && (
+                      <p>
+                        <span className="font-medium">Recursos:</span> {institucion.imgs.length} imagen(es)
+                      </p>
+                    )}
                   </div>
                   <div className="mt-4">
                     <span className="inline-flex items-center text-brand-600 font-semibold group-hover:text-brand-800 transition-colors cursor-pointer">

@@ -6,85 +6,101 @@ import Button from "@/components/ui/button/Button";
 import { ChevronLeftIcon } from "@/icons";
 import Link from "next/link";
 import React, { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
+import {
+    clearPendingTwoFactorEmail,
+    getPendingTwoFactorEmail,
+    persistAuthSession,
+} from "@/service/auth-storage";
+
+const resolveRedirectPath = (role: string, callbackUrl: string | null) => {
+    if (callbackUrl?.startsWith("/")) {
+        return callbackUrl;
+    }
+
+    return role === "ADMIN" ? "/admin" : "/home";
+};
+
+const extractToken = (response: Response, data: any) => {
+    if (data?.token) {
+        return data.token;
+    }
+
+    const authHeader = response.headers.get("Authorization");
+    if (!authHeader) {
+        return "";
+    }
+
+    return authHeader.startsWith("Bearer ")
+        ? authHeader.substring(7)
+        : authHeader;
+};
+
+const getRoleName = (user: any) => String(user?.role?.name || user?.role || "").toUpperCase();
 
 export default function TwoStepVerification() {
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const { setCurrentUser } = useAuth();
     const [code, setCode] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
 
-    // Obtener el email guardado en localStorage
-    let email = "";
-    if (typeof window !== "undefined") {
-        email = localStorage.getItem("2fa_user_email") || "";
-    }
+    const email = getPendingTwoFactorEmail();
 
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: React.SyntheticEvent<HTMLFormElement>) => {
         event.preventDefault();
         setError(null);
         setSuccess(false);
         setIsLoading(true);
+
+        const callbackUrl = searchParams.get("callbackUrl");
+        const rememberMe = searchParams.get("remember") === "1";
+        const normalizedCode = code.trim();
+
+        if (!email) {
+            setError("Tu sesión de verificación expiró. Inicia sesión nuevamente.");
+            setIsLoading(false);
+            return;
+        }
+
+        if (!/^\d{4,8}$/.test(normalizedCode)) {
+            setError("Ingresa un código válido.");
+            setIsLoading(false);
+            return;
+        }
 
         try {
             const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/auth/verify-code`;
             const response = await fetch(API_URL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, code }),
+                body: JSON.stringify({ email, code: normalizedCode }),
                 credentials: "include", // igual que en login
             });
-            const data = await response.json();
-            if (response.ok) {
-                setSuccess(true);
-                // Guardar token igual que en login
-                let token = data.token;
-                if (!token) {
-                    const authHeader = response.headers.get("Authorization");
-                    if (authHeader) {
-                        token = authHeader.startsWith("Bearer ")
-                            ? authHeader.substring(7)
-                            : authHeader;
-                    }
-                }
-                if (token) {
-                    const expires = new Date();
-                    expires.setDate(expires.getDate() + 1);
-                    document.cookie = `token=${token}; path=/; expires=${expires.toUTCString()}; SameSite=Strict`;
-                    localStorage.setItem("token", token);
-                } else {
-                    setError("No se recibió token de autenticación");
-                    setIsLoading(false);
-                    return;
-                }
-                setTimeout(() => {
-                    const roleRaw = data.user?.role?.name || data.user?.role || "";
-                    const role = String(roleRaw).toUpperCase();
-                    switch (role) {
-                        case "ADMIN":
-                            window.location.href = "/admin";
-                            break;
-                        case "CLIENT":
-                        case "PARTICIPANTE":
-                            window.location.href = "/participante";
-                            break;
-                        case "PSM":
-                            window.location.href = "/psm";
-                            break;
-                        case "ADMINISTRATIVO":
-                            window.location.href = "/administrativo/inventario/medicamentos";
-                            break;
-                        case "ADMIN_CONGRESO":
-                        case "ROLE_ADMIN_CONGRESO":
-                            window.location.href = "/administrativo";
-                            break;
-                        default:
-                            window.location.href = "/participante";
-                    }
-                }, 0);
-            } else {
+            const data = await response.json().catch(() => ({}));
+            if (!response.ok) {
                 setError(data.message || "Invalid code");
+                return;
             }
-        } catch (err) {
+
+            const token = extractToken(response, data);
+            if (!token) {
+                setError("No se recibió token de autenticación");
+                return;
+            }
+
+            persistAuthSession(token, { rememberMe });
+            clearPendingTwoFactorEmail();
+            if (data.user) {
+                setCurrentUser(data.user);
+            }
+
+            setSuccess(true);
+            router.replace(resolveRedirectPath(getRoleName(data.user), callbackUrl));
+        } catch {
             setError("Error verifying code. Try again.");
         } finally {
             setIsLoading(false);
@@ -96,7 +112,7 @@ export default function TwoStepVerification() {
             {/* Back */}
             <div className="relative py-3 sm:py-5">
                 <Link
-                    href="/"
+                    href="/home"
                     className="inline-flex items-center text-sm font-medium text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors"
                 >
                     <ChevronLeftIcon className="w-5 h-5 mr-1" />
@@ -117,7 +133,7 @@ export default function TwoStepVerification() {
                 </div>
 
                 {/* Form */}
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={(event) => void handleSubmit(event)}>
                     <div className="space-y-6">
                         <div>
                             <Label>
@@ -160,7 +176,7 @@ export default function TwoStepVerification() {
                     <p className="text-sm text-center text-gray-700 dark:text-gray-400">
                         Remember your password?{" "}
                         <Link
-                            href="/auth/signIn"
+                            href="/signin"
                             className="text-brand-500 hover:text-brand-600 dark:text-brand-400"
                         >
                             Sign in

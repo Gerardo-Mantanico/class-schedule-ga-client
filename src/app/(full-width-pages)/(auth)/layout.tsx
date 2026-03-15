@@ -8,9 +8,9 @@ import React from "react";
 
 export default function AuthLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
     <div className="relative p-6 bg-white z-1 dark:bg-gray-900 sm:p-0">
       <ThemeProvider>
@@ -24,16 +24,21 @@ export default function AuthLayout({
               {/* <!-- ===== Common Grid Shape Start ===== --> */}
               <GridShape />
               <div className="flex flex-col items-center max-w-xs">
-                <Link href="/" className="block mb-4">
+                <Link href="/home" className="block mb-4">
                   <Image
-                    width={231}
-                    height={48}
-                    src="./images/logo/auth-logo.svg"
-                    alt="Logo"
+                    width={360}
+                    height={220}
+                    src="/images/logo/sesion.png"
+                    alt="Imagen de sesión"
+                    className="h-auto w-auto max-w-full"
                   />
                 </Link>
-                <p className="text-center text-gray-400 dark:text-white/60">
-                  El espacio seguro donde podrás consultar tus citas, acceder a tus tcongresos terapéuticas y dar seguimiento a tu tratamiento de forma personalizada. 
+                <h2 className="mb-3 w-full text-justify text-xl font-semibold text-white">
+                  Sistema de Gestión de Horarios Académicos
+                </h2>
+                <p className="w-full text-justify text-gray-400 dark:text-white/60">
+                  Accede al panel institucional para administrar cursos, salones, docentes y la
+                  planificación académica del CUNOC - USAC en un entorno seguro.
                 </p>
               </div>
             </div>

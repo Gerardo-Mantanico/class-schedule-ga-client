@@ -5,37 +5,24 @@ import { Dropdown } from "../ui/dropdown/Dropdown";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { useAuth } from "@/context/AuthContext";
 import { usePathname, useRouter } from "next/navigation";
+import { clearAuthSession } from "@/service/auth-storage";
 
 const resolveProfileHref = (pathname: string, roleName?: string) => {
   const firstSegment = pathname.split("/").find(Boolean);
 
   if (firstSegment === "admin") return "/admin/profile";
-  if (firstSegment === "administrativo") return "/administrativo/profile";
-  if (firstSegment === "participante") return "/participante/profile";
-  if (firstSegment === "psm") return "/psm/profile";
 
   const normalizedRole = (roleName || "").toUpperCase();
-  if (normalizedRole.includes("ADMINISTRATIVO") || normalizedRole.includes("ADMIN_CONGRESO")) {
-    return "/administrativo/profile";
-  }
   if (normalizedRole.includes("ADMIN")) return "/admin/profile";
-  if (normalizedRole.includes("PSM")) return "/psm/profile";
-  if (
-    normalizedRole.includes("PARTICIPANTE") ||
-    normalizedRole.includes("PACIENTE") ||
-    normalizedRole.includes("CLIENT")
-  ) {
-    return "/participante/profile";
-  }
 
-  return "/profile";
+  return "/home";
 };
 
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
-  const { currentUser } = useAuth();
+  const { currentUser, setCurrentUser } = useAuth();
   const profileHref = resolveProfileHref(pathname, currentUser?.role?.name);
 
   function toggleDropdown(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
@@ -48,11 +35,9 @@ export default function UserDropdown() {
   }
 
   const handleLogout = () => {
-    // Limpiar token de localStorage
-    localStorage.removeItem("token");
-    // Limpiar cookie
-    document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
-    router.push("/signin");
+    clearAuthSession();
+    setCurrentUser(null);
+    router.replace("/signin");
   };
 
   return (
@@ -97,7 +82,7 @@ export default function UserDropdown() {
       <Dropdown
         isOpen={isOpen}
         onClose={closeDropdown}
-        className="absolute right-0 mt-[17px] flex w-[260px] flex-col rounded-2xl border border-gray-200 bg-white p-3 shadow-theme-lg dark:border-gray-800 dark:bg-gray-dark"
+        className="absolute right-0 mt-4.25 flex w-65 flex-col rounded-2xl border border-gray-200 bg-white p-3 shadow-theme-lg dark:border-gray-800 dark:bg-gray-dark"
       >
         <div>
           <span className="block font-medium text-gray-700 text-theme-sm dark:text-gray-400">
@@ -108,7 +93,7 @@ export default function UserDropdown() {
           </span>
           {currentUser?.role && (
             <span className="mt-1 inline-block px-2 py-0.5 text-xs font-medium rounded-full bg-brand-100 text-brand-700 dark:bg-brand-900/30 dark:text-brand-300">
-              {currentUser.role.name || currentUser.role.name}
+              {currentUser.role.name}
             </span>
           )}
         </div>

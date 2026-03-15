@@ -1,23 +1,111 @@
+import { getStoredToken } from './auth-storage';
+
 // Configuración base
-const baseURL = 'http://localhost:8090/api/v1'
+const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8090/api/v1'
+
+const parseErrorBody = async (response) => {
+  try {
+    const text = await response.text();
+    if (!text) return null;
+
+    try {
+      return JSON.parse(text);
+    } catch {
+      return text;
+    }
+  } catch {
+    return null;
+  }
+};
+
+const getAuthHeaders = () => {
+  if (globalThis.window === undefined) {
+    return {};
+  }
+
+  const token = getStoredToken();
+  if (!token) {
+    return {};
+  }
+
+  return {
+    Authorization: `Bearer ${token}`,
+  };
+};
+
+const buildErrorMessage = (response, errorData) => {
+  let message = response.statusText || `Error ${response.status}`;
+
+  if (errorData != null) {
+    if (typeof errorData === 'string') {
+      message = errorData.trim() || message;
+    } else if (errorData.message) {
+      message = errorData.message;
+    } else if (errorData.error) {
+      message = errorData.error;
+    } else if (Array.isArray(errorData) && errorData.length > 0) {
+      try {
+        const mapped = errorData
+          .map((it) => (it && (it.message || it.defaultMessage || JSON.stringify(it))))
+          .join(' | ');
+        message = mapped || JSON.stringify(errorData);
+      } catch {
+        message = JSON.stringify(errorData);
+      }
+    } else {
+      message = JSON.stringify(errorData);
+    }
+  }
+
+  if (!message || message === '{}') {
+    const statusSuffix = response.statusText ? ` - ${response.statusText}` : '';
+    return `Error ${response.status}${statusSuffix}`;
+  }
+
+  return message;
+};
+
+const createApiError = (message, response, endpoint, errorData) => {
+  const err = new Error(message);
+  try {
+    err.status = response.status;
+    err.statusText = response.statusText;
+    err.endpoint = endpoint;
+    err.data = errorData;
+  } catch {
+    // ignore if attachment fails
+  }
+
+  return err;
+};
+
+const parseSuccessBody = async (response) => {
+  if (response.status === 204) {
+    return null;
+  }
+
+  const contentLength = response.headers.get('content-length');
+  if (contentLength === '0' || !response.text) {
+    return null;
+  }
+
+  try {
+    return await response.json();
+  } catch {
+    return null;
+  }
+};
 
 
 // Función interna para hacer requests
 const request = async (endpoint, method, data = null, customHeaders = {}) => {
-  let url = `${baseURL}${endpoint}`;
+  const url = `${baseURL}${endpoint}`;
   
   const headers = {
     'Content-Type': 'application/json',
+    ...getAuthHeaders(),
     ...customHeaders,
   };
-
-  // Añadir token de autenticación si existe
-  if (globalThis.window !== undefined) {
-    const token = localStorage.getItem('token');
-    if (token) {
-      headers.Authorization = `Bearer ${token}`;
-    }
-  }
 
   const config = {
     method,
@@ -30,76 +118,28 @@ const request = async (endpoint, method, data = null, customHeaders = {}) => {
 
   try {
     const response = await fetch(url, config);
-    
-    // Manejo de respuestas no exitosas
+
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
+      const errorData = await parseErrorBody(response.clone());
+      const message = buildErrorMessage(response, errorData);
 
-      // Construir un mensaje legible a partir de distintas formas de respuesta
-      let message = response.statusText || `Error ${response.status}`;
-      if (errorData) {
-        if (typeof errorData === 'string') {
-          message = errorData;
-        } else if (errorData.message) {
-          message = errorData.message;
-        } else if (errorData.error) {
-          message = errorData.error;
-        } else if (Array.isArray(errorData) && errorData.length > 0) {
-          try {
-            // Intentar obtener mensajes individuales si vienen en un array
-            const mapped = errorData.map((it) => (it && (it.message || it.defaultMessage || JSON.stringify(it))) ).join(' | ');
-            message = mapped || JSON.stringify(errorData);
-          } catch {
-            message = JSON.stringify(errorData);
-          }
-        } else {
-          message = JSON.stringify(errorData);
-        }
-      }
-
-      // Log detallado del error
       console.error('Error API completo:', {
         status: response.status,
         statusText: response.statusText,
         endpoint: url,
-        errorData: errorData,
+        errorData,
         fullError: message,
       });
 
-      // Adjuntar el body original al Error para que el código superior pueda inspeccionarlo
-      const err = new Error(message);
-      try {
-        err.data = errorData; // attach extra info
-      } catch {
-        // ignore if attachment fails
-      }
-      throw err;
+      throw createApiError(message, response, url, errorData);
     }
 
-    // Retornar datos parseados para respuestas exitosas
-    // Manejar 204 No Content
-    if (response.status === 204) {
-      return null;
-    }
-
-    // Verificar si hay contenido en la respuesta
-    const contentLength = response.headers.get('content-length');
-    
-    // Si no hay contenido, retornar null
-    if (contentLength === '0' || !response.text) {
-      return null;
-    }
-
-    try {
-      const responseData = await response.json();
-      return responseData;
-    } catch {
-      // Si no puede parsear JSON pero es 200, retornar null
-      return null;
-    }
+    return parseSuccessBody(response);
 
   } catch (error) {
-    console.error('Error en la solicitud:', error);
+    if (!(error instanceof Error) || typeof error.status !== 'number') {
+      console.error('Error en la solicitud:', error);
+    }
     throw error;
   }
 };

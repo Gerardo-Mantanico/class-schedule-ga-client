@@ -126,7 +126,7 @@ export default function ActividadTable() {
       horaInicio: toDateTimeLocalValue(actividad.horaInicio),
       horaFin: toDateTimeLocalValue(actividad.horaFin),
       capacidadMaxima: actividad.capacidadMaxima,
-      salonId: actividad.salonId,
+      salonId: actividad.salonId ?? 0,
       congresoId: actividad.congresoId,
     });
     openModal();

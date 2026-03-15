@@ -59,8 +59,8 @@ export const useConvocatoria = () => {
   } = useCrud<Convocatoria>(convocatoriaApi, transformPayload);
 
   const fetchConvocatoriasByCongreso = useCallback(
-    async (congresoId: number, page = 0, size = 10) => {
-      return fetchItems({ congresoId, page, size });
+    async (congresoId: number, page = 0, size = 1000) => {
+      return fetchItems({ congresoId, page, size, estado: "ACTIVO" });
     },
     [fetchItems]
   );

@@ -46,8 +46,18 @@ const cardStyles = [
 export default function CongresoSection() {
 
   const { congresos, loading, error } = useCongreso();
+  const hasUnavailableData = Boolean(error) || !congresos || congresos.length === 0;
 
-  console.log("CongresoSection State:", { congresos, loading, error });
+  const formatDate = (value?: string) => {
+    if (!value) return "Sin fecha";
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) return value;
+    return parsed.toLocaleDateString("es-MX", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  };
 
   if (loading) {
     return (
@@ -59,24 +69,20 @@ export default function CongresoSection() {
     );
   }
 
-  if (error) {
-    return (
-      <section id="congresos" className="px-4 py-16 mx-auto max-w-7xl sm:px-6 lg:px-8 lg:py-24">
-        <div className="text-center">
-          <p className="text-lg text-red-600 dark:text-red-400">Error al cargar congresos: {error}</p>
-        </div>
-      </section>
-    );
-  }
-
-  if (!congresos || congresos.length === 0) {
+  if (hasUnavailableData) {
      return (
       <section id="congresos" className="px-4 py-16 mx-auto max-w-7xl sm:px-6 lg:px-8 lg:py-24">
-        <div className="text-center">
+        <div className="rounded-3xl border border-gray-200 bg-white p-8 text-center shadow-theme-sm dark:border-gray-800 dark:bg-white/3 sm:p-10">
+          <span className="inline-flex rounded-full bg-brand-50 px-4 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-brand-700 dark:bg-brand-500/15 dark:text-brand-300">
+            Información institucional
+          </span>
            <h2 className="mb-4 text-3xl font-bold text-gray-900 sm:text-4xl dark:text-white">
               Congresos
             </h2>
-          <p className="text-lg text-gray-600 dark:text-gray-400">No hay congresos registrados aún.</p>
+          <p className="mx-auto max-w-2xl text-lg text-gray-600 dark:text-gray-400">
+            El catálogo público de congresos no está disponible por ahora. La demo sigue habilitada
+            para conocer la experiencia general y el panel administrativo del sistema.
+          </p>
         </div>
       </section>
     );
@@ -114,9 +120,30 @@ export default function CongresoSection() {
                   <h3 className="mb-4 text-2xl font-bold text-gray-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
                     {congreso.titulo}
                   </h3>
-                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                  <p className="mb-4 text-gray-600 dark:text-gray-300 leading-relaxed line-clamp-3">
                     {congreso.descripcion}
                   </p>
+
+                  <div className="space-y-1 text-sm text-gray-700 dark:text-gray-300">
+                    <p>
+                      <span className="font-medium">Ubicación:</span> {congreso.ubicacion || "No definida"}
+                    </p>
+                    <p>
+                      <span className="font-medium">Fecha inicio:</span> {formatDate(congreso.fechaInicio)}
+                    </p>
+                    <p>
+                      <span className="font-medium">Fecha fin:</span> {formatDate(congreso.fechaFin)}
+                    </p>
+                    <p>
+                      <span className="font-medium">Inscripción:</span> ${Number(congreso.precioInscripcion ?? 0).toFixed(2)}
+                    </p>
+                    <p>
+                      <span className="font-medium">Comisión:</span> {Number(congreso.comisionPorcentaje ?? 0)}%
+                    </p>
+                    <p>
+                      <span className="font-medium">Estado:</span> {congreso.activo ? "Activo" : "Inactivo"}
+                    </p>
+                  </div>
                 </div>
               );
             })}

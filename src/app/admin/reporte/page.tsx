@@ -1,19 +1,35 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import Button from "@/components/ui/button/Button";
+import StripedCard from "@/components/common/StripedCard";
 import { MdPictureAsPdf, MdImage, MdTableChart, MdBarChart } from "react-icons/md";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
-import { useReporteSesiones } from "@/hooks/reporte/useReporteSesiones";
+import { useReporteHorarios } from "@/hooks/reporte/useReporteHorarios";
+import { TableIcon, FileIcon, TaskIcon, CheckCircleIcon } from "@/icons";
 
-export default function ReporteClinico() {
+export default function ReporteHorariosPage() {
   const refReporte = useRef<HTMLDivElement>(null);
-  const { reportes: estadisticas, loading } = useReporteSesiones();
+  const [tipo, setTipo] = useState<"MIXTO" | "CURSO" | "LAB">("MIXTO");
+  const [anio, setAnio] = useState("2026");
+  const [semestre, setSemestre] = useState("1");
+  const [carrera, setCarrera] = useState("Todas");
 
-  // Descargar como PDF
+  const filters = useMemo(
+    () => ({
+      tipo,
+      anio,
+      semestre,
+      carrera,
+    }),
+    [tipo, anio, semestre, carrera]
+  );
+
+  const { stats, grid, salones, loading } = useReporteHorarios(filters);
+
   const handleDescargarPDF = async () => {
     if (!refReporte.current) return;
     const canvas = await html2canvas(refReporte.current);
@@ -23,34 +39,64 @@ export default function ReporteClinico() {
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
     pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-    pdf.save("reporte_clinico.pdf");
+    pdf.save("reporte_horarios.pdf");
   };
 
-  // Descargar como Imagen
   const handleDescargarImagen = async () => {
     if (!refReporte.current) return;
     const canvas = await html2canvas(refReporte.current);
     canvas.toBlob(blob => {
-      if (blob) saveAs(blob, "reporte_clinico.png");
+      if (blob) saveAs(blob, "reporte_horarios.png");
     });
   };
 
-  // Descargar como Excel
   const handleDescargarExcel = () => {
-    const ws = XLSX.utils.json_to_sheet(estadisticas);
+    const ws = XLSX.utils.json_to_sheet(grid);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Reporte");
     const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
     const data = new Blob([excelBuffer], { type: "application/octet-stream" });
-    saveAs(data, "reporte_clinico.xlsx");
+    saveAs(data, "reporte_horarios.xlsx");
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-8 bg-white dark:bg-gray-900 rounded-xl shadow-lg">
+    <div className="mx-auto space-y-4 rounded-xl bg-white p-8 shadow-lg dark:bg-gray-900">
       <div className="flex items-center gap-3 mb-6">
         <MdBarChart className="text-blue-600 dark:text-blue-400" size={28} />
-        <h1 className="text-xl font-bold text-gray-900 dark:text-white">Reportes Clínicos</h1>
+        <h1 className="text-xl font-bold text-gray-900 dark:text-white">Reportes y estadísticas de horarios</h1>
       </div>
+
+      <div className="grid grid-cols-1 gap-3 rounded-lg border border-gray-200 p-4 dark:border-white/10 lg:grid-cols-4">
+        <select
+          className="h-10 rounded-lg border border-gray-300 bg-transparent px-3 text-sm dark:border-gray-700"
+          value={tipo}
+          onChange={(event) => setTipo(event.target.value as "MIXTO" | "CURSO" | "LAB")}
+        >
+          <option value="MIXTO">Horario cursos y laboratorios</option>
+          <option value="CURSO">Solo cursos</option>
+          <option value="LAB">Solo laboratorios</option>
+        </select>
+
+        <input
+          className="h-10 rounded-lg border border-gray-300 bg-transparent px-3 text-sm dark:border-gray-700"
+          value={anio}
+          onChange={(event) => setAnio(event.target.value)}
+          placeholder="Año"
+        />
+        <input
+          className="h-10 rounded-lg border border-gray-300 bg-transparent px-3 text-sm dark:border-gray-700"
+          value={semestre}
+          onChange={(event) => setSemestre(event.target.value)}
+          placeholder="Semestre"
+        />
+        <input
+          className="h-10 rounded-lg border border-gray-300 bg-transparent px-3 text-sm dark:border-gray-700"
+          value={carrera}
+          onChange={(event) => setCarrera(event.target.value)}
+          placeholder="Carrera"
+        />
+      </div>
+
       <div className="flex justify-end gap-2 mb-4">
         <Button
           onClick={handleDescargarPDF}
@@ -71,25 +117,73 @@ export default function ReporteClinico() {
           <MdTableChart size={16} /> Excel
         </Button>
       </div>
+
+      <div className="grid grid-cols-1 gap-3 lg:grid-cols-4">
+        <StripedCard
+          title="Total bloques"
+          icon={TableIcon}
+          tone="bg-brand-50 text-brand-700 dark:bg-brand-500/15 dark:text-brand-300"
+          stripe="bg-brand-500"
+          compact
+        >
+          <p className="text-2xl font-semibold text-gray-800 dark:text-white/90">{stats.total}</p>
+        </StripedCard>
+        <StripedCard
+          title="Cursos"
+          icon={FileIcon}
+          tone="bg-blue-light-50 text-blue-light-700 dark:bg-blue-light-500/15 dark:text-blue-light-300"
+          stripe="bg-blue-light-500"
+          compact
+        >
+          <p className="text-2xl font-semibold text-gray-800 dark:text-white/90">{stats.cursos}</p>
+        </StripedCard>
+        <StripedCard
+          title="Laboratorios"
+          icon={TaskIcon}
+          tone="bg-warning-50 text-warning-700 dark:bg-warning-500/15 dark:text-warning-300"
+          stripe="bg-warning-500"
+          compact
+        >
+          <p className="text-2xl font-semibold text-gray-800 dark:text-white/90">{stats.labs}</p>
+        </StripedCard>
+        <StripedCard
+          title="Sin salón"
+          icon={CheckCircleIcon}
+          tone="bg-indigo-50 text-indigo-700 dark:bg-indigo-500/15 dark:text-indigo-300"
+          stripe="bg-indigo-500"
+          compact
+        >
+          <p className="text-2xl font-semibold text-gray-800 dark:text-white/90">{stats.sinSalon}</p>
+        </StripedCard>
+      </div>
+
       <div ref={refReporte} className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-        <h2 className="text-base font-semibold mb-3 text-gray-800 dark:text-gray-200">Estadísticas de atención por área y servicio</h2>
+        <h2 className="text-base font-semibold mb-3 text-gray-800 dark:text-gray-200">
+          Matriz de horarios por salón ({filters.tipo})
+        </h2>
         {loading ? (
           <div>Cargando...</div>
         ) : (
           <table className="w-full text-left border-collapse text-sm">
             <thead>
               <tr>
-                <th className="border-b py-1 px-2 text-gray-700 dark:text-gray-300 font-medium">Área</th>
-                <th className="border-b py-1 px-2 text-gray-700 dark:text-gray-300 font-medium">Servicio</th>
-                <th className="border-b py-1 px-2 text-gray-700 dark:text-gray-300 font-medium">Número de sesiones</th>
+                <th className="border-b py-1 px-2 text-gray-700 dark:text-gray-300 font-medium">Horario</th>
+                {salones.map((salon) => (
+                  <th key={salon} className="border-b py-1 px-2 text-gray-700 dark:text-gray-300 font-medium">
+                    {salon}
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody>
-              {estadisticas.map((item, idx) => (
-                <tr key={item.servicioId} className={idx % 2 === 0 ? "bg-white dark:bg-gray-900" : "bg-gray-100 dark:bg-gray-700"}>
-                  <td className="py-1 px-2">{item.congresoNombre}</td>
-                  <td className="py-1 px-2">{item.servicioNombre}</td>
-                  <td className="py-1 px-2">{item.sesiones}</td>
+              {grid.map((item, idx) => (
+                <tr key={`${item.horario}-${idx}`} className={idx % 2 === 0 ? "bg-white dark:bg-gray-900" : "bg-gray-100 dark:bg-gray-700"}>
+                  <td className="py-1 px-2 font-medium">{item.horario}</td>
+                  {salones.map((salon) => (
+                    <td key={`${item.horario}-${salon}`} className="py-1 px-2">
+                      {item[salon]}
+                    </td>
+                  ))}
                 </tr>
               ))}
             </tbody>

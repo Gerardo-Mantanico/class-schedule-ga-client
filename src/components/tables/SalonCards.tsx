@@ -19,6 +19,9 @@ export default function SalonCards() {
   const [selectedSalon, setSelectedSalon] = useState<Salon | null>(null);
   const [formData, setFormData] = useState({
     nombre: "",
+    codigoInterno: "",
+    tipo: "AMBOS" as "LAB" | "CURSO" | "AMBOS",
+    tipoHorario: "AMBOS" as "MANANA" | "TARDE" | "AMBOS",
     ubicacion: "",
     capacidad: 0,
     recursos: "",
@@ -29,6 +32,9 @@ export default function SalonCards() {
     setSelectedSalon(null);
     setFormData({
       nombre: "",
+      codigoInterno: "",
+      tipo: "AMBOS",
+      tipoHorario: "AMBOS",
       ubicacion: "",
       capacidad: 0,
       recursos: "",
@@ -41,6 +47,9 @@ export default function SalonCards() {
     setSelectedSalon(salon);
     setFormData({
       nombre: salon.nombre,
+      codigoInterno: salon.codigoInterno || "",
+      tipo: salon.tipo || "AMBOS",
+      tipoHorario: salon.tipoHorario || "AMBOS",
       ubicacion: salon.ubicacion,
       capacidad: salon.capacidad,
       recursos: salon.recursos,
@@ -59,11 +68,16 @@ export default function SalonCards() {
     toast.error("No fue posible eliminar el salón");
   };
 
-  const handleSave = async (event: React.FormEvent) => {
+  const handleSave = async (event: React.BaseSyntheticEvent) => {
     event.preventDefault();
 
     if (!formData.nombre.trim() || !formData.ubicacion.trim()) {
       toast.error("Completa nombre y ubicación del salón.");
+      return;
+    }
+
+    if (!formData.codigoInterno.trim()) {
+      toast.error("Completa el id/código interno del salón.");
       return;
     }
 
@@ -210,8 +224,20 @@ export default function SalonCards() {
                   <span>{salon.ubicacion}</span>
                 </p>
                 <p className="flex items-center gap-2">
+                  <span className="text-xs font-medium">ID:</span>
+                  <span>{salon.codigoInterno || "-"}</span>
+                </p>
+                <p className="flex items-center gap-2">
                   <MdPeopleAlt className="h-4 w-4 text-brand-500" />
                   <span>Capacidad: {salon.capacidad}</span>
+                </p>
+                <p className="flex items-center gap-2">
+                  <span className="text-xs font-medium">Tipo:</span>
+                  <span>{salon.tipo || "AMBOS"}</span>
+                </p>
+                <p className="flex items-center gap-2">
+                  <span className="text-xs font-medium">Horario:</span>
+                  <span>{salon.tipoHorario || "AMBOS"}</span>
                 </p>
                 <p className="flex items-start gap-2">
                   <MdBuild className="mt-0.5 h-4 w-4 text-brand-500" />
@@ -261,6 +287,46 @@ export default function SalonCards() {
                     value={formData.capacidad}
                     onChange={(event) => setFormData({ ...formData, capacidad: Number(event.target.value || 0) })}
                   />
+                </div>
+
+                <div className="col-span-2 lg:col-span-1">
+                  <Label>ID interno</Label>
+                  <Input
+                    type="text"
+                    placeholder="Ej. LAB-101"
+                    value={formData.codigoInterno}
+                    onChange={(event) => setFormData({ ...formData, codigoInterno: event.target.value })}
+                  />
+                </div>
+
+                <div className="col-span-2 lg:col-span-1">
+                  <Label>Tipo</Label>
+                  <select
+                    className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm dark:border-gray-700"
+                    value={formData.tipo}
+                    onChange={(event) =>
+                      setFormData({ ...formData, tipo: event.target.value as "LAB" | "CURSO" | "AMBOS" })
+                    }
+                  >
+                    <option value="LAB">Lab</option>
+                    <option value="CURSO">Curso</option>
+                    <option value="AMBOS">Ambos</option>
+                  </select>
+                </div>
+
+                <div className="col-span-2 lg:col-span-1">
+                  <Label>Tipo de horario</Label>
+                  <select
+                    className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm dark:border-gray-700"
+                    value={formData.tipoHorario}
+                    onChange={(event) =>
+                      setFormData({ ...formData, tipoHorario: event.target.value as "MANANA" | "TARDE" | "AMBOS" })
+                    }
+                  >
+                    <option value="MANANA">Mañana</option>
+                    <option value="TARDE">Tarde</option>
+                    <option value="AMBOS">Ambos</option>
+                  </select>
                 </div>
 
                 <div className="col-span-2">

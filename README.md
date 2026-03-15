@@ -4,3 +4,5 @@
 
 [Manual de usurio para empleados](https://scribehow.com/viewer/MANUAL_DE_USUARIO_PSIFIRM__l4h71_9BRjm04d2m6DyPTQ)
 
+[Guía de integración backend para demo de horarios](docs/integracion-backend.md)
+

@@ -6,7 +6,7 @@ export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // Rutas que requieren autenticación
-  const protectedRoutes = ['/admin', '/participante','/psm', '/administrativo']
+  const protectedRoutes = ['/admin']
   
   // Verificar si la ruta actual es protegida
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route))
@@ -25,9 +25,6 @@ export function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/admin/:path*',
-    '/participante/:path*',
-    '/psm/:path*',
-    '/administrativo/:path*'
+    '/admin/:path*'
   ],
 }

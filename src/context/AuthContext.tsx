@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from "react";
 import { User } from "@/hooks/useUser";
 import { userApi } from "@/service/user.service";
+import { clearAuthSession, getStoredDemoUser, getStoredToken, isDemoToken } from "@/service/auth-storage";
 
 interface AuthContextType {
   currentUser: User | null;
@@ -18,10 +19,34 @@ export function AuthProvider({ children }: Readonly<{ children: React.ReactNode 
   const [isLoading, setIsLoading] = useState(true);
 
   const loadUser = useCallback(async () => {
+    if (globalThis.window === undefined) {
+      setCurrentUser(null);
+      setIsLoading(false);
+      return;
+    }
+
+    const token = getStoredToken();
+
+    if (!token) {
+      setCurrentUser(null);
+      setIsLoading(false);
+      return;
+    }
+
+    if (isDemoToken(token)) {
+      const demoUser = getStoredDemoUser<User>();
+      setCurrentUser(demoUser);
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const user = await userApi.getCurrentUser();
       setCurrentUser(user);
-    } catch {
+    } catch (error: any) {
+      if (error?.status === 401 || error?.status === 403) {
+        clearAuthSession();
+      }
       setCurrentUser(null);
     } finally {
       setIsLoading(false);

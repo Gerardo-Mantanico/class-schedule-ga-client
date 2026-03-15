@@ -12,7 +12,7 @@ export function useChangePassword() {
       await authService.changePassword(code, email, newPassword);
       return true;
     } catch (e: any) {
-      setError(e?.response?.data?.message || "No se pudo cambiar la contraseña");
+      setError(e?.data?.message || e?.message || "No se pudo cambiar la contraseña");
       return false;
     } finally {
       setLoading(false);

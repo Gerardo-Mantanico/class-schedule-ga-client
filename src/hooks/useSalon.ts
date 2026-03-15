@@ -4,10 +4,14 @@ import salonApi from "@/service/salon.service";
 export interface Salon {
   id: number;
   nombre: string;
+  codigoInterno?: string;
+  tipo?: "LAB" | "CURSO" | "AMBOS";
+  tipoHorario?: "MANANA" | "TARDE" | "AMBOS";
   ubicacion: string;
   capacidad: number;
   recursos: string;
   estado: string;
+  usadoEnHorario?: boolean;
   activo?: boolean;
   createdAt?: string;
   updatedAt?: string;
@@ -15,6 +19,9 @@ export interface Salon {
 
 type SalonPayload = {
   nombre: string;
+  codigoInterno: string;
+  tipo: "LAB" | "CURSO" | "AMBOS";
+  tipoHorario: "MANANA" | "TARDE" | "AMBOS";
   ubicacion: string;
   capacidad: number;
   recursos: string;
@@ -31,6 +38,9 @@ const transformPayload = (data: unknown): SalonPayload => {
 
   return {
     nombre: value.nombre ?? "",
+    codigoInterno: value.codigoInterno ?? "SIN-CODIGO",
+    tipo: value.tipo ?? "AMBOS",
+    tipoHorario: value.tipoHorario ?? "AMBOS",
     ubicacion: value.ubicacion ?? "",
     capacidad: Number(value.capacidad ?? 0),
     recursos: value.recursos ?? "",

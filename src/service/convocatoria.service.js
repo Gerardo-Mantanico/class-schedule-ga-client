@@ -2,6 +2,11 @@ import { createCrudService } from "./crud.factory.js";
 import api from "./api.service";
 
 const ENDPOINT_BASE = "/convocatorias";
+const DEFAULT_CONVOCATORIA_PARAMS = {
+	page: 0,
+	size: 1000,
+	estado: "ACTIVO",
+};
 
 const crud = createCrudService(ENDPOINT_BASE);
 
@@ -50,14 +55,18 @@ const normalizeConvocatoriasResponse = (response) => {
 export const convocatoriaApi = {
 	...crud,
 	getAll: async (params = {}) => {
+		const mergedParams = { ...DEFAULT_CONVOCATORIA_PARAMS, ...params };
+
 		if (params?.congresoId !== undefined && params?.congresoId !== null) {
 			if (params?.page !== undefined || params?.size !== undefined) {
-				return await crud.getAll(params);
+				return await crud.getAll(mergedParams);
 			}
-			const response = await api.get(`${ENDPOINT_BASE}/congreso/${params.congresoId}`);
+			const response = await api.get(`${ENDPOINT_BASE}/congreso/${params.congresoId}`, {
+				params: { estado: mergedParams.estado },
+			});
 			return normalizeConvocatoriasResponse(response);
 		}
-		return await crud.getAll(params);
+		return await crud.getAll(mergedParams);
 	},
 };
 

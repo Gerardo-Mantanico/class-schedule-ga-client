@@ -12,7 +12,7 @@ export function useRecoverPassword() {
       await authService.recoverPassword(email);
       return true;
     } catch (e: any) {
-      setError(e?.response?.data?.message || "Error al recuperar contraseña");
+      setError(e?.data?.message || e?.message || "Error al recuperar contraseña");
       return false;
     } finally {
       setLoading(false);

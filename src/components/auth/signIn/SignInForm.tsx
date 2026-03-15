@@ -6,10 +6,78 @@ import Button from "@/components/ui/button/Button";
 import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "@/icons";
 import Link from "next/link";
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
+import { persistAuthSession, storeDemoUser, storePendingTwoFactorEmail } from "@/service/auth-storage";
+import { User } from "@/hooks/useUser";
+
+const DEMO_CREDENTIALS = {
+  email: "admin@demo.com",
+  password: "Admin1234",
+};
+
+const DEMO_USER: User = {
+  id: 1,
+  firstname: "Admin",
+  lastname: "Demo",
+  email: DEMO_CREDENTIALS.email,
+  dpi: 1234567890101,
+  phoneNumber: "50255551234",
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+  active: true,
+  role: {
+    id: 1,
+    name: "ADMIN",
+    description: "Administrador demo",
+  },
+  use2fa: false,
+};
+
+const resolveRedirectPath = (role: string, callbackUrl: string | null) => {
+  if (callbackUrl?.startsWith("/")) {
+    return callbackUrl;
+  }
+
+  return role === "ADMIN" ? "/admin" : "/home";
+};
+
+const extractToken = (response: Response, data: any) => {
+  if (data?.token) {
+    return data.token;
+  }
+
+  const authHeader = response.headers.get("Authorization");
+  if (!authHeader) {
+    return "";
+  }
+
+  return authHeader.startsWith("Bearer ")
+    ? authHeader.substring(7)
+    : authHeader;
+};
+
+const buildTwoFactorPath = (callbackUrl: string | null, rememberMe: boolean) => {
+  const params = new URLSearchParams();
+
+  if (callbackUrl?.startsWith("/")) {
+    params.set("callbackUrl", callbackUrl);
+  }
+
+  if (rememberMe) {
+    params.set("remember", "1");
+  }
+
+  const query = params.toString();
+  return query ? `/twoverification?${query}` : "/twoverification";
+};
+
+const getRoleName = (user: any) => String(user?.role?.name || user?.role || "").toUpperCase();
 
 export default function SignInForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const { setCurrentUser } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
 
@@ -22,15 +90,38 @@ export default function SignInForm() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     setError(null);
     setSuccess(false);
     setIsLoading(true);
 
-    const loginData = { email, password };
+    const trimmedEmail = email.trim().toLowerCase();
+    const callbackUrl = searchParams.get("callbackUrl");
+
+    if (!trimmedEmail || !password) {
+      setError("Ingresa tu correo y contraseña.");
+      setIsLoading(false);
+      return;
+    }
+
+    const loginData = { email: trimmedEmail, password };
     const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/auth/login`;
+
+    if (
+      trimmedEmail === DEMO_CREDENTIALS.email &&
+      password === DEMO_CREDENTIALS.password
+    ) {
+      const demoToken = `demo-token-${Date.now()}`;
+      persistAuthSession(demoToken, { rememberMe: isChecked });
+      storeDemoUser(DEMO_USER, { rememberMe: isChecked });
+      setCurrentUser(DEMO_USER);
+      setSuccess(true);
+      router.replace("/admin");
+      setIsLoading(false);
+      return;
+    }
 
     try {
       const response = await fetch(API_URL, {
@@ -40,83 +131,33 @@ export default function SignInForm() {
         credentials: "include", // 👈 Importante para cookies
       });
 
-      const data = await response.json();
+      const data = await response.json().catch(() => ({}));
 
-      if (response.ok) {
-        console.log("Inicio de sesión exitoso:", data);
-
-        // Si el backend retorna use2fa: true, redirigir a verificación y no exigir token ni user
-        if (data.use2fa) {
-          // Guarda el email ingresado para la verificación
-          localStorage.setItem("2fa_user_email", email);
-          router.push("/twoverification");
-          return;
-        }
-
-        // Intentar obtener el token del cuerpo o de los headers
-        let token = data.token;
-        if (!token) {
-          const authHeader = response.headers.get("Authorization");
-          if (authHeader) {
-            token = authHeader.startsWith("Bearer ")
-              ? authHeader.substring(7)
-              : authHeader;
-          }
-        }
-
-        // 🔥 SOLUCIÓN: Guardar token ANTES de redirigir
-        if (token) {
-          // Establecer cookie con fecha de expiración
-          const expires = new Date();
-          expires.setDate(expires.getDate() + 1); // 1 día
-          document.cookie = `token=${token}; path=/; expires=${expires.toUTCString()}; SameSite=Strict`;
-          // También guardar en localStorage como respaldo
-          localStorage.setItem("token", token);
-        } else {
-          console.warn("Advertencia: No se recibió token");
-          setError("No se recibió token de autenticación");
-          setIsLoading(false);
-          return;
-        }
-
-        setSuccess(true);
-
-        setTimeout(() => {
-          // Obtener el rol de forma segura
-          const roleRaw = data.user?.role?.name || data.user?.role || "";
-          const role = String(roleRaw).toUpperCase();
-
-          console.log("Rol detectado para redirección:", role);
-
-          switch (role) {
-            case "ADMIN":
-              window.location.href = "/admin";
-              break;
-            case "CLIENT":
-            case "PARTICIPANTE":
-              window.location.href = "/participante";
-              break;
-            case "PSM":
-              window.location.href = "/psm";
-              break;
-            case "ADMINISTRATIVO":
-              window.location.href = "/administrativo/inventario/medicamentos";
-              break;
-            case "ADMIN_CONGRESO":
-            case "ROLE_ADMIN_CONGRESO":
-              window.location.href = "/administrativo";
-              break;
-            default:
-              console.log("Redirigiendo por defecto (Rol: " + role + ")");
-              window.location.href = "/participante";
-          }
-        }, 0);
-      } else {
-        console.error("Error al iniciar sesión:", data);
+      if (!response.ok) {
         setError(data.message || "Credenciales incorrectas");
+        return;
       }
-    } catch (err) {
-      console.error("Error de red:", err);
+
+      if (data.use2fa) {
+        storePendingTwoFactorEmail(trimmedEmail);
+        router.push(buildTwoFactorPath(callbackUrl, isChecked));
+        return;
+      }
+
+      const token = extractToken(response, data);
+      if (!token) {
+        setError("No se recibió token de autenticación");
+        return;
+      }
+
+      persistAuthSession(token, { rememberMe: isChecked });
+      if (data.user) {
+        setCurrentUser(data.user);
+      }
+
+      setSuccess(true);
+      router.replace(resolveRedirectPath(getRoleName(data.user), callbackUrl));
+    } catch {
       setError("No se pudo conectar con el servidor. Verifica tu conexión.");
     } finally {
       setIsLoading(false);
@@ -145,7 +186,7 @@ export default function SignInForm() {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={(event) => void handleSubmit(event)}>
           <div className="space-y-6">
             <div>
               <Label>
@@ -188,6 +229,11 @@ export default function SignInForm() {
 
             {error && (
               <p className="text-sm text-center text-error-500">{error}</p>
+            )}
+            {!error && (
+              <p className="text-xs text-center text-gray-500 dark:text-gray-400">
+                Demo: admin@demo.com / Admin1234
+              </p>
             )}
             {success && (
               <p className="text-sm text-center text-success-500">

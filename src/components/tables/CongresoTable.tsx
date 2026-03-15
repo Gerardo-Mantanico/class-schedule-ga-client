@@ -151,7 +151,7 @@ export default function CongresoTable() {
     e.preventDefault();
     const isEditing = Boolean(selectedCongreso);
     let success = false;
-    if (isEditing) {
+    if (isEditing && selectedCongreso) {
       success = await updateCongreso(selectedCongreso.id, formData);
     } else {
       success = await createCongreso(formData);

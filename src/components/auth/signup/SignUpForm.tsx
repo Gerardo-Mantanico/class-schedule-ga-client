@@ -3,7 +3,6 @@
 import Link from "next/link";
 import Label from "@/components/form/Label";
 import Input from "@/components/form/input/InputField";
-import PasswordInput from "./PasswordInput";
 import {
   ChevronLeftIcon,
   EyeIcon,
@@ -85,6 +84,7 @@ export default function SignUpForm() {
                     placeholder="Enter your first name"
                     value={formData.firstname}
                     onChange={handleChange}
+                    required
                   />
                 </div>
 
@@ -100,6 +100,7 @@ export default function SignUpForm() {
                     placeholder="Enter your last name"
                     value={formData.lastname}
                     onChange={handleChange}
+                    required
                   />
                 </div>
               </div>
@@ -116,6 +117,7 @@ export default function SignUpForm() {
                   placeholder="Enter your email"
                   value={formData.email}
                   onChange={handleChange}
+                  required
                 />
               </div>
 
@@ -132,6 +134,7 @@ export default function SignUpForm() {
                     placeholder="Enter your phone number"
                     value={formData.phoneNumber}
                     onChange={handleChange}
+                    required
                   />
                 </div>
                 <div>
@@ -144,10 +147,9 @@ export default function SignUpForm() {
                     name="dpi"
                     value={formData.dpi}
                     onChange={handleChange}
-                         placeholder="0.00"
-                    step={0.01}
-                    min="0"
-                 />
+                    placeholder="Enter your DPI"
+                    required
+                  />
                 </div>
               </div>
 
@@ -165,19 +167,37 @@ export default function SignUpForm() {
                     type={showPassword ? "text" : "password"}
                     value={formData.password}
                     onChange={handleChange}
+                    required
                   />
 
-                  <span
+                  <button
+                    type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute z-30 -translate-y-1/2 cursor-pointer right-4 top-1/2"
+                    aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                   >
                     {showPassword ? (
                       <EyeIcon className="fill-gray-500 dark:fill-gray-400" />
                     ) : (
                       <EyeCloseIcon className="fill-gray-500 dark:fill-gray-400" />
                     )}
-                  </span>
+                  </button>
                 </div>
+              </div>
+
+              <div>
+                <Label>
+                  Confirm Password<span className="text-error-500">*</span>
+                </Label>
+
+                <Input
+                  placeholder="Repeat your password"
+                  name="confirmPassword"
+                  type={showPassword ? "text" : "password"}
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  required
+                />
               </div>
 
               {/* Alertas */}
