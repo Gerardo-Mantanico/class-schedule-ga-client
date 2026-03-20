@@ -231,11 +231,6 @@ export default function SignInForm() {
             {error && (
               <p className="text-sm text-center text-error-500">{error}</p>
             )}
-            {!error && (
-              <p className="text-xs text-center text-gray-500 dark:text-gray-400">
-                Demo: admin@demo.com / Admin1234
-              </p>
-            )}
             {success && (
               <p className="text-sm text-center text-success-500">
                 ¡Inicio de sesión exitoso! Redirigiendo...

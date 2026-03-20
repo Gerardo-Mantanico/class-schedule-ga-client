@@ -1,7 +1,7 @@
 import { createCrudService } from "./crud.factory";
 import api from "./api.service";
 
-const baseService = createCrudService("/courses");
+const baseService = createCrudService("/classrooms");
 
 const toNumber = (value, fallback = 0) => {
   const parsed = Number(value);
@@ -10,24 +10,23 @@ const toNumber = (value, fallback = 0) => {
 
 const normalizeSchedule = (value) => {
   const normalized = String(value || "").trim().toUpperCase();
-  return normalized === "AFTERNOON" ? "AFTERNOON" : "MORNING";
+  if (normalized === "AFTERNOON") return "AFTERNOON";
+  if (normalized === "NIGHT") return "NIGHT";
+  return "MORNING";
 };
 
-const normalizeCourse = (item) => {
+const normalizeClassroom = (item) => {
   if (!item || typeof item !== "object") return item;
 
-  const courseCode = Number(item.courseCode ?? item.id ?? 0);
+  const classroomId = Number(item.id ?? item.classroomId ?? 0);
 
   return {
     ...item,
-    id: courseCode,
-    courseCode,
+    id: classroomId,
+    classroomId,
     name: String(item.name ?? "").trim(),
-    semester: toNumber(item.semester, 1),
-    isCommonArea: Boolean(item.isCommonArea),
-    isMandatory: Boolean(item.isMandatory ?? true),
-    hasLab: Boolean(item.hasLab),
-    numberOfPeriods: toNumber(item.numberOfPeriods, 1),
+    classTypeId: toNumber(item.classTypeId, 0),
+    capacity: toNumber(item.capacity, 1),
     typeOfSchedule: normalizeSchedule(item.typeOfSchedule),
     active: typeof item.active === "boolean" ? item.active : true,
   };
@@ -35,7 +34,7 @@ const normalizeCourse = (item) => {
 
 const normalizeCollection = (response) => {
   if (Array.isArray(response)) {
-    return response.map(normalizeCourse);
+    return response.map(normalizeClassroom);
   }
 
   if (!response || typeof response !== "object") {
@@ -43,43 +42,33 @@ const normalizeCollection = (response) => {
   }
 
   if (Array.isArray(response.content)) {
-    return { ...response, content: response.content.map(normalizeCourse) };
+    return { ...response, content: response.content.map(normalizeClassroom) };
   }
 
   if (Array.isArray(response.data)) {
-    return { ...response, data: response.data.map(normalizeCourse) };
+    return { ...response, data: response.data.map(normalizeClassroom) };
   }
 
   if (Array.isArray(response.items)) {
-    return { ...response, items: response.items.map(normalizeCourse) };
+    return { ...response, items: response.items.map(normalizeClassroom) };
   }
 
   if (Array.isArray(response.rows)) {
-    return { ...response, rows: response.rows.map(normalizeCourse) };
+    return { ...response, rows: response.rows.map(normalizeClassroom) };
   }
 
   if (Array.isArray(response.results)) {
-    return { ...response, results: response.results.map(normalizeCourse) };
+    return { ...response, results: response.results.map(normalizeClassroom) };
   }
 
-  return normalizeCourse(response);
+  return normalizeClassroom(response);
 };
 
-const buildCoursePayload = (payload, id) => {
-  const courseCode = toNumber(payload?.courseCode ?? id ?? payload?.id, 0);
-
-  if (courseCode <= 0) {
-    throw new TypeError("El código del curso debe ser numérico y mayor a cero");
-  }
-
+const buildClassroomPayload = (payload) => {
   return {
-    courseCode,
     name: String(payload?.name ?? "").trim(),
-    semester: toNumber(payload?.semester, 1),
-    isCommonArea: Boolean(payload?.isCommonArea),
-    isMandatory: Boolean(payload?.isMandatory ?? true),
-    hasLab: Boolean(payload?.hasLab),
-    numberOfPeriods: toNumber(payload?.numberOfPeriods, 1),
+    classTypeId: toNumber(payload?.classTypeId, 0),
+    capacity: toNumber(payload?.capacity, 1),
     typeOfSchedule: normalizeSchedule(payload?.typeOfSchedule),
   };
 };
@@ -89,16 +78,12 @@ const validateSalon = (payload) => {
     throw new Error("El nombre es obligatorio");
   }
 
-  if (toNumber(payload?.courseCode, 0) <= 0) {
-    throw new Error("El código es obligatorio y debe ser mayor a cero");
+  if (toNumber(payload?.classTypeId, 0) <= 0) {
+    throw new Error("El tipo de salón es obligatorio y debe ser mayor a cero");
   }
 
-  if (toNumber(payload?.semester, 0) <= 0) {
-    throw new Error("El semestre debe ser mayor a cero");
-  }
-
-  if (toNumber(payload?.numberOfPeriods, 0) <= 0) {
-    throw new Error("El número de periodos debe ser mayor a cero");
+  if (toNumber(payload?.capacity, 0) <= 0) {
+    throw new Error("La capacidad debe ser mayor a cero");
   }
 };
 
@@ -114,17 +99,17 @@ export const salonApi = {
   },
   create: async (payload) => {
     validateSalon(payload);
-    const response = await baseService.create(buildCoursePayload(payload));
+    const response = await baseService.create(buildClassroomPayload(payload));
     return normalizeCollection(response);
   },
   update: async (id, payload) => {
-    const normalizedId = Number(id ?? payload?.courseCode ?? payload?.id ?? 0);
+    const normalizedId = Number(id ?? payload?.id ?? payload?.classroomId ?? 0);
     if (!Number.isFinite(normalizedId) || normalizedId <= 0) {
       throw new TypeError("Id inválido para actualizar");
     }
 
-    validateSalon({ ...payload, courseCode: payload?.courseCode ?? normalizedId });
-    const response = await api.patch(`/courses/${normalizedId}`, buildCoursePayload(payload, normalizedId));
+    validateSalon(payload);
+    const response = await api.patch(`/classrooms/${normalizedId}`, buildClassroomPayload(payload));
     return normalizeCollection(response);
   },
   delete: async (id) => {
