@@ -89,57 +89,22 @@ export const useCrud = <T extends { id: number | string }>(
     }
   }, [apiService]);
 
-  // Crear elemento
-  const extractCreatedItem = (response: unknown): T | null => {
-    if (!response || typeof response !== 'object') return null;
-
-    type CreateResp = {
-      data?: unknown;
-      content?: unknown;
-      item?: unknown;
-      result?: unknown;
-    };
-
-    const respObj = response as CreateResp;
-    const candidate = respObj.data || respObj.content || respObj.item || respObj.result || response;
-
-    if (!candidate || typeof candidate !== 'object') return null;
-    if (!('id' in (candidate as Record<string, unknown>))) return null;
-
-    return candidate as T;
-  };
-
   const createItem = async (data: Partial<T>) => {
     setLoading(true);
     try {
       const payload = transformPayload ? transformPayload(data) : data;
-      const response = await apiService.create(payload);
-      const createdItem = extractCreatedItem(response);
-
-      if (createdItem) {
-        setItems((prev) => [...prev, createdItem]);
-        setTotalItems((prev) => (typeof prev === 'number' ? prev + 1 : prev));
-      } else {
-        await fetchItems();
-      }
+      await apiService.create(payload);
+      // Recargar desde backend para evitar filas parciales o nulas en tablas.
+      await fetchItems();
 
       return true;
     } catch (err: unknown) {
       let errorMessage = 'Error al crear elemento';
       if (err instanceof Error) {
-  const extra = (err as unknown as { data?: unknown }).data;
         errorMessage = err.message || errorMessage;
-        if (extra) {
-          try {
-            errorMessage = `${errorMessage} — ${JSON.stringify(extra)}`;
-          } catch {
-            // ignore JSON stringify issues
-          }
-        }
         // Log del error completo para debugging
         console.error('Error detallado al crear:', {
           message: err.message,
-          data: extra,
           stack: err.stack,
           payload: data,
         });
@@ -166,15 +131,7 @@ export const useCrud = <T extends { id: number | string }>(
     } catch (err: unknown) {
       console.error("Error en updateItem:", err);
       if (err instanceof Error) {
-  const extra = (err as unknown as { data?: unknown }).data;
         let errorMessage = err.message || 'Error al actualizar elemento';
-        if (extra) {
-          try {
-            errorMessage = `${errorMessage} — ${JSON.stringify(extra)}`;
-          } catch {
-            // ignore
-          }
-        }
         setError(errorMessage);
       } else {
         setError('Error desconocido al actualizar elemento');

@@ -3,14 +3,11 @@ import salonApi from "../service/salon.service.js";
 
 export interface Salon {
   id: number;
-  courseCode?: number;
+  classroomId?: number;
   name: string;
-  semester: number;
-  isCommonArea: boolean;
-  isMandatory: boolean;
-  hasLab: boolean;
-  numberOfPeriods: number;
-  typeOfSchedule: "MORNING" | "AFTERNOON";
+  classTypeId: number;
+  capacity: number;
+  typeOfSchedule: "MORNING" | "AFTERNOON" | "NIGHT";
   active?: boolean;
   createdAt?: string;
   createdBy?: string | null;
@@ -19,31 +16,21 @@ export interface Salon {
 }
 
 type SalonPayload = {
-  courseCode: number;
   name: string;
-  semester: number;
-  isCommonArea: boolean;
-  isMandatory: boolean;
-  hasLab: boolean;
-  numberOfPeriods: number;
-  typeOfSchedule: "MORNING" | "AFTERNOON";
+  classTypeId: number;
+  capacity: number;
+  typeOfSchedule: "MORNING" | "AFTERNOON" | "NIGHT";
 };
 
 const transformPayload = (data: unknown): SalonPayload => {
   const value = (data ?? {}) as Partial<Salon>;
-  const normalizedSchedule =
-    String(value.typeOfSchedule ?? "MORNING").toUpperCase() === "AFTERNOON"
-      ? "AFTERNOON"
-      : "MORNING";
+  const rawSchedule = String(value.typeOfSchedule ?? "MORNING").toUpperCase();
+  const normalizedSchedule = rawSchedule === "AFTERNOON" || rawSchedule === "NIGHT" ? rawSchedule : "MORNING";
 
   return {
-    courseCode: Number(value.courseCode ?? value.id ?? 0),
     name: String(value.name ?? "").trim(),
-    semester: Number(value.semester ?? 1),
-    isCommonArea: Boolean(value.isCommonArea),
-    isMandatory: Boolean(value.isMandatory ?? true),
-    hasLab: Boolean(value.hasLab),
-    numberOfPeriods: Number(value.numberOfPeriods ?? 1),
+    classTypeId: Number(value.classTypeId ?? 0),
+    capacity: Number(value.capacity ?? 1),
     typeOfSchedule: normalizedSchedule,
   };
 };
