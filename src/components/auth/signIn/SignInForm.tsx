@@ -43,8 +43,8 @@ const resolveRedirectPath = (role: string, callbackUrl: string | null) => {
 };
 
 const extractToken = (response: Response, data: any) => {
-  if (data?.token) {
-    return data.token;
+  if (data?.access_token) {
+    return data.access_token;
   }
 
   const authHeader = response.headers.get("Authorization");
@@ -128,7 +128,7 @@ export default function SignInForm() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(loginData),
-        credentials: "include", // 👈 Importante para cookies
+        // credentials: "include", // 👈 Importante para cookies
       });
 
       const data = await response.json().catch(() => ({}));

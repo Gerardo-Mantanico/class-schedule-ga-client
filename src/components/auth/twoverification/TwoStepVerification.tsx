@@ -78,7 +78,7 @@ export default function TwoStepVerification() {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, code: normalizedCode }),
-                credentials: "include", // igual que en login
+                // credentials: "include", // igual que en login
             });
             const data = await response.json().catch(() => ({}));
             if (!response.ok) {
