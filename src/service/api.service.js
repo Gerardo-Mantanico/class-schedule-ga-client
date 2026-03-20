@@ -1,7 +1,9 @@
 import { getStoredToken } from './auth-storage';
 
 // Configuración base
-const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+const baseURL =
+  process.env.NEXT_PUBLIC_API_URL ||
+  'https://class-schedule-cunoc-ctfkghdzcchag2ak.eastus-01.azurewebsites.net'
 
 const parseErrorBody = async (response) => {
   try {

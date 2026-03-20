@@ -4,7 +4,6 @@ import React, { useMemo, useRef, useState } from "react";
 import Button from "@/components/ui/button/Button";
 import StripedCard from "@/components/common/StripedCard";
 import { MdPictureAsPdf, MdImage, MdTableChart, MdBarChart } from "react-icons/md";
-import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
@@ -30,24 +29,47 @@ export default function ReporteHorariosPage() {
 
   const { stats, grid, salones, loading } = useReporteHorarios(filters);
 
+  const getReporteCanvas = async () => {
+    if (!refReporte.current) {
+      throw new Error("No se encontro el contenido del reporte para exportar.");
+    }
+
+    return html2canvas(refReporte.current, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: "#ffffff",
+    });
+  };
+
   const handleDescargarPDF = async () => {
-    if (!refReporte.current) return;
-    const canvas = await html2canvas(refReporte.current);
+    const canvas = await getReporteCanvas();
+    const { jsPDF } = await import("jspdf/dist/jspdf.es.min.js");
     const imgData = canvas.toDataURL("image/png");
-    const pdf = new jsPDF();
+    const pdf = new jsPDF("p", "mm", "a4");
     const imgProps = pdf.getImageProperties(imgData);
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+
+    let heightLeft = pdfHeight;
+    let position = 0;
+    pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
+    heightLeft -= pdf.internal.pageSize.getHeight();
+
+    while (heightLeft > 0) {
+      position = heightLeft - pdfHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
+      heightLeft -= pdf.internal.pageSize.getHeight();
+    }
+
     pdf.save("reporte_horarios.pdf");
   };
 
   const handleDescargarImagen = async () => {
-    if (!refReporte.current) return;
-    const canvas = await html2canvas(refReporte.current);
-    canvas.toBlob(blob => {
+    const canvas = await getReporteCanvas();
+    canvas.toBlob((blob) => {
       if (blob) saveAs(blob, "reporte_horarios.png");
-    });
+    }, "image/png");
   };
 
   const handleDescargarExcel = () => {
