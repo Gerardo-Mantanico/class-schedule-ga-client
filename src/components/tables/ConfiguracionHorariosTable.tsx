@@ -111,6 +111,9 @@ export default function ConfiguracionHorariosTable() {
   const [formData, setFormData] = useState(initialForm);
   const [currentPage, setCurrentPage] = useState(1);
   const [wizardStep, setWizardStep] = useState(0);
+  const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
+  const [selectedConfigIdForGenerate, setSelectedConfigIdForGenerate] = useState<string | null>(null);
+  const [generationName, setGenerationName] = useState("");
 
   const [professorCode, setProfessorCode] = useState("");
   const [classroomId, setClassroomId] = useState("");
@@ -212,13 +215,41 @@ export default function ConfiguracionHorariosTable() {
     closeModal();
   };
 
-  const handleRunGenerate = async (configId: string) => {
-    const generatedId = await runGenerate(parseInt(configId));
+  const handleRunGenerate = async (configId: string, name: string) => {
+    const generatedId = await runGenerate(parseInt(configId), name);
     if (!generatedId) {
       toast.error("No fue posible ejecutar el algoritmo genético");
-      return;
+      return false;
     }
     toast.success(`Horario generado #${generatedId}`);
+    return true;
+  };
+
+  const openGenerateModal = (configId: string) => {
+    setSelectedConfigIdForGenerate(configId);
+    setGenerationName("");
+    setIsGenerateModalOpen(true);
+  };
+
+  const closeGenerateModal = () => {
+    setIsGenerateModalOpen(false);
+    setSelectedConfigIdForGenerate(null);
+    setGenerationName("");
+  };
+
+  const handleConfirmGenerate = async () => {
+    const trimmedName = generationName.trim();
+    if (!trimmedName) {
+      toast.error("Nombre obligatorio");
+      return;
+    }
+
+    if (!selectedConfigIdForGenerate) return;
+
+    const ok = await handleRunGenerate(selectedConfigIdForGenerate, trimmedName);
+    if (ok) {
+      closeGenerateModal();
+    }
   };
 
   const handleAddProfessor = async () => {
@@ -292,7 +323,7 @@ export default function ConfiguracionHorariosTable() {
         onEdit={handleEdit}
         onDelete={(item) => deleteConfiguracion(item.id)}
         actions={(item) => (
-          <Button size="sm" variant="outline" type="button" onClick={() => handleRunGenerate(item.id)}>
+          <Button size="sm" variant="outline" type="button" onClick={() => openGenerateModal(item.id)}>
             Ejecutar GA
           </Button>
         )}
@@ -518,6 +549,35 @@ export default function ConfiguracionHorariosTable() {
           </form>
 
           {(generationLoading || generationSaving) && <p className="mt-3 text-xs text-gray-500">Sincronizando datos de configuración...</p>}
+        </div>
+      </Modal>
+
+      <Modal isOpen={isGenerateModalOpen} onClose={closeGenerateModal} className="max-w-lg m-4">
+        <div className="relative w-full rounded-3xl bg-white p-6 dark:bg-gray-900">
+          <h4 className="mb-4 text-xl font-semibold text-gray-800 dark:text-white/90">Generar horario</h4>
+
+          <div>
+            <Label>Nombre</Label>
+            <Input
+              value={generationName}
+              onChange={(event) => setGenerationName(event.target.value)}
+              placeholder="Ingresa un nombre"
+            />
+          </div>
+
+          <div className="mt-6 flex items-center justify-end gap-3">
+            <Button size="sm" variant="outline" type="button" onClick={closeGenerateModal}>
+              Cancelar
+            </Button>
+            <Button
+              size="sm"
+              type="button"
+              onClick={handleConfirmGenerate}
+              disabled={generationLoading || generationSaving || !selectedConfigIdForGenerate}
+            >
+              Aceptar
+            </Button>
+          </div>
         </div>
       </Modal>
     </div>

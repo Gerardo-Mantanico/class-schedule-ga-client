@@ -56,7 +56,9 @@ export const scheduleGenerationApi = {
     });
   },
 
-  generate: async (scheduleConfigId) => api.post(`/ga/generate/${scheduleConfigId}`, {}),
+  generate: async (scheduleConfigId, name) => api.post(`/ga/generate/${scheduleConfigId}`, {
+    name,
+  }),
   getGeneratedSchedules: async () => api.get("/generated-schedules"),
   getGeneratedSchedule: async (generatedScheduleId) => api.get(`/generated-schedules/${generatedScheduleId}`),
   patchGeneratedItem: async (generatedScheduleId, generatedScheduleItemId, payload) => {

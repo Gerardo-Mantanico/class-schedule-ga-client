@@ -378,12 +378,12 @@ export const useScheduleGeneration = () => {
     }
   }, []);
 
-  const runGenerate = async (scheduleConfigId: Id) => {
+  const runGenerate = async (scheduleConfigId: Id, name: string) => {
     setSaving(true);
     setError(null);
 
     try {
-      const response = await scheduleGenerationApi.generate(scheduleConfigId);
+      const response = await scheduleGenerationApi.generate(scheduleConfigId, name);
       const payload = response as Record<string, unknown>;
       const generatedScheduleId = parseInt(String(
         payload.generatedScheduleId ||
