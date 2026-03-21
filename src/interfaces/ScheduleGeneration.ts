@@ -98,6 +98,7 @@ export interface GeneratedScheduleResponse {
 export interface GeneratedScheduleListItem {
   generatedScheduleId: Id;
   scheduleConfigId: Id;
+  name: string;
   fitness?: number;
   hardPenalty?: number;
   softPenalty?: number;

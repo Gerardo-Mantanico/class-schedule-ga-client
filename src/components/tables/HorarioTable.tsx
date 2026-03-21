@@ -30,7 +30,8 @@ const expectedDayByBucket: Record<string, number> = {
 };
 
 const columns: Column<GeneratedScheduleListItem>[] = [
-  { header: "ID generado", accessorKey: "generatedScheduleId" },
+  { header: "ID", accessorKey: "generatedScheduleId" },
+  { header: "Nombre", accessorKey: "name" },
   { header: "Config ID", accessorKey: "scheduleConfigId" },
   { header: "Fitness", accessorKey: "fitness" },
   { header: "Hard penalty", accessorKey: "hardPenalty" },

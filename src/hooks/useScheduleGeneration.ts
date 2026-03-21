@@ -110,6 +110,7 @@ const toGeneratedListItem = (payload: unknown): GeneratedScheduleListItem | null
   return {
     generatedScheduleId,
     scheduleConfigId,
+    name: value.name as string,
     fitness: Number(value.fitness ?? 0),
     hardPenalty: Number(value.hardPenalty ?? 0),
     softPenalty: Number(value.softPenalty ?? 0),
