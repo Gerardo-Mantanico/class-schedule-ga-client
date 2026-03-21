@@ -84,6 +84,7 @@ export interface GeneratedScheduleResponse {
   scheduleConfigId: Id;
   slots: GeneratedScheduleSlot[];
   items: GeneratedScheduleItem[];
+  warnings?: GeneratedScheduleWarning[];
   fitness?: number;
   hardPenalty?: number;
   softPenalty?: number;
@@ -100,4 +101,24 @@ export interface GeneratedScheduleListItem {
   fitness?: number;
   hardPenalty?: number;
   softPenalty?: number;
+}
+
+export interface GeneratedScheduleWarningItem {
+  geneId?: string;
+  courseName?: string;
+  professorName?: string;
+  classroomName?: string;
+}
+
+export interface GeneratedScheduleWarning {
+  code: string;
+  severity?: string;
+  message: string;
+  dayIndex?: number;
+  geneIds?: string[];
+  courseCodes?: Array<string | number>;
+  sectionIndexes?: number[];
+  configProfessorIds?: string[];
+  configClassroomIds?: string[];
+  items?: GeneratedScheduleWarningItem[];
 }

@@ -12,6 +12,7 @@ import type {
   ConfigProfessorItem,
   GeneratedScheduleResponse,
   GeneratedScheduleListItem,
+  GeneratedScheduleWarning,
   Id,
 } from "@/interfaces/ScheduleGeneration";
 
@@ -84,6 +85,9 @@ const normalizeGenerated = (payload: unknown): GeneratedScheduleResponse | null 
     scheduleConfigId,
     slots: asArray(value.slots) as GeneratedScheduleResponse["slots"],
     items: asArray(value.items) as GeneratedScheduleResponse["items"],
+    warnings: asArray(value.warnings)
+      .map(normalizeWarning)
+      .filter((item): item is GeneratedScheduleWarning => item != null),
     fitness: Number(value.fitness ?? 0),
     hardPenalty: Number(value.hardPenalty ?? 0),
     softPenalty: Number(value.softPenalty ?? 0),
@@ -110,6 +114,56 @@ const toGeneratedListItem = (payload: unknown): GeneratedScheduleListItem | null
     hardPenalty: Number(value.hardPenalty ?? 0),
     softPenalty: Number(value.softPenalty ?? 0),
   };
+};
+
+const normalizeWarning = (payload: unknown): GeneratedScheduleWarning | null => {
+  if (!payload || typeof payload !== "object") return null;
+
+  const value = payload as Record<string, unknown>;
+  const code = String(value.code ?? "");
+  const message = String(value.message ?? "");
+  if (!code && !message) return null;
+
+  const toStringArray = (input: unknown): string[] => {
+    if (!Array.isArray(input)) return [];
+    return input.map((item) => String(item));
+  };
+
+  const toNumberArray = (input: unknown): number[] => {
+    if (!Array.isArray(input)) return [];
+    return input
+      .map((item) => Number(item))
+      .filter((item) => Number.isFinite(item));
+  };
+
+  const warning: GeneratedScheduleWarning = {
+    code,
+    severity: value.severity ? String(value.severity) : undefined,
+    message,
+    dayIndex: value.dayIndex == null ? undefined : Number(value.dayIndex),
+    geneIds: toStringArray(value.geneIds),
+    courseCodes: Array.isArray(value.courseCodes)
+      ? value.courseCodes.map((item) => (typeof item === "number" ? item : String(item)))
+      : [],
+    sectionIndexes: toNumberArray(value.sectionIndexes),
+    configProfessorIds: toStringArray(value.configProfessorIds),
+    configClassroomIds: toStringArray(value.configClassroomIds),
+    items: Array.isArray(value.items)
+      ? value.items
+          .filter((item) => item && typeof item === "object")
+          .map((item) => {
+            const row = item as Record<string, unknown>;
+            return {
+              geneId: row.geneId == null ? undefined : String(row.geneId),
+              courseName: row.courseName == null ? undefined : String(row.courseName),
+              professorName: row.professorName == null ? undefined : String(row.professorName),
+              classroomName: row.classroomName == null ? undefined : String(row.classroomName),
+            };
+          })
+      : [],
+  };
+
+  return warning;
 };
 
 export const useScheduleGeneration = () => {
@@ -382,7 +436,7 @@ export const useScheduleGeneration = () => {
   const updateGeneratedItem = async (
     generatedScheduleId: Id,
     generatedScheduleItemId: Id,
-    payload: { dayIndex: number; startSlot: number }
+    payload: { dayIndex: number; startSlot: number; configClassroomId?: Id | undefined }
   ) => {
     setSaving(true);
     setError(null);
@@ -392,8 +446,9 @@ export const useScheduleGeneration = () => {
         generatedScheduleItemId,
         payload
       );
-
-      const warnings = asArray((response as Record<string, unknown>).warnings).map((value) => String(value));
+      const warnings = asArray((response as Record<string, unknown>).warnings)
+        .map(normalizeWarning)
+        .filter((item): item is GeneratedScheduleWarning => item != null);
       await fetchGeneratedSchedule(generatedScheduleId);
       return warnings;
     } catch (err: unknown) {
