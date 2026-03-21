@@ -158,6 +158,7 @@ const api = {
   },
   post: (endpoint, data, options = {}) => request(endpoint, 'POST', data, options.headers),
   put: (endpoint, data, options = {}) => request(endpoint, 'PUT', data, options.headers),
+  patch: (endpoint, data, options = {}) => request(endpoint, 'PATCH', data, options.headers),
   delete: (endpoint, options = {}) => request(endpoint, 'DELETE', null, options.headers),
 };
 
