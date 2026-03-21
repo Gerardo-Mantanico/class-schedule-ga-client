@@ -44,10 +44,8 @@ export const scheduleGenerationApi = {
 
   getConfigCourses: async () => api.get("/config-courses"),
   createConfigCourse: async (payload) => {
-    const nextId = await computeNextId("/config-courses", "configCourseId");
     return api.post("/config-courses", {
       ...payload,
-      configCourseId: nextId,
     });
   },
 

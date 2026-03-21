@@ -244,9 +244,9 @@ export const useScheduleGeneration = () => {
 
   const createConfigCourse = async (payload: {
     scheduleConfigId: Id;
-    courseCode: string;
+    courseCode: number;
     sectionQty: number;
-    scheduleTime: number;
+    scheduleTime: string;
     requireClassroom: boolean;
     typeOfSchedule: "MORNING" | "AFTERNOON" | "BOTH";
     isFixed?: boolean;

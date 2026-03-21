@@ -119,7 +119,6 @@ export default function ConfiguracionHorariosTable() {
 
   const [courseCode, setCourseCode] = useState("");
   const [sectionQty, setSectionQty] = useState(1);
-  const [scheduleTime, setScheduleTime] = useState(1);
   const [requireClassroom, setRequireClassroom] = useState(true);
   const [courseTypeOfSchedule, setCourseTypeOfSchedule] = useState<"MORNING" | "AFTERNOON" | "BOTH">("BOTH");
 
@@ -249,9 +248,9 @@ export default function ConfiguracionHorariosTable() {
     if (!currentConfigId || !courseCode) return;
     const ok = await createConfigCourse({
       scheduleConfigId: parseInt(currentConfigId),
-      courseCode,
+      courseCode: Number(courseCode),
       sectionQty,
-      scheduleTime,
+      scheduleTime: new Date().toISOString(),
       requireClassroom,
       typeOfSchedule: courseTypeOfSchedule,
     });
@@ -473,12 +472,11 @@ export default function ConfiguracionHorariosTable() {
                   </select>
                 </div>
                 <div><Label>Secciones (1-2)</Label><Input type="number" min="1" max="2" value={sectionQty} onChange={(event) => setSectionQty(Math.max(1, Math.min(2, Number(event.target.value || 1))))} /></div>
-                <div><Label>Periodos</Label><Input type="number" min="1" value={scheduleTime} onChange={(event) => setScheduleTime(Math.max(1, Number(event.target.value || 1)))} /></div>
                 <div><Label>Jornada</Label><select className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm dark:border-gray-700" value={courseTypeOfSchedule} onChange={(event) => setCourseTypeOfSchedule(event.target.value as "MORNING" | "AFTERNOON" | "BOTH")}><option value="MORNING">Mañana</option><option value="AFTERNOON">Tarde</option><option value="BOTH">Ambos</option></select></div>
                 <div className="flex items-center gap-2"><input id="requireClassroom" type="checkbox" checked={requireClassroom} onChange={(event) => setRequireClassroom(event.target.checked)} /><Label htmlFor="requireClassroom">Requiere salón</Label></div>
                 <div className="col-span-3 flex justify-end"><Button size="sm" type="button" onClick={handleAddCourse}>Agregar curso</Button></div>
                 <div className="col-span-3 space-y-2 text-sm">
-                  {configCourses.map((item) => <div key={item.configCourseId} className="rounded-lg bg-gray-50 p-2 dark:bg-white/5">#{item.configCourseId} - {item.courseCode} | secciones: {item.sectionQty} | periodos: {item.scheduleTime}</div>)}
+                  {configCourses.map((item) => <div key={item.configCourseId} className="rounded-lg bg-gray-50 p-2 dark:bg-white/5">#{item.configCourseId} - {item.courseCode} | secciones: {item.sectionQty}</div>)}
                 </div>
               </>
             )}
