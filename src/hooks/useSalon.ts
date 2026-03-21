@@ -1,51 +1,50 @@
 import { useCrud } from "./useCrud";
-import salonApi from "@/service/salon.service";
+import salonApi from "../service/salon.service.js";
 
 export interface Salon {
   id: number;
-  nombre: string;
-  codigoInterno?: string;
-  tipo?: "LAB" | "CURSO" | "AMBOS";
-  tipoHorario?: "MANANA" | "TARDE" | "AMBOS";
-  ubicacion: string;
-  capacidad: number;
-  recursos: string;
-  estado: string;
-  usadoEnHorario?: boolean;
-  activo?: boolean;
+  courseCode?: number;
+  name: string;
+  semester: number;
+  isCommonArea: boolean;
+  isMandatory: boolean;
+  hasLab: boolean;
+  numberOfPeriods: number;
+  typeOfSchedule: "MORNING" | "AFTERNOON";
+  active?: boolean;
   createdAt?: string;
+  createdBy?: string | null;
   updatedAt?: string;
+  updatedBy?: string | null;
 }
 
 type SalonPayload = {
-  nombre: string;
-  codigoInterno: string;
-  tipo: "LAB" | "CURSO" | "AMBOS";
-  tipoHorario: "MANANA" | "TARDE" | "AMBOS";
-  ubicacion: string;
-  capacidad: number;
-  recursos: string;
-  estado: string;
-  activo: boolean;
+  courseCode: number;
+  name: string;
+  semester: number;
+  isCommonArea: boolean;
+  isMandatory: boolean;
+  hasLab: boolean;
+  numberOfPeriods: number;
+  typeOfSchedule: "MORNING" | "AFTERNOON";
 };
 
 const transformPayload = (data: unknown): SalonPayload => {
   const value = (data ?? {}) as Partial<Salon>;
-  const normalizedEstado = String(value.estado ?? "ACTIVO").trim() || "ACTIVO";
-  const normalizedEstadoUpper = normalizedEstado.toUpperCase();
-  const normalizedActivo =
-    typeof value.activo === "boolean" ? value.activo : normalizedEstadoUpper === "ACTIVO";
+  const normalizedSchedule =
+    String(value.typeOfSchedule ?? "MORNING").toUpperCase() === "AFTERNOON"
+      ? "AFTERNOON"
+      : "MORNING";
 
   return {
-    nombre: value.nombre ?? "",
-    codigoInterno: value.codigoInterno ?? "SIN-CODIGO",
-    tipo: value.tipo ?? "AMBOS",
-    tipoHorario: value.tipoHorario ?? "AMBOS",
-    ubicacion: value.ubicacion ?? "",
-    capacidad: Number(value.capacidad ?? 0),
-    recursos: value.recursos ?? "",
-    estado: normalizedEstado,
-    activo: normalizedActivo,
+    courseCode: Number(value.courseCode ?? value.id ?? 0),
+    name: String(value.name ?? "").trim(),
+    semester: Number(value.semester ?? 1),
+    isCommonArea: Boolean(value.isCommonArea),
+    isMandatory: Boolean(value.isMandatory ?? true),
+    hasLab: Boolean(value.hasLab),
+    numberOfPeriods: Number(value.numberOfPeriods ?? 1),
+    typeOfSchedule: normalizedSchedule,
   };
 };
 

@@ -4,8 +4,6 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const PHONE_REGEX = /^[+]?\d{8,15}$/;
-const DPI_REGEX = /^\d{10,20}$/;
 const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
 
 export function useSignUp() {
@@ -16,13 +14,8 @@ export function useSignUp() {
   const [success, setSuccess] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
-    firstname: "",
-    lastname: "",
     email: "",
-    dpi: "",
-    phoneNumber: "",
     password: "",
-    confirmPassword: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,25 +32,15 @@ export function useSignUp() {
     setSuccess(null);
 
     const sanitizedData = {
-      firstname: formData.firstname.trim(),
-      lastname: formData.lastname.trim(),
       email: formData.email.trim().toLowerCase(),
-      dpi: formData.dpi.trim(),
-      phoneNumber: formData.phoneNumber.trim(),
       password: formData.password,
-      confirmPassword: formData.confirmPassword,
     };
 
     if (
-      !sanitizedData.firstname ||
-      !sanitizedData.lastname ||
       !sanitizedData.email ||
-      !sanitizedData.dpi ||
-      !sanitizedData.phoneNumber ||
-      !sanitizedData.password ||
-      !sanitizedData.confirmPassword
+      !sanitizedData.password
     ) {
-      setError("Completa todos los campos.");
+      setError("Correo y contraseña son obligatorios.");
       setLoading(false);
       return;
     }
@@ -68,38 +51,16 @@ export function useSignUp() {
       return;
     }
 
-    if (!PHONE_REGEX.test(sanitizedData.phoneNumber)) {
-      setError("Ingresa un número de teléfono válido.");
-      setLoading(false);
-      return;
-    }
-
-    if (!DPI_REGEX.test(sanitizedData.dpi)) {
-      setError("Ingresa un DPI válido.");
-      setLoading(false);
-      return;
-    }
-
     if (!PASSWORD_REGEX.test(sanitizedData.password)) {
       setError("La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula y un número.");
       setLoading(false);
       return;
     }
 
-    if (sanitizedData.password !== sanitizedData.confirmPassword) {
-      setError("Las contraseñas no coinciden.");
-      setLoading(false);
-      return;
-    }
-
-    const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/auth/signup`;
+    const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/auth/register`;
 
     const payload = {
-      firstname: sanitizedData.firstname,
-      lastname: sanitizedData.lastname,
       email: sanitizedData.email,
-      dpi: sanitizedData.dpi,
-      phoneNumber: sanitizedData.phoneNumber,
       password: sanitizedData.password,
     };
 

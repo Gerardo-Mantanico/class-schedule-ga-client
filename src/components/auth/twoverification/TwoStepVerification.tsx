@@ -12,6 +12,7 @@ import {
     clearPendingTwoFactorEmail,
     getPendingTwoFactorEmail,
     persistAuthSession,
+    storeAuthUser,
 } from "@/service/auth-storage";
 
 const resolveRedirectPath = (role: string, callbackUrl: string | null) => {
@@ -95,6 +96,7 @@ export default function TwoStepVerification() {
             persistAuthSession(token, { rememberMe });
             clearPendingTwoFactorEmail();
             if (data.user) {
+                storeAuthUser(data.user, { rememberMe });
                 setCurrentUser(data.user);
             }
 

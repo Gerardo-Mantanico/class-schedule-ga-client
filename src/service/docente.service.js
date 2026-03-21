@@ -1,48 +1,110 @@
-import { createDemoCrudService } from "./demoCrud.service";
-import { docentesSeed } from "./demoSeed.data";
+import { createCrudService } from "./crud.factory";
+import api from "./api.service";
 
-const baseService = createDemoCrudService({
-  storageKey: "demo:docentes",
-  seed: docentesSeed,
-  sortBy: "nombre",
-});
+const baseService = createCrudService("/professors");
 
-const normalizeRegistro = (value) => String(value || "").trim().toUpperCase();
+const normalizeProfessor = (item) => {
+  if (!item || typeof item !== "object") return item;
 
-const validateDocente = async (payload, idToIgnore = null) => {
-  if (!payload.nombre?.trim()) throw new Error("El nombre es obligatorio");
-  if (!payload.registroPersonal?.trim()) throw new Error("El registro de personal es obligatorio");
-  if (!payload.horaEntrada || !payload.horaSalida) throw new Error("Debes indicar hora de entrada y salida");
+  const professorCode = Number(item.professorCode ?? item.id ?? 0);
 
-  const docentes = await baseService.getAll();
-  const registro = normalizeRegistro(payload.registroPersonal);
-  const duplicate = docentes.find(
-    (docente) =>
-      normalizeRegistro(docente.registroPersonal) === registro && String(docente.id) !== String(idToIgnore)
-  );
+  return {
+    id: professorCode,
+    professorCode,
+    firstName: String(item.firstName ?? "").trim(),
+    secondName: String(item.secondName ?? "").trim(),
+    lastName: String(item.lastName ?? "").trim(),
+    secondLastName: String(item.secondLastName ?? "").trim(),
+    entryTime: item.entryTime,
+    exitTime: item.exitTime,
+  };
+};
 
-  if (duplicate) {
-    throw new Error("No deben existir docentes con el mismo registro de personal");
+const normalizeCollection = (response) => {
+  if (Array.isArray(response)) return response.map(normalizeProfessor);
+  if (!response || typeof response !== "object") return response;
+
+  if (Array.isArray(response.content)) return { ...response, content: response.content.map(normalizeProfessor) };
+  if (Array.isArray(response.data)) return { ...response, data: response.data.map(normalizeProfessor) };
+  if (Array.isArray(response.items)) return { ...response, items: response.items.map(normalizeProfessor) };
+  if (Array.isArray(response.rows)) return { ...response, rows: response.rows.map(normalizeProfessor) };
+  if (Array.isArray(response.results)) return { ...response, results: response.results.map(normalizeProfessor) };
+
+  return normalizeProfessor(response);
+};
+
+const toIsoDateTime = (timeValue) => {
+  if (!timeValue) return null;
+
+  if (String(timeValue).includes("T")) {
+    const parsedIso = new Date(timeValue);
+    if (!Number.isNaN(parsedIso.getTime())) return parsedIso.toISOString();
   }
+
+  const now = new Date();
+  const [hoursRaw, minutesRaw] = String(timeValue).split(":");
+  const hours = Number(hoursRaw);
+  const minutes = Number(minutesRaw);
+
+  if (!Number.isFinite(hours) || !Number.isFinite(minutes)) return null;
+
+  const date = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes, 0, 0);
+  return date.toISOString();
+};
+
+const buildProfessorPayload = (payload, id) => {
+  const professorCode = Number(payload?.professorCode ?? id ?? payload?.id ?? 0);
+  if (!Number.isFinite(professorCode) || professorCode <= 0) {
+    throw new TypeError("El código del docente debe ser mayor a cero");
+  }
+
+  const entryTime = toIsoDateTime(payload?.entryTime);
+  const exitTime = toIsoDateTime(payload?.exitTime);
+
+  if (!entryTime || !exitTime) {
+    throw new TypeError("Debes indicar hora de entrada y salida válidas");
+  }
+
+  return {
+    professorCode,
+    firstName: String(payload?.firstName ?? "").trim(),
+    secondName: String(payload?.secondName ?? "").trim(),
+    lastName: String(payload?.lastName ?? "").trim(),
+    secondLastName: String(payload?.secondLastName ?? "").trim(),
+    entryTime,
+    exitTime,
+  };
+};
+
+const validateProfessor = (payload) => {
+  if (!String(payload?.firstName ?? "").trim()) throw new Error("El primer nombre es obligatorio");
+  if (!String(payload?.lastName ?? "").trim()) throw new Error("El primer apellido es obligatorio");
 };
 
 export const docenteApi = {
   ...baseService,
+  getAll: async (params = {}) => normalizeCollection(await baseService.getAll(params)),
+  get: async (id) => normalizeProfessor(await baseService.get(id)),
   create: async (payload) => {
-    await validateDocente(payload);
-    return baseService.create({
-      ...payload,
-      registroPersonal: normalizeRegistro(payload.registroPersonal),
-      cursosPreferidos: Array.isArray(payload.cursosPreferidos) ? payload.cursosPreferidos : [],
-    });
+    validateProfessor(payload);
+    return normalizeCollection(await baseService.create(buildProfessorPayload(payload)));
   },
   update: async (id, payload) => {
-    await validateDocente(payload, id);
-    return baseService.update(id, {
-      ...payload,
-      registroPersonal: normalizeRegistro(payload.registroPersonal),
-      cursosPreferidos: Array.isArray(payload.cursosPreferidos) ? payload.cursosPreferidos : [],
-    });
+    const normalizedId = Number(id ?? payload?.professorCode ?? payload?.id ?? 0);
+    if (!Number.isFinite(normalizedId) || normalizedId <= 0) {
+      throw new TypeError("Id inválido para actualizar");
+    }
+
+    validateProfessor(payload);
+    return normalizeCollection(await api.patch(`/professors/${normalizedId}`, buildProfessorPayload(payload, normalizedId)));
+  },
+  delete: async (id) => {
+    const normalizedId = Number(id);
+    if (!Number.isFinite(normalizedId) || normalizedId <= 0) {
+      throw new TypeError("Id inválido para eliminar");
+    }
+
+    return baseService.delete(normalizedId);
   },
 };
 

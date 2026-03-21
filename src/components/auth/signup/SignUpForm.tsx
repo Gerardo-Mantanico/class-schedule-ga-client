@@ -70,41 +70,6 @@ export default function SignUpForm() {
           <form onSubmit={handleSubmit}>
             <div className="space-y-5">
 
-              {/* First + Last Name */}
-              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                {/* First Name */}
-                <div className="sm:col-span-1">
-                  <Label>
-                    First Name<span className="text-error-500">*</span>
-                  </Label>
-                  <Input
-                    type="text"
-                    id="firstname"
-                    name="firstname"
-                    placeholder="Enter your first name"
-                    value={formData.firstname}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-
-                {/* Last Name */}
-                <div className="sm:col-span-1">
-                  <Label>
-                    Last Name<span className="text-error-500">*</span>
-                  </Label>
-                  <Input
-                    type="text"
-                    id="lastname"
-                    name="lastname"
-                    placeholder="Enter your last name"
-                    value={formData.lastname}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-              </div>
-
               {/* Email */}
               <div>
                 <Label>
@@ -120,39 +85,6 @@ export default function SignUpForm() {
                   required
                 />
               </div>
-
-              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                {/* Phone Number */}
-                <div>
-                  <Label>
-                    Phone Number<span className="text-error-500">*</span>
-                  </Label>
-                  <Input
-                    type="tel"
-                    id="phoneNumber"
-                    name="phoneNumber"
-                    placeholder="Enter your phone number"
-                    value={formData.phoneNumber}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-                <div>
-                  <Label>
-                    Dpi<span className="text-error-500">*</span>
-                  </Label>
-                  <Input
-                    type="text"
-                    id="dpi"
-                    name="dpi"
-                    value={formData.dpi}
-                    onChange={handleChange}
-                    placeholder="Enter your DPI"
-                    required
-                  />
-                </div>
-              </div>
-
 
               {/* Password */}
               <div>
@@ -183,21 +115,6 @@ export default function SignUpForm() {
                     )}
                   </button>
                 </div>
-              </div>
-
-              <div>
-                <Label>
-                  Confirm Password<span className="text-error-500">*</span>
-                </Label>
-
-                <Input
-                  placeholder="Repeat your password"
-                  name="confirmPassword"
-                  type={showPassword ? "text" : "password"}
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  required
-                />
               </div>
 
               {/* Alertas */}

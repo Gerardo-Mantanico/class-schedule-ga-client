@@ -1,4 +1,5 @@
 const AUTH_TOKEN_KEY = "token";
+const AUTH_USER_KEY = "auth_user";
 const PENDING_2FA_EMAIL_KEY = "2fa_user_email";
 const DEMO_USER_KEY = "demo_auth_user";
 const DEMO_TOKEN_PREFIX = "demo-token-";
@@ -21,6 +22,41 @@ export const getStoredToken = (): string | null => {
   }
 
   return sessionStorage.getItem(AUTH_TOKEN_KEY) || localStorage.getItem(AUTH_TOKEN_KEY);
+};
+
+export const storeAuthUser = (user: unknown, options: { rememberMe?: boolean } = {}) => {
+  if (!isBrowser() || !user) {
+    return;
+  }
+
+  const rememberMe = Boolean(options.rememberMe);
+  const serialized = JSON.stringify(user);
+
+  if (rememberMe) {
+    localStorage.setItem(AUTH_USER_KEY, serialized);
+    sessionStorage.removeItem(AUTH_USER_KEY);
+    return;
+  }
+
+  sessionStorage.setItem(AUTH_USER_KEY, serialized);
+  localStorage.removeItem(AUTH_USER_KEY);
+};
+
+export const getStoredAuthUser = <T = unknown>(): T | null => {
+  if (!isBrowser()) {
+    return null;
+  }
+
+  const raw = sessionStorage.getItem(AUTH_USER_KEY) || localStorage.getItem(AUTH_USER_KEY);
+  if (!raw) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(raw) as T;
+  } catch {
+    return null;
+  }
 };
 
 export const isDemoToken = (token?: string | null) =>
@@ -87,6 +123,8 @@ export const clearAuthSession = () => {
 
   localStorage.removeItem(AUTH_TOKEN_KEY);
   sessionStorage.removeItem(AUTH_TOKEN_KEY);
+  localStorage.removeItem(AUTH_USER_KEY);
+  sessionStorage.removeItem(AUTH_USER_KEY);
   localStorage.removeItem(DEMO_USER_KEY);
   sessionStorage.removeItem(DEMO_USER_KEY);
   document.cookie = `${AUTH_TOKEN_KEY}=; Path=/; Max-Age=0${getCookieSecurityFlags()}`;

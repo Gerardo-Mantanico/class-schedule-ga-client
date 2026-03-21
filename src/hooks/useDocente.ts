@@ -1,16 +1,38 @@
 import { useCrud } from "./useCrud";
 import docenteApi from "@/service/docente.service";
-import type { Docente } from "@/interfaces/HorariosDemo";
 
-const transformPayload = (data: unknown): Omit<Docente, "id"> => {
+export interface Docente {
+  id: number;
+  professorCode?: number;
+  firstName: string;
+  secondName: string;
+  lastName: string;
+  secondLastName: string;
+  entryTime: string;
+  exitTime: string;
+}
+
+type DocentePayload = {
+  professorCode: number;
+  firstName: string;
+  secondName: string;
+  lastName: string;
+  secondLastName: string;
+  entryTime: string;
+  exitTime: string;
+};
+
+const transformPayload = (data: unknown): DocentePayload => {
   const value = (data ?? {}) as Partial<Docente>;
 
   return {
-    nombre: value.nombre ?? "",
-    registroPersonal: String(value.registroPersonal ?? "").toUpperCase(),
-    horaEntrada: value.horaEntrada ?? "07:00",
-    horaSalida: value.horaSalida ?? "13:00",
-    cursosPreferidos: Array.isArray(value.cursosPreferidos) ? value.cursosPreferidos : [],
+    professorCode: Number(value.professorCode ?? value.id ?? 0),
+    firstName: String(value.firstName ?? "").trim(),
+    secondName: String(value.secondName ?? "").trim(),
+    lastName: String(value.lastName ?? "").trim(),
+    secondLastName: String(value.secondLastName ?? "").trim(),
+    entryTime: String(value.entryTime ?? ""),
+    exitTime: String(value.exitTime ?? ""),
   };
 };
 

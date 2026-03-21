@@ -3,7 +3,14 @@
 import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from "react";
 import { User } from "@/hooks/useUser";
 import { userApi } from "@/service/user.service";
-import { clearAuthSession, getStoredDemoUser, getStoredToken, isDemoToken } from "@/service/auth-storage";
+import {
+  clearAuthSession,
+  getStoredAuthUser,
+  getStoredDemoUser,
+  getStoredToken,
+  isDemoToken,
+  storeAuthUser,
+} from "@/service/auth-storage";
 
 interface AuthContextType {
   currentUser: User | null;
@@ -26,6 +33,7 @@ export function AuthProvider({ children }: Readonly<{ children: React.ReactNode 
     }
 
     const token = getStoredToken();
+    const cachedUser = getStoredAuthUser<User>();
 
     if (!token) {
       setCurrentUser(null);
@@ -43,11 +51,14 @@ export function AuthProvider({ children }: Readonly<{ children: React.ReactNode 
     try {
       const user = await userApi.getCurrentUser();
       setCurrentUser(user);
+      storeAuthUser(user, { rememberMe: Boolean(globalThis.localStorage.getItem("token")) });
     } catch (error: any) {
       if (error?.status === 401 || error?.status === 403) {
         clearAuthSession();
+        setCurrentUser(null);
+      } else {
+        setCurrentUser(cachedUser);
       }
-      setCurrentUser(null);
     } finally {
       setIsLoading(false);
     }

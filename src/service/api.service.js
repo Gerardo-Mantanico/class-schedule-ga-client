@@ -1,7 +1,7 @@
 import { getStoredToken } from './auth-storage';
 
 // Configuración base
-const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8090/api/v1'
+const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
 
 const parseErrorBody = async (response) => {
   try {

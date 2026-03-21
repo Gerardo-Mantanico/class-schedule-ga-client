@@ -7,12 +7,13 @@ import {
   TaskIcon,
   CheckCircleIcon,
   TimeIcon,
+  ListIcon,
 } from "@/icons";
 import StripedCard from "@/components/common/StripedCard";
 
 export const metadata: Metadata = {
   title: "Panel administrativo",
-  description: "Administra cursos, salones, docentes y generación de horarios.",
+  description: "Administra cursos, carreras, salones, docentes y generación de horarios.",
 };
 
 const accessCards = [
@@ -24,6 +25,15 @@ const accessCards = [
     tone: "bg-brand-50 text-brand-700 dark:bg-brand-500/15 dark:text-brand-300",
     stripe: "bg-brand-500",
     cta: "Gestionar cursos",
+  },
+  {
+    title: "Careers",
+    description: "Gestiona el catálogo de carreras enviando únicamente el nombre a la API.",
+    href: "/admin/careers",
+    icon: ListIcon,
+    tone: "bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300",
+    stripe: "bg-emerald-500",
+    cta: "Gestionar careers",
   },
   {
     title: "Salones",
@@ -91,12 +101,8 @@ export default function AdminDashboardPage() {
         </h1>
         <p className="mt-3 max-w-3xl text-sm text-gray-600 dark:text-gray-400">
           Este panel concentra únicamente los módulos vigentes del proyecto: carga de datos, catálogos
-          académicos, configuración de generación y control operativo de horarios.
+          académicos, carreras, configuración de generación y control operativo de horarios.
         </p>
-        <div className="mt-5 inline-flex items-center gap-2 rounded-lg border border-brand-200 bg-white px-3 py-2 text-xs text-brand-700 dark:border-brand-800 dark:bg-white/5 dark:text-brand-300">
-          <CheckCircleIcon className="h-4 w-4" />
-          Demo activa sin dependencia de backend para datos de horarios
-        </div>
       </section>
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -115,31 +121,6 @@ export default function AdminDashboardPage() {
         ))}
       </section>
 
-      <section className="grid gap-4 lg:grid-cols-3">
-        <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/3">
-          <h3 className="text-base font-semibold text-gray-900 dark:text-white">Flujo recomendado</h3>
-          <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm text-gray-600 dark:text-gray-400">
-            <li>Registrar cursos, salones y docentes.</li>
-            <li>Cargar datos masivos por CSV cuando sea necesario.</li>
-            <li>Definir la configuración de generación de horarios.</li>
-            <li>Revisar, ajustar manualmente y exportar reportes.</li>
-          </ol>
-        </div>
-
-        <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/3">
-          <h3 className="text-base font-semibold text-gray-900 dark:text-white">Modo demo</h3>
-          <p className="mt-3 text-sm text-gray-600 dark:text-gray-400">
-            Los módulos de horarios operan con datos locales para facilitar la demostración sin dependencia del servidor.
-          </p>
-        </div>
-
-        <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/3">
-          <h3 className="text-base font-semibold text-gray-900 dark:text-white">Integración backend</h3>
-          <p className="mt-3 text-sm text-gray-600 dark:text-gray-400">
-            La guía funcional para conectar API y payloads esperados está documentada en el directorio de documentación del proyecto.
-          </p>
-        </div>
-      </section>
     </div>
   );
 }

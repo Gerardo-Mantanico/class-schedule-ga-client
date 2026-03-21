@@ -14,7 +14,7 @@ export const createCrudService = (endpoint) => ({
   },
 
   update: async (id, data) => {
-    return await api.put(`${endpoint}/${id}`, data);
+    return await api.patch(`${endpoint}/${id}`, data);
   },
 
   delete: async (id) => {

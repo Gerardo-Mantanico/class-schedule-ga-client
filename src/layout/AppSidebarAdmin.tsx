@@ -179,6 +179,11 @@ const navItems: NavItem[] = [
     path: "/admin/docentes",
   },
   {
+    icon: <ListIcon />,
+    name: "Carreras",
+    path: "/admin/careers",
+  },
+  {
     icon: <FileIcon />,
     name: "Carga CSV",
     path: "/admin/carga-csv",

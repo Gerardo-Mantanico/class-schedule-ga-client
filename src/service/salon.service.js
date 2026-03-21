@@ -1,60 +1,140 @@
-import { createDemoCrudService } from "./demoCrud.service";
-import { salonesSeed } from "./demoSeed.data";
+import { createCrudService } from "./crud.factory";
+import api from "./api.service";
 
-const baseService = createDemoCrudService({
-	storageKey: "demo:salones",
-	seed: salonesSeed,
-	sortBy: "nombre",
-});
+const baseService = createCrudService("/courses");
 
-const normalizeName = (value) => String(value || "").trim().toLowerCase();
+const toNumber = (value, fallback = 0) => {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+};
 
-const validateSalon = async (payload, idToIgnore = null) => {
-	if (!payload.nombre?.trim()) throw new Error("El nombre del salón es obligatorio");
-	if (!payload.codigoInterno?.trim() && !payload.id) throw new Error("El id/código interno del salón es obligatorio");
-	if (Number(payload.capacidad || 0) <= 0) throw new Error("La cantidad de estudiantes debe ser mayor a cero");
-	if (!["LAB", "CURSO", "AMBOS"].includes(String(payload.tipo || "AMBOS").toUpperCase())) {
-		throw new Error("El tipo de salón debe ser lab, curso o ambos");
-	}
+const normalizeSchedule = (value) => {
+  const normalized = String(value || "").trim().toUpperCase();
+  return normalized === "AFTERNOON" ? "AFTERNOON" : "MORNING";
+};
 
-	const salones = await baseService.getAll();
-	const duplicate = salones.find(
-		(salon) => normalizeName(salon.nombre) === normalizeName(payload.nombre) && String(salon.id) !== String(idToIgnore)
-	);
+const normalizeCourse = (item) => {
+  if (!item || typeof item !== "object") return item;
 
-	if (duplicate) {
-		throw new Error("No deben existir salones con el mismo nombre");
-	}
+  const courseCode = Number(item.courseCode ?? item.id ?? 0);
+
+  return {
+    ...item,
+    id: courseCode,
+    courseCode,
+    name: String(item.name ?? "").trim(),
+    semester: toNumber(item.semester, 1),
+    isCommonArea: Boolean(item.isCommonArea),
+    isMandatory: Boolean(item.isMandatory ?? true),
+    hasLab: Boolean(item.hasLab),
+    numberOfPeriods: toNumber(item.numberOfPeriods, 1),
+    typeOfSchedule: normalizeSchedule(item.typeOfSchedule),
+    active: typeof item.active === "boolean" ? item.active : true,
+  };
+};
+
+const normalizeCollection = (response) => {
+  if (Array.isArray(response)) {
+    return response.map(normalizeCourse);
+  }
+
+  if (!response || typeof response !== "object") {
+    return response;
+  }
+
+  if (Array.isArray(response.content)) {
+    return { ...response, content: response.content.map(normalizeCourse) };
+  }
+
+  if (Array.isArray(response.data)) {
+    return { ...response, data: response.data.map(normalizeCourse) };
+  }
+
+  if (Array.isArray(response.items)) {
+    return { ...response, items: response.items.map(normalizeCourse) };
+  }
+
+  if (Array.isArray(response.rows)) {
+    return { ...response, rows: response.rows.map(normalizeCourse) };
+  }
+
+  if (Array.isArray(response.results)) {
+    return { ...response, results: response.results.map(normalizeCourse) };
+  }
+
+  return normalizeCourse(response);
+};
+
+const buildCoursePayload = (payload, id) => {
+  const courseCode = toNumber(payload?.courseCode ?? id ?? payload?.id, 0);
+
+  if (courseCode <= 0) {
+    throw new TypeError("El código del curso debe ser numérico y mayor a cero");
+  }
+
+  return {
+    courseCode,
+    name: String(payload?.name ?? "").trim(),
+    semester: toNumber(payload?.semester, 1),
+    isCommonArea: Boolean(payload?.isCommonArea),
+    isMandatory: Boolean(payload?.isMandatory ?? true),
+    hasLab: Boolean(payload?.hasLab),
+    numberOfPeriods: toNumber(payload?.numberOfPeriods, 1),
+    typeOfSchedule: normalizeSchedule(payload?.typeOfSchedule),
+  };
+};
+
+const validateSalon = (payload) => {
+  if (!String(payload?.name ?? "").trim()) {
+    throw new Error("El nombre es obligatorio");
+  }
+
+  if (toNumber(payload?.courseCode, 0) <= 0) {
+    throw new Error("El código es obligatorio y debe ser mayor a cero");
+  }
+
+  if (toNumber(payload?.semester, 0) <= 0) {
+    throw new Error("El semestre debe ser mayor a cero");
+  }
+
+  if (toNumber(payload?.numberOfPeriods, 0) <= 0) {
+    throw new Error("El número de periodos debe ser mayor a cero");
+  }
 };
 
 export const salonApi = {
-	...baseService,
-	create: async (payload) => {
-		await validateSalon(payload);
-		return baseService.create({
-			...payload,
-			codigoInterno: payload.codigoInterno || payload.id || "SIN-CODIGO",
-			tipo: String(payload.tipo || "AMBOS").toUpperCase(),
-			tipoHorario: String(payload.tipoHorario || "AMBOS").toUpperCase(),
-			estado: payload.estado || "ACTIVO",
-			usadoEnHorario: false,
-		});
-	},
-	update: async (id, payload) => {
-		await validateSalon(payload, id);
-		return baseService.update(id, {
-			...payload,
-			tipo: String(payload.tipo || "AMBOS").toUpperCase(),
-			tipoHorario: String(payload.tipoHorario || "AMBOS").toUpperCase(),
-		});
-	},
-	delete: async (id) => {
-		const salon = await baseService.get(id);
-		if (salon?.usadoEnHorario) {
-			throw new Error("No puedes eliminar un salón usado para un horario");
-		}
-		return baseService.delete(id);
-	},
+  ...baseService,
+  getAll: async (params = {}) => {
+    const response = await baseService.getAll(params);
+    return normalizeCollection(response);
+  },
+  get: async (id) => {
+    const response = await baseService.get(id);
+    return normalizeCourse(response);
+  },
+  create: async (payload) => {
+    validateSalon(payload);
+    const response = await baseService.create(buildCoursePayload(payload));
+    return normalizeCollection(response);
+  },
+  update: async (id, payload) => {
+    const normalizedId = Number(id ?? payload?.courseCode ?? payload?.id ?? 0);
+    if (!Number.isFinite(normalizedId) || normalizedId <= 0) {
+      throw new TypeError("Id inválido para actualizar");
+    }
+
+    validateSalon({ ...payload, courseCode: payload?.courseCode ?? normalizedId });
+    const response = await api.patch(`/courses/${normalizedId}`, buildCoursePayload(payload, normalizedId));
+    return normalizeCollection(response);
+  },
+  delete: async (id) => {
+    const normalizedId = Number(id);
+    if (!Number.isFinite(normalizedId) || normalizedId <= 0) {
+      throw new TypeError("Id inválido para eliminar");
+    }
+
+    return baseService.delete(normalizedId);
+  },
 };
 
 export default salonApi;

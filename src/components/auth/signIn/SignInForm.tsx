@@ -8,7 +8,7 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { persistAuthSession, storeDemoUser, storePendingTwoFactorEmail } from "@/service/auth-storage";
+import { persistAuthSession, storeAuthUser, storeDemoUser, storePendingTwoFactorEmail } from "@/service/auth-storage";
 import { User } from "@/hooks/useUser";
 
 const DEMO_CREDENTIALS = {
@@ -152,6 +152,7 @@ export default function SignInForm() {
 
       persistAuthSession(token, { rememberMe: isChecked });
       if (data.user) {
+        storeAuthUser(data.user, { rememberMe: isChecked });
         setCurrentUser(data.user);
       }
 

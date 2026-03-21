@@ -3,80 +3,85 @@
 import React, { useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useModal } from "@/hooks/useModal";
-import { useCurso } from "@/hooks/useCurso";
+import { useCurso, type Curso } from "@/hooks/useCurso";
 import { GenericTable, type Column } from "@/components/ui/table/GenericTable";
 import { Modal } from "@/components/ui/modal";
 import Button from "@/components/ui/button/Button";
 import Input from "@/components/form/input/InputField";
 import Label from "@/components/form/Label";
-import type { Curso, CursoCarreraSemestre } from "@/interfaces/HorariosDemo";
+
+const semesterOptions = [
+  { value: 1, label: "Primer semestre" },
+  { value: 2, label: "Segundo semestre" },
+  { value: 3, label: "Tercer semestre" },
+  { value: 4, label: "Cuarto semestre" },
+  { value: 5, label: "Quinto semestre" },
+  { value: 6, label: "Sexto semestre" },
+  { value: 7, label: "Séptimo semestre" },
+  { value: 8, label: "Octavo semestre" },
+  { value: 9, label: "Noveno semestre" },
+  { value: 10, label: "Décimo semestre" },
+];
+
+const scheduleLabel = (value?: string) => (value === "AFTERNOON" ? "Tarde" : "Mañana");
+const semesterLabel = (value?: number) => {
+  const option = semesterOptions.find((item) => item.value === Number(value));
+  return option?.label ?? `${Number(value || 1)}° semestre`;
+};
 
 type FormData = {
-  nombre: string;
-  codigo: string;
-  tipoHorario: "MANANA" | "TARDE" | "AMBOS";
-  tieneLab: boolean;
-  esAreaComun: boolean;
-  semestreAreaComun: number;
-  obligatorioAreaComun: boolean;
-  periodos: number;
-  carrera: string;
-  semestre: number;
-  seccion: string;
-  tipo: "OBLIGATORIO" | "OPTATIVO";
+  courseCode: number;
+  name: string;
+  semester: number;
+  isCommonArea: boolean;
+  isMandatory: boolean;
+  hasLab: boolean;
+  numberOfPeriods: number;
+  typeOfSchedule: "MORNING" | "AFTERNOON";
+};
+
+const initialForm: FormData = {
+  courseCode: 0,
+  name: "",
+  semester: 1,
+  isCommonArea: false,
+  isMandatory: true,
+  hasLab: false,
+  numberOfPeriods: 1,
+  typeOfSchedule: "MORNING",
 };
 
 const columns: Column<Curso>[] = [
   {
     header: "Curso",
-    cell: (curso) => (
+    cell: (item) => (
       <div>
-        <p className="font-medium text-gray-800 dark:text-white/90">{curso.nombre}</p>
-        <p className="text-xs text-gray-500 dark:text-gray-400">Código: {curso.codigo}</p>
+        <p className="font-medium text-gray-800 dark:text-white/90">{item.name}</p>
+        <p className="text-xs text-gray-500 dark:text-gray-400">Código: {item.courseCode ?? item.id}</p>
       </div>
     ),
   },
   {
+    header: "Semestre",
+    cell: (item) => semesterLabel(item.semester),
+  },
+  {
     header: "Horario",
-    accessorKey: "tipoHorario",
+    cell: (item) => `${item.typeOfSchedule} (${scheduleLabel(item.typeOfSchedule)})`,
   },
   {
-    header: "Periodos",
-    accessorKey: "periodos",
+    header: "Periodo(s)",
+    accessorKey: "numberOfPeriods",
   },
   {
-    header: "Tipo",
-    cell: (curso) => (
+    header: "Estado",
+    cell: (item) => (
       <span className="inline-block rounded-full bg-brand-50 px-3 py-1 text-xs font-medium text-brand-700 dark:bg-brand-500/20 dark:text-brand-300">
-        {curso.esAreaComun ? "Área común" : "Por carrera"}
+        {item.active ? "Activo" : "Inactivo"}
       </span>
     ),
   },
-  {
-    header: "Carreras/Sem.",
-    cell: (curso) =>
-      curso.esAreaComun ? (
-        <span className="text-xs text-gray-600 dark:text-gray-300">Semestre común: {curso.semestreAreaComun}</span>
-      ) : (
-        <span className="text-xs text-gray-600 dark:text-gray-300">{curso.carrerasSemestres.length} asignaciones</span>
-      ),
-  },
 ];
-
-const initialForm: FormData = {
-  nombre: "",
-  codigo: "",
-  tipoHorario: "AMBOS",
-  tieneLab: false,
-  esAreaComun: false,
-  semestreAreaComun: 1,
-  obligatorioAreaComun: true,
-  periodos: 1,
-  carrera: "",
-  semestre: 1,
-  seccion: "A",
-  tipo: "OBLIGATORIO",
-};
 
 export default function CursoTable() {
   const { isOpen, openModal, closeModal } = useModal();
@@ -84,7 +89,6 @@ export default function CursoTable() {
 
   const [selectedCurso, setSelectedCurso] = useState<Curso | null>(null);
   const [formData, setFormData] = useState<FormData>(initialForm);
-  const [asignaciones, setAsignaciones] = useState<CursoCarreraSemestre[]>([]);
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 7;
@@ -97,81 +101,55 @@ export default function CursoTable() {
   const handleAdd = () => {
     setSelectedCurso(null);
     setFormData(initialForm);
-    setAsignaciones([]);
     openModal();
   };
 
   const handleEdit = (curso: Curso) => {
     setSelectedCurso(curso);
     setFormData({
-      nombre: curso.nombre,
-      codigo: curso.codigo,
-      tipoHorario: curso.tipoHorario,
-      tieneLab: curso.tieneLab,
-      esAreaComun: curso.esAreaComun,
-      semestreAreaComun: curso.semestreAreaComun ?? 1,
-      obligatorioAreaComun: curso.obligatorioAreaComun ?? true,
-      periodos: curso.periodos,
-      carrera: "",
-      semestre: 1,
-      seccion: "A",
-      tipo: "OBLIGATORIO",
+      courseCode: Number(curso.courseCode ?? curso.id ?? 0),
+      name: curso.name,
+      semester: Number(curso.semester ?? 1),
+      isCommonArea: Boolean(curso.isCommonArea),
+      isMandatory: Boolean(curso.isMandatory ?? true),
+      hasLab: Boolean(curso.hasLab),
+      numberOfPeriods: Number(curso.numberOfPeriods ?? 1),
+      typeOfSchedule: curso.typeOfSchedule === "AFTERNOON" ? "AFTERNOON" : "MORNING",
     });
-    setAsignaciones(curso.carrerasSemestres || []);
     openModal();
-  };
-
-  const addAsignacion = () => {
-    if (!formData.carrera.trim()) {
-      toast.error("Ingresa una carrera para asignar");
-      return;
-    }
-
-    setAsignaciones((prev) => [
-      ...prev,
-      {
-        carrera: formData.carrera.trim(),
-        semestre: Number(formData.semestre),
-        seccion: formData.seccion.trim(),
-        tipo: formData.tipo,
-      },
-    ]);
-
-    setFormData((prev) => ({ ...prev, carrera: "", semestre: 1, seccion: "A" }));
-  };
-
-  const removeAsignacion = (index: number) => {
-    setAsignaciones((prev) => prev.filter((_, idx) => idx !== index));
   };
 
   const handleSave = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (!formData.nombre.trim() || !formData.codigo.trim()) {
-      toast.error("Nombre y código son obligatorios");
+    if (!formData.name.trim()) {
+      toast.error("El nombre es obligatorio");
       return;
     }
 
-    if (!formData.esAreaComun && asignaciones.length === 0) {
-      toast.error("Debes asignar al menos una carrera y semestre");
+    if (formData.courseCode <= 0) {
+      toast.error("El código del curso debe ser mayor a cero");
+      return;
+    }
+
+    if (formData.semester <= 0 || formData.numberOfPeriods <= 0) {
+      toast.error("Semestre y número de periodos deben ser mayores a cero");
       return;
     }
 
     const payload = {
-      nombre: formData.nombre.trim(),
-      codigo: formData.codigo.trim(),
-      tipoHorario: formData.tipoHorario,
-      tieneLab: formData.tieneLab,
-      esAreaComun: formData.esAreaComun,
-      semestreAreaComun: formData.esAreaComun ? Number(formData.semestreAreaComun) : undefined,
-      obligatorioAreaComun: formData.esAreaComun ? formData.obligatorioAreaComun : undefined,
-      periodos: Number(formData.periodos),
-      carrerasSemestres: formData.esAreaComun ? [] : asignaciones,
-      usadoEnHorario: selectedCurso?.usadoEnHorario ?? false,
+      courseCode: Number(formData.courseCode),
+      name: formData.name.trim(),
+      semester: Number(formData.semester),
+      isCommonArea: formData.isCommonArea,
+      isMandatory: formData.isMandatory,
+      hasLab: formData.hasLab,
+      numberOfPeriods: Number(formData.numberOfPeriods),
+      typeOfSchedule: formData.typeOfSchedule,
     };
 
     const success = selectedCurso
-      ? await updateCurso(selectedCurso.id, payload)
+      ? await updateCurso(Number(selectedCurso.courseCode ?? selectedCurso.id), payload)
       : await createCurso(payload);
 
     if (success) {
@@ -198,7 +176,7 @@ export default function CursoTable() {
         data={currentCursos}
         columns={columns}
         onEdit={handleEdit}
-        onDelete={(item) => deleteCurso(item.id)}
+        onDelete={(item) => deleteCurso(Number(item.courseCode ?? item.id))}
         pagination={{
           currentPage,
           totalPages,
@@ -220,152 +198,84 @@ export default function CursoTable() {
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
               <div>
                 <Label>Nombre</Label>
-                <Input value={formData.nombre} onChange={(event) => setFormData((prev) => ({ ...prev, nombre: event.target.value }))} />
+                <Input value={formData.name} onChange={(event) => setFormData((prev) => ({ ...prev, name: event.target.value }))} />
               </div>
               <div>
-                <Label>Código</Label>
-                <Input value={formData.codigo} onChange={(event) => setFormData((prev) => ({ ...prev, codigo: event.target.value.toUpperCase() }))} />
-              </div>
-
-              <div>
-                <Label>Tipo horario</Label>
-                <select
-                  className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm dark:border-gray-700"
-                  value={formData.tipoHorario}
-                  onChange={(event) =>
-                    setFormData((prev) => ({ ...prev, tipoHorario: event.target.value as FormData["tipoHorario"] }))
-                  }
-                >
-                  <option value="MANANA">Mañana</option>
-                  <option value="TARDE">Tarde</option>
-                  <option value="AMBOS">Ambos</option>
-                </select>
-              </div>
-              <div>
-                <Label>Periodos</Label>
+                <Label>Código del curso</Label>
                 <Input
                   type="number"
                   min="1"
-                  value={formData.periodos}
-                  onChange={(event) => setFormData((prev) => ({ ...prev, periodos: Number(event.target.value || 1) }))}
+                  value={formData.courseCode}
+                  onChange={(event) => setFormData((prev) => ({ ...prev, courseCode: Number(event.target.value || 0) }))}
                 />
+              </div>
+
+              <div>
+                <Label>Semestre</Label>
+                <select
+                  className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm dark:border-gray-700"
+                  value={formData.semester}
+                  onChange={(event) => setFormData((prev) => ({ ...prev, semester: Number(event.target.value) }))}
+                >
+                  {semesterOptions.map((option) => (
+                    <option key={option.value} value={option.value}>{option.label}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <Label>Número de periodos</Label>
+                <Input
+                  type="number"
+                  min="1"
+                  value={formData.numberOfPeriods}
+                  onChange={(event) => setFormData((prev) => ({ ...prev, numberOfPeriods: Number(event.target.value || 1) }))}
+                />
+              </div>
+
+              <div>
+                <Label>Tipo de horario</Label>
+                <select
+                  className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm dark:border-gray-700"
+                  value={formData.typeOfSchedule}
+                  onChange={(event) =>
+                    setFormData((prev) => ({ ...prev, typeOfSchedule: event.target.value as FormData["typeOfSchedule"] }))
+                  }
+                >
+                  <option value="MORNING">Mañana</option>
+                  <option value="AFTERNOON">Tarde</option>
+                </select>
+              </div>
+
+              <div className="flex items-center gap-2 pt-7">
+                <input
+                  id="hasLab"
+                  type="checkbox"
+                  checked={formData.hasLab}
+                  onChange={(event) => setFormData((prev) => ({ ...prev, hasLab: event.target.checked }))}
+                />
+                <Label htmlFor="hasLab">Tiene laboratorio</Label>
               </div>
 
               <div className="flex items-center gap-2">
                 <input
-                  id="tieneLab"
+                  id="isCommonArea"
                   type="checkbox"
-                  checked={formData.tieneLab}
-                  onChange={(event) => setFormData((prev) => ({ ...prev, tieneLab: event.target.checked }))}
+                  checked={formData.isCommonArea}
+                  onChange={(event) => setFormData((prev) => ({ ...prev, isCommonArea: event.target.checked }))}
                 />
-                <Label htmlFor="tieneLab">Tiene laboratorio</Label>
+                <Label htmlFor="isCommonArea">Es área común</Label>
               </div>
+
               <div className="flex items-center gap-2">
                 <input
-                  id="esAreaComun"
+                  id="isMandatory"
                   type="checkbox"
-                  checked={formData.esAreaComun}
-                  onChange={(event) => setFormData((prev) => ({ ...prev, esAreaComun: event.target.checked }))}
+                  checked={formData.isMandatory}
+                  onChange={(event) => setFormData((prev) => ({ ...prev, isMandatory: event.target.checked }))}
                 />
-                <Label htmlFor="esAreaComun">Es área común</Label>
+                <Label htmlFor="isMandatory">Es obligatorio</Label>
               </div>
             </div>
-
-            {formData.esAreaComun ? (
-              <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-                <div>
-                  <Label>Semestre área común</Label>
-                  <Input
-                    type="number"
-                    min="1"
-                    value={formData.semestreAreaComun}
-                    onChange={(event) =>
-                      setFormData((prev) => ({ ...prev, semestreAreaComun: Number(event.target.value || 1) }))
-                    }
-                  />
-                </div>
-                <div className="flex items-center gap-2 pt-7">
-                  <input
-                    id="obligatorioAreaComun"
-                    type="checkbox"
-                    checked={formData.obligatorioAreaComun}
-                    onChange={(event) =>
-                      setFormData((prev) => ({ ...prev, obligatorioAreaComun: event.target.checked }))
-                    }
-                  />
-                  <Label htmlFor="obligatorioAreaComun">Obligatorio en área común</Label>
-                </div>
-              </div>
-            ) : (
-              <div className="rounded-xl border border-gray-200 p-4 dark:border-white/10">
-                <h5 className="mb-3 text-sm font-semibold text-gray-700 dark:text-gray-200">Asignar carrera y semestre</h5>
-                <div className="grid grid-cols-1 gap-4 lg:grid-cols-4">
-                  <div className="lg:col-span-2">
-                    <Label>Carrera</Label>
-                    <Input
-                      value={formData.carrera}
-                      onChange={(event) => setFormData((prev) => ({ ...prev, carrera: event.target.value }))}
-                    />
-                  </div>
-                  <div>
-                    <Label>Semestre</Label>
-                    <Input
-                      type="number"
-                      min="1"
-                      value={formData.semestre}
-                      onChange={(event) => setFormData((prev) => ({ ...prev, semestre: Number(event.target.value || 1) }))}
-                    />
-                  </div>
-                  <div>
-                    <Label>Sección</Label>
-                    <Input
-                      value={formData.seccion}
-                      onChange={(event) => setFormData((prev) => ({ ...prev, seccion: event.target.value }))}
-                    />
-                  </div>
-                  <div>
-                    <Label>Tipo</Label>
-                    <select
-                      className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm dark:border-gray-700"
-                      value={formData.tipo}
-                      onChange={(event) =>
-                        setFormData((prev) => ({ ...prev, tipo: event.target.value as FormData["tipo"] }))
-                      }
-                    >
-                      <option value="OBLIGATORIO">Obligatorio</option>
-                      <option value="OPTATIVO">Optativo</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="mt-3 flex justify-end">
-                  <Button size="sm" type="button" variant="outline" onClick={addAsignacion}>
-                    Agregar asignación
-                  </Button>
-                </div>
-
-                <div className="mt-3 space-y-2 text-sm">
-                  {asignaciones.length === 0 ? (
-                    <p className="text-gray-500 dark:text-gray-400">No hay asignaciones agregadas.</p>
-                  ) : (
-                    asignaciones.map((item, index) => (
-                      <div key={`${item.carrera}-${index}`} className="flex items-center justify-between rounded-lg bg-gray-50 p-2 dark:bg-white/5">
-                        <span className="text-gray-700 dark:text-gray-300">
-                          {item.carrera} - Sem {item.semestre} - Sec {item.seccion || "-"} - {item.tipo}
-                        </span>
-                        <button
-                          type="button"
-                          className="text-xs font-medium text-red-600 dark:text-red-300"
-                          onClick={() => removeAsignacion(index)}
-                        >
-                          Quitar
-                        </button>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
-            )}
 
             <div className="flex items-center justify-end gap-3">
               <Button size="sm" variant="outline" type="button" onClick={closeModal}>

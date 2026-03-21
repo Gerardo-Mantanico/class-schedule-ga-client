@@ -1,21 +1,50 @@
 import { useCrud } from "./useCrud";
 import cursoApi from "@/service/curso.service";
-import type { Curso } from "@/interfaces/HorariosDemo";
 
-const transformPayload = (data: unknown): Omit<Curso, "id"> => {
+export interface Curso {
+  id: number;
+  courseCode?: number;
+  name: string;
+  semester: number;
+  isCommonArea: boolean;
+  isMandatory: boolean;
+  hasLab: boolean;
+  numberOfPeriods: number;
+  typeOfSchedule: "MORNING" | "AFTERNOON";
+  active?: boolean;
+  createdAt?: string;
+  createdBy?: string | null;
+  updatedAt?: string;
+  updatedBy?: string | null;
+}
+
+type CursoPayload = {
+  courseCode: number;
+  name: string;
+  semester: number;
+  isCommonArea: boolean;
+  isMandatory: boolean;
+  hasLab: boolean;
+  numberOfPeriods: number;
+  typeOfSchedule: "MORNING" | "AFTERNOON";
+};
+
+const transformPayload = (data: unknown): CursoPayload => {
   const value = (data ?? {}) as Partial<Curso>;
+  const normalizedSchedule =
+    String(value.typeOfSchedule ?? "MORNING").toUpperCase() === "AFTERNOON"
+      ? "AFTERNOON"
+      : "MORNING";
 
   return {
-    nombre: value.nombre ?? "",
-    codigo: String(value.codigo ?? "").toUpperCase(),
-    carrerasSemestres: Array.isArray(value.carrerasSemestres) ? value.carrerasSemestres : [],
-    tipoHorario: value.tipoHorario ?? "AMBOS",
-    tieneLab: Boolean(value.tieneLab),
-    esAreaComun: Boolean(value.esAreaComun),
-    semestreAreaComun: value.semestreAreaComun,
-    obligatorioAreaComun: value.obligatorioAreaComun,
-    periodos: Number(value.periodos ?? 1),
-    usadoEnHorario: Boolean(value.usadoEnHorario),
+    courseCode: Number(value.courseCode ?? value.id ?? 0),
+    name: String(value.name ?? "").trim(),
+    semester: Number(value.semester ?? 1),
+    isCommonArea: Boolean(value.isCommonArea),
+    isMandatory: Boolean(value.isMandatory ?? true),
+    hasLab: Boolean(value.hasLab),
+    numberOfPeriods: Number(value.numberOfPeriods ?? 1),
+    typeOfSchedule: normalizedSchedule,
   };
 };
 
