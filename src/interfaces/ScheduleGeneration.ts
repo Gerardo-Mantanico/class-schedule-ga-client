@@ -21,6 +21,13 @@ export interface ConfigProfessorItem {
   professorCode: string;
   firstName: string;
   lastName: string;
+  professor: {
+    "professorCode": number;
+    "firstName": string;
+    "secondName": string;
+    "lastName": string;
+    "secondLastName": string;
+  }
 }
 
 export interface ConfigClassroomItem {
@@ -29,6 +36,10 @@ export interface ConfigClassroomItem {
   classroomId: Id;
   typeOfSchedule: "MORNING" | "AFTERNOON" | "BOTH";
   classroomType: "CLASS" | "LAB" | "BOTH";
+  classroom: {
+    "classroomId": number;
+    "name": string;
+  }
 }
 
 export interface ConfigCourseItem {
@@ -43,12 +54,29 @@ export interface ConfigCourseItem {
   fixedDayIndex?: number;
   fixedStartSlot?: number;
   configClassroomId?: Id;
+  course: {
+      name: string;
+  }
 }
 
 export interface ConfigCourseProfessorItem {
   configCourseProfessorId: Id;
   configProfessorId: Id;
   configCourseId: Id;
+  configProfessor: {
+      professor: {
+          "professorCode": number;
+          "firstName": string;
+          "secondName": string;
+          "lastName": string;
+          "secondLastName": string;
+      }
+  },
+    configCourse: {
+        course: {
+            name: string;
+        }
+    }
 }
 
 export interface GeneratedScheduleSlot {

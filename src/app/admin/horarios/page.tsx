@@ -8,8 +8,10 @@ export const metadata: Metadata = {
 
 export default function HorariosPage() {
   return (
-    <div className="space-y-6">
-      <HorarioTable />
+    <div className="min-w-0 space-y-6 overflow-x-hidden">
+      <div className="min-w-0">
+        <HorarioTable />
+      </div>
     </div>
   );
 }

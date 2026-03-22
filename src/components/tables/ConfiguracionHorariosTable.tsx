@@ -10,6 +10,7 @@ import { Modal } from "@/components/ui/modal";
 import Button from "@/components/ui/button/Button";
 import Input from "@/components/form/input/InputField";
 import Label from "@/components/form/Label";
+import { TrashBinIcon } from "@/icons";
 import type { ConfiguracionHorario } from "@/interfaces/ScheduleConfig";
 
 const formatTimeOnly = (value: string) => {
@@ -103,6 +104,10 @@ export default function ConfiguracionHorariosTable() {
     createConfigClassroom,
     createConfigCourse,
     createConfigCourseProfessor,
+    deleteConfigProfessor,
+    deleteConfigClassroom,
+    deleteConfigCourse,
+    deleteConfigCourseProfessor,
     runGenerate,
   } = useScheduleGeneration();
 
@@ -305,6 +310,38 @@ export default function ConfiguracionHorariosTable() {
     }
   };
 
+  const handleDeleteProfessor = async (configProfessorId: number) => {
+    if (!currentConfigId) return;
+    const ok = await deleteConfigProfessor(parseInt(currentConfigId), configProfessorId);
+    if (ok) {
+      toast.success("Docente eliminado");
+    }
+  };
+
+  const handleDeleteClassroom = async (configClassroomId: number) => {
+    if (!currentConfigId) return;
+    const ok = await deleteConfigClassroom(parseInt(currentConfigId), configClassroomId);
+    if (ok) {
+      toast.success("Salón eliminado");
+    }
+  };
+
+  const handleDeleteCourse = async (configCourseId: number) => {
+    if (!currentConfigId) return;
+    const ok = await deleteConfigCourse(parseInt(currentConfigId), configCourseId);
+    if (ok) {
+      toast.success("Curso eliminado");
+    }
+  };
+
+  const handleDeletePreference = async (configCourseProfessorId: number) => {
+    if (!currentConfigId) return;
+    const ok = await deleteConfigCourseProfessor(parseInt(currentConfigId), configCourseProfessorId);
+    if (ok) {
+      toast.success("Preferencia eliminada");
+    }
+  };
+
   if (loading && configuraciones.length === 0) return <div>Cargando configuraciones...</div>;
   if (error && configuraciones.length === 0) return <div>Error: {error}</div>;
 
@@ -331,7 +368,7 @@ export default function ConfiguracionHorariosTable() {
       />
 
       <Modal isOpen={isOpen} onClose={closeModal} className="max-w-190 m-4">
-        <div className="no-scrollbar relative w-full max-w-190 overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
+        <div className="relative flex w-full max-w-190 max-h-[90vh] flex-col rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
           <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
             {selected ? "Editar configuración" : "Crear configuración"}
           </h4>
@@ -357,7 +394,7 @@ export default function ConfiguracionHorariosTable() {
             <p className="mb-3 text-sm text-amber-600">Guarda primero la configuración general para habilitar este paso.</p>
           )}
 
-          <form onSubmit={handlePrimaryAction} className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+          <form onSubmit={handlePrimaryAction} className="custom-scrollbar grid grid-cols-1 gap-4 overflow-y-auto pr-1 lg:grid-cols-3">
             {error && (
               <div className="col-span-3 rounded-lg bg-red-50 p-3 text-sm text-red-600 dark:bg-red-900/10 dark:text-red-400">{error}</div>
             )}
@@ -460,7 +497,23 @@ export default function ConfiguracionHorariosTable() {
                   <Button size="sm" type="button" onClick={handleAddProfessor}>Agregar</Button>
                 </div>
                 <div className="col-span-3 space-y-2 text-sm">
-                  {configProfessors.map((item) => <div key={item.configProfessorId} className="rounded-lg bg-gray-50 p-2 dark:bg-white/5">#{item.configProfessorId} - {item.professorCode}</div>)}
+                  <div className="custom-scrollbar max-h-52 space-y-2 overflow-y-auto pr-1">
+                    {configProfessors.map((item) => (
+                      <div key={item.configProfessorId} className="flex items-center justify-between gap-3 rounded-lg bg-gray-50 p-2 dark:bg-white/5">
+                        <span>
+                          #{item.configProfessorId} - {item.professor.firstName} {item.professor.lastName}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => void handleDeleteProfessor(item.configProfessorId)}
+                          className="rounded-lg p-2 text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                          aria-label={`Eliminar docente ${item.professor.firstName} ${item.professor.lastName}`}
+                        >
+                          <TrashBinIcon className="h-4 w-4" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </>
             )}
@@ -488,7 +541,23 @@ export default function ConfiguracionHorariosTable() {
                 </div>
                 <div className="col-span-3 flex justify-end"><Button size="sm" type="button" onClick={handleAddClassroom}>Agregar salón</Button></div>
                 <div className="col-span-3 space-y-2 text-sm">
-                  {configClassrooms.map((item) => <div key={item.configClassroomId} className="rounded-lg bg-gray-50 p-2 dark:bg-white/5">#{item.configClassroomId} - {item.classroomId} | {item.typeOfSchedule} | {item.classroomType}</div>)}
+                  <div className="custom-scrollbar max-h-52 space-y-2 overflow-y-auto pr-1">
+                    {configClassrooms.map((item) => (
+                      <div key={item.configClassroomId} className="flex items-center justify-between gap-3 rounded-lg bg-gray-50 p-2 dark:bg-white/5">
+                        <span>
+                          {item.classroom.name} - {item.typeOfSchedule} | {item.classroomType}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => void handleDeleteClassroom(item.configClassroomId)}
+                          className="rounded-lg p-2 text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                          aria-label={`Eliminar salón ${item.classroom.name}`}
+                        >
+                          <TrashBinIcon className="h-4 w-4" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </>
             )}
@@ -507,7 +576,23 @@ export default function ConfiguracionHorariosTable() {
                 <div className="flex items-center gap-2"><input id="requireClassroom" type="checkbox" checked={requireClassroom} onChange={(event) => setRequireClassroom(event.target.checked)} /><Label htmlFor="requireClassroom">Requiere salón</Label></div>
                 <div className="col-span-3 flex justify-end"><Button size="sm" type="button" onClick={handleAddCourse}>Agregar curso</Button></div>
                 <div className="col-span-3 space-y-2 text-sm">
-                  {configCourses.map((item) => <div key={item.configCourseId} className="rounded-lg bg-gray-50 p-2 dark:bg-white/5">#{item.configCourseId} - {item.courseCode} | secciones: {item.sectionQty}</div>)}
+                  <div className="custom-scrollbar max-h-52 space-y-2 overflow-y-auto pr-1">
+                    {configCourses.map((item) => (
+                      <div key={item.configCourseId} className="flex items-center justify-between gap-3 rounded-lg bg-gray-50 p-2 dark:bg-white/5">
+                        <span>
+                          {item.courseCode} {item.course.name} | secciones: {item.sectionQty}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => void handleDeleteCourse(item.configCourseId)}
+                          className="rounded-lg p-2 text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                          aria-label={`Eliminar curso ${item.course.name}`}
+                        >
+                          <TrashBinIcon className="h-4 w-4" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </>
             )}
@@ -518,19 +603,35 @@ export default function ConfiguracionHorariosTable() {
                   <Label>Curso configurado</Label>
                   <select className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm dark:border-gray-700" value={prefCourseId} onChange={(event) => setPrefCourseId(event.target.value)}>
                     <option value="">Selecciona curso</option>
-                    {configCourses.map((item) => <option key={item.configCourseId} value={item.configCourseId}>#{item.configCourseId} - {item.courseCode}</option>)}
+                    {configCourses.map((item) => <option key={item.configCourseId} value={item.configCourseId}>#{item.courseCode} - {item.course.name}</option>)}
                   </select>
                 </div>
                 <div>
                   <Label>Docente configurado</Label>
                   <select className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm dark:border-gray-700" value={prefProfessorId} onChange={(event) => setPrefProfessorId(event.target.value)}>
                     <option value="">Selecciona docente</option>
-                    {configProfessors.map((item) => <option key={item.configProfessorId} value={item.configProfessorId}>#{item.configProfessorId} - {item.professorCode}</option>)}
+                    {configProfessors.map((item) => <option key={item.configProfessorId} value={item.configProfessorId}>#{item.configProfessorId} - {item.professor.firstName} {item.professor.lastName}</option>)}
                   </select>
                 </div>
                 <div className="flex items-end"><Button size="sm" type="button" onClick={handleAddPreference}>Agregar</Button></div>
                 <div className="col-span-3 space-y-2 text-sm">
-                  {configCourseProfessors.map((item) => <div key={item.configCourseProfessorId} className="rounded-lg bg-gray-50 p-2 dark:bg-white/5">#{item.configCourseProfessorId} - Curso #{item.configCourseId} | Docente #{item.configProfessorId}</div>)}
+                  <div className="custom-scrollbar max-h-52 space-y-2 overflow-y-auto pr-1">
+                    {configCourseProfessors.map((item) => (
+                      <div key={item.configCourseProfessorId} className="flex items-center justify-between gap-3 rounded-lg bg-gray-50 p-2 dark:bg-white/5">
+                        <span>
+                          Curso: {item.configCourse.course.name} | Docente: {item.configProfessor.professor.firstName} {item.configProfessor.professor.lastName}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => void handleDeletePreference(item.configCourseProfessorId)}
+                          className="rounded-lg p-2 text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                          aria-label={`Eliminar preferencia ${item.configCourse.course.name}`}
+                        >
+                          <TrashBinIcon className="h-4 w-4" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </>
             )}

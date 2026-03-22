@@ -353,11 +353,104 @@ export const useScheduleGeneration = () => {
     }
   };
 
-  const fetchGeneratedSchedule = useCallback(async (generatedScheduleId: Id) => {
+  const deleteConfigProfessor = async (scheduleConfigId: Id, configProfessorId: Id) => {
+    setSaving(true);
+    setError(null);
+    try {
+      await scheduleGenerationApi.deleteConfigProfessor(configProfessorId);
+      await loadConfigData(scheduleConfigId);
+      return true;
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message || "Error al eliminar docente de configuración");
+      } else {
+        setError("Error al eliminar docente de configuración");
+      }
+      return false;
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const deleteConfigClassroom = async (scheduleConfigId: Id, configClassroomId: Id) => {
+    setSaving(true);
+    setError(null);
+    try {
+      await scheduleGenerationApi.deleteConfigClassroom(configClassroomId);
+      await loadConfigData(scheduleConfigId);
+      return true;
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message || "Error al eliminar salón de configuración");
+      } else {
+        setError("Error al eliminar salón de configuración");
+      }
+      return false;
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const deleteConfigCourse = async (scheduleConfigId: Id, configCourseId: Id) => {
+    setSaving(true);
+    setError(null);
+    try {
+      await scheduleGenerationApi.deleteConfigCourse(configCourseId);
+      await loadConfigData(scheduleConfigId);
+      return true;
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message || "Error al eliminar curso de configuración");
+      } else {
+        setError("Error al eliminar curso de configuración");
+      }
+      return false;
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const deleteConfigCourseProfessor = async (
+    scheduleConfigId: Id,
+    configCourseProfessorId: Id
+  ) => {
+    setSaving(true);
+    setError(null);
+    try {
+      await scheduleGenerationApi.deleteConfigCourseProfessor(configCourseProfessorId);
+      await loadConfigData(scheduleConfigId);
+      return true;
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message || "Error al eliminar preferencia curso-docente");
+      } else {
+        setError("Error al eliminar preferencia curso-docente");
+      }
+      return false;
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const fetchGeneratedSchedule = useCallback(async (
+    generatedScheduleId: Id,
+    filters?: { sessionType?: "CLASS" | "LAB"; semester?: number; careerCode?: number }
+  ) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await scheduleGenerationApi.getGeneratedSchedule(generatedScheduleId);
+      const params: Record<string, string> = {};
+      if (filters?.sessionType) {
+        params.sessionType = filters.sessionType;
+      }
+      if (typeof filters?.semester === "number" && Number.isFinite(filters.semester) && filters.semester > 0) {
+        params.semester = String(filters.semester);
+      }
+      if (typeof filters?.careerCode === "number" && Number.isFinite(filters.careerCode) && filters.careerCode > 0) {
+        params.careerCode = String(filters.careerCode);
+      }
+
+      const response = await scheduleGenerationApi.getGeneratedSchedule(generatedScheduleId, params);
       const normalized = normalizeGenerated(response);
       if (!normalized) {
         setError("No se pudo interpretar el horario generado");
@@ -483,6 +576,10 @@ export const useScheduleGeneration = () => {
     createConfigClassroom,
     createConfigCourse,
     createConfigCourseProfessor,
+    deleteConfigProfessor,
+    deleteConfigClassroom,
+    deleteConfigCourse,
+    deleteConfigCourseProfessor,
     runGenerate,
     fetchGeneratedSchedules,
     fetchGeneratedSchedule,

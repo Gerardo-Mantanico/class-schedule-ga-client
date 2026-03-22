@@ -1,28 +1,5 @@
 import api from "./api.service";
 
-const asArray = (value) => {
-  if (Array.isArray(value)) return value;
-  if (!value || typeof value !== "object") return [];
-
-  const obj = value;
-  return obj.content || obj.data || obj.items || obj.rows || obj.results || [];
-};
-
-const toNumericId = (value) => {
-  const parsed = Number(String(value ?? "0"));
-  return Number.isFinite(parsed) ? parsed : 0;
-};
-
-const computeNextId = async (endpoint, idKey) => {
-  const response = await api.get(endpoint);
-  const items = asArray(response);
-  const maxId = items.reduce((acc, item) => {
-    const current = toNumericId(item?.[idKey] ?? item?.id);
-    return current > acc ? current : acc;
-  }, 0);
-  return String(maxId + 1);
-};
-
 export const scheduleGenerationApi = {
   getCourses: async () => api.get("/courses"),
   getProfessors: async () => api.get("/professors"),
@@ -34,12 +11,18 @@ export const scheduleGenerationApi = {
       ...payload,
     });
   },
+  deleteConfigProfessor: async (configProfessorId) => {
+    return api.delete(`/config-professors/${configProfessorId}`);
+  },
 
   getConfigClassrooms: async () => api.get("/config-classrooms"),
   createConfigClassroom: async (payload) => {
     return api.post("/config-classrooms", {
       ...payload,
     });
+  },
+  deleteConfigClassroom: async (configClassroomId) => {
+    return api.delete(`/config-classrooms/${configClassroomId}`);
   },
 
   getConfigCourses: async () => api.get("/config-courses"),
@@ -48,6 +31,9 @@ export const scheduleGenerationApi = {
       ...payload,
     });
   },
+  deleteConfigCourse: async (configCourseId) => {
+    return api.delete(`/config-courses/${configCourseId}`);
+  },
 
   getConfigCourseProfessors: async () => api.get("/config-course-professors"),
   createConfigCourseProfessor: async (payload) => {
@@ -55,12 +41,17 @@ export const scheduleGenerationApi = {
       ...payload,
     });
   },
+  deleteConfigCourseProfessor: async (configCourseProfessorId) => {
+    return api.delete(`/config-course-professors/${configCourseProfessorId}`);
+  },
 
   generate: async (scheduleConfigId, name) => api.post(`/ga/generate/${scheduleConfigId}`, {
     name,
   }),
   getGeneratedSchedules: async () => api.get("/generated-schedules"),
-  getGeneratedSchedule: async (generatedScheduleId) => api.get(`/generated-schedules/${generatedScheduleId}`),
+  getGeneratedSchedule: async (generatedScheduleId, params = {}) => {
+    return api.get(`/generated-schedules/${generatedScheduleId}`, { params });
+  },
   patchGeneratedItem: async (generatedScheduleId, generatedScheduleItemId, payload) => {
     return api.patch(
       `/generated-schedules/${generatedScheduleId}/items/${generatedScheduleItemId}`,
