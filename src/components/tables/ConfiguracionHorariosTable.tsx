@@ -445,8 +445,8 @@ export default function ConfiguracionHorariosTable() {
                       }))
                     }
                   >
-                    <option value={1}>1</option>
-                    <option value={2}>2</option>
+                    <option value={1}>Torneo</option>
+                    <option value={2}>Ruleta</option>
                   </select>
                 </div>
                 <div>
@@ -461,8 +461,8 @@ export default function ConfiguracionHorariosTable() {
                       }))
                     }
                   >
-                    <option value={1}>1</option>
-                    <option value={2}>2</option>
+                    <option value={1}>Cruce de punto</option>
+                    <option value={2}>Cruce uniforme</option>
                   </select>
                 </div>
                 <div>
@@ -477,8 +477,8 @@ export default function ConfiguracionHorariosTable() {
                       }))
                     }
                   >
-                    <option value={1}>1</option>
-                    <option value={2}>2</option>
+                    <option value={1}>Ramdom Resseting</option>
+                    <option value={2}>Intercambio</option>
                   </select>
                 </div>
               </>
